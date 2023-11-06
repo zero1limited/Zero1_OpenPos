@@ -13,7 +13,7 @@
         "psr-4": {
             "Zero1\\HyvaPos\\": ""
         }
-    }
+    },
     "keywords": [
         "Magento 2",
         "Magento"
