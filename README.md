@@ -18,11 +18,15 @@ ZERO-1 POS > Configuration - General
  - Set 'Enable POS system' to 'Enable
  - Set 'POS Store' to whichever Web Store you wish - IMPORTANT - this will prevent unregistered users accessing the site
  - Set 'Redirect Store' to the store you wish in-case any unregistered users should visit the URL
+ - 
 
 ZERO-1 POS > Configuration - General
  - 'Receipt header' - Enter text you wish to show at the top - HTML is allowed
 
-
+General Config - for the POS website
+ - Allow Guest Checkout	 - No
+ - Display Mini Cart - No
+ - After Adding a Product Redirect to Shopping Cart	- Yes
 
 
 ## Feature TODO List
