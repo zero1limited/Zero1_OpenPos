@@ -4,7 +4,7 @@ Description of the Zero_Pos
 
 ## Installation & Configuration
 
-composer require xxxxxx
+composer require zero1/pos
 
 configure for use on single website
 set website theme to Zero1_POS
