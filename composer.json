@@ -1,5 +1,5 @@
 {
-    "name": "zero1/hyva-pos",
+    "name": "zero1/pos",
     "license": [
         "GPL-3.0-or-later"
     ],
@@ -11,7 +11,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Zero1\\HyvaPos\\": ""
+            "Zero1\\Pos\\": ""
         }
     },
     "keywords": [
