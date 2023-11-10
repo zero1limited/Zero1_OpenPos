@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="zero1_pos" translate="label" sortOrder="600">
+            <label>ZERO-1 POS</label>
+        </tab>
+        <section id="zero1_pos" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Configuration</label>
+            <tab>zero1_pos</tab>
+            <resource>Zero1_Pos::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General</label>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable POS system</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="pos_store" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>POS Store</label>
+                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
+                </field>
+                <field id="redirect_store" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Redirect Store</label>
+                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
+                    <comment>A store to redirect to if the POS store URL is requested without a customer session in place.</comment>
+                </field>
+            </group>
+
+            <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Customisation (Arron)</label>
+                <field id="receipt_header" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Receipt header</label>
+                    <comment>Example comment!</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

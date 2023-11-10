@@ -1,0 +1,134 @@
+<!-- Example on how to get shit from order. See: app/code/Zero1/Pos/Block/ReceiptHeader.php -->
+<!--
+
+Order Date: <?= $block->getOrderDate(); ?>
+
+Order grand total: <?= $block->getOrderGrandTotal() ?>
+
+
+Order Items:
+<?php foreach($block->getOrderItems() as $orderItem): ?>
+
+-- ITEM START --
+SKU: <?= $orderItem->getSku() ?>
+
+Price: <?= $orderItem->getPrice() ?>
+
+Name: <?= $orderItem->getName() ?>
+
+-- ITEM END --
+
+<?php endforeach ?>
+
+-->
+<!-- Example on how to get shit from order. See: app/code/Zero1/Pos/Block/ReceiptHeader.php -->
+
+
+
+
+
+
+
+<script type="text/javascript" name="Ideal_Postcodes">
+window. print();
+</script>
+<script language="JavaScript" src="IDAutomation_Uni_C128.js"></script>
+
+<style>
+    #receipt {
+        display:none;
+    }
+
+
+@media print {
+
+    body {
+        margin: 0;
+        color: #000;
+        background-color: #fff;
+        font-size: 8pt;
+        font-family: sans-serif;
+    }
+    #receipt {
+        display:block;
+    }
+
+
+    /* print.css */
+    #dashboard, .top-container, #header, .page-header, .checkout-success, h1.page-title, #LoginAsCustomer  {
+        display: none;
+    }
+    .page-wrapper, .page-main, .columns {
+        margin: 0; padding:0;    margin-left: 0rem;
+    }
+
+
+    @font-face {
+      font-family: Zero1PosBarcode;
+      src: url(/LibreBarcode39-Regular.ttf);
+    }
+
+    .barcode {
+      font-family: Zero1PosBarcode;
+      font-size: 38px;
+    }
+
+}
+</style>
+
+
+<div id="receipt">
+    <div style="width:70%; margin:auto; text-align:centre;">
+    <a class="flex items-center justify-center text-xl font-medium tracking-wide text-gray-800
+    no-underline hover:no-underline font-title" href="https://www.divinetrash.co.uk/" title="Womens clothes, Mens clothes" aria-label="store logo">
+    <img src="https://www.divinetrash.co.uk/static/version1698247906/frontend/z1/hyva/en_GB/images/logo.svg" title="Womens clothes, Mens clothes" alt="Womens clothes, Mens clothes" width="150px" height="52px">
+</a>
+
+
+
+<?= $block->getReceiptHeaderContents(); ?>
+
+<strong>Order # <?= $block->getOrderIncrementId() ?></strong><br>
+<strong><?= $block->getOrderDate(); ?></strong>
+
+</div>
+
+<table style="width:90%; margin-left:auto">
+    <tr>
+      <th style="text-align:right">Qty</th>
+      <th>Item</th>
+      <th style="text-align:right">SubTotal</th>
+    </tr>
+
+
+    <?php foreach($block->getOrderItems() as $orderItem): ?>
+    <tr>
+      <td style="text-align:right"><?= $orderItem->getQty() ?></td>
+      <td><?= $orderItem->getName() ?> </td>
+      <td style="text-align:right"><?= $orderItem->getPrice() ?></td>
+    </tr>
+    <?php endforeach ?>
+
+
+    <tr>
+      <td style="text-align:right"></td>
+      <td>TOTAL</td>
+      <td style="text-align:right">£12.23</td>
+    </tr>
+  </table>
+
+
+  <div style="width:70%; margin:auto; text-align:centre;">
+    <h3>THANK YOU FOR SHOPPING WITH US</h3>
+    <h3>********************************</h3>
+
+<strong>DT Life / Cavendish Arcade, Buxton SK17 6AW<br>
+    sale@divinetrash.co.uk / 01298 79555</strong>
+    <h3>********************************</h3>
+
+
+    <h3 class="barcode">*<?= $block->getOrderIncrementId() ?>*</h3>
+
+
+
+</div>

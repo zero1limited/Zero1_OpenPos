@@ -1,0 +1,27 @@
+<div id="zero-1-hyva-pos-auto-add" class="px-6">
+    <div class="relative w-full flex">
+        <input id="z1-auto-add"
+            autocomplete="off"
+            name="z1-auto-add"
+            wire:blur="addProduct" 
+            placeholder="<?= $escaper->escapeHtmlAttr(__('Scan Barcode or enter SKU / search term')) ?>"
+            class="w-full p-2 text-sm leading-normal transition appearance-none text-grey-800
+            outline-none lg:text-lg border px-4"
+            wire:model.defer="skuInput"
+        />
+        <button class="btn" wire:click="addProduct">Search</button>
+    </div>
+    <script>
+  // This function is called every time the focus is lost, reassigning it back
+  function keepFocus() {
+    document.getElementById("z1-auto-add").focus();
+  }
+
+  const password = document.querySelector('input[id="z1-auto-add"]');
+  password.addEventListener("blur", (event) => {
+    document.getElementById("z1-auto-add").focus();
+  });
+
+
+</script>
+</div>
