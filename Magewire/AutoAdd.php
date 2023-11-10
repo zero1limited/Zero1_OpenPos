@@ -50,12 +50,14 @@ class AutoAdd extends Component
         try {
             $product = $this->productRepository->get($this->skuInput);
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
-            $this->dispatchErrorMessage('SKU: '.$this->skuInput.' doesn\'t exist.');
+            // TODO - need to search on secondary field Ie Barcode/custom field
+            $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
             return;
         }
 
         if($product->getTypeId() != \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
-            $this->dispatchErrorMessage('The SKU you are trying to add isn\'t a simple product, so cannot be added to the cart.');
+            $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
+            //$this->dispatchErrorMessage('The SKU you are trying to add isn\'t a simple product, so cannot be added to the cart.');
             return;
         }
 
