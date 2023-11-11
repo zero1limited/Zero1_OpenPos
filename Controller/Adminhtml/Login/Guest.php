@@ -182,7 +182,7 @@ class Guest extends Action
         // TODO this class isnt complete, below IDs are hardcoded!
 
         // $customerId = (int)$this->_request->getParam('customer_id');
-        $customerId = 48799;
+        $customerId = 5591; // Divine Trash Walkin
         $storeId = 9;
 
         // if (!$customerId) {
