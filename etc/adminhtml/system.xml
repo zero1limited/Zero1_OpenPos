@@ -26,10 +26,15 @@
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Customisation (Arron)</label>
+                <label>Printed Receipt</label>
                 <field id="receipt_header" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
-                    <comment>Example comment!</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
+                </field>
+
+                <field id="receipt_footer" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Receipt footer</label>
+                    <comment>Please enter the text/html you wish to show at the receipt footer</comment>
                 </field>
             </group>
         </section>
