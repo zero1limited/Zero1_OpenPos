@@ -46,6 +46,11 @@ General Config - for the POS website
  - [x] Fallback to catalog search result if search term is not a SKU
  - [x] Always show minicart (not needed anymore)
 
+TODO
+barcode printing
+stock in, adjustments
+
+
 ## Thoughts for future Dev
  - Additional screen for customer to enter their email address
  - comms with card terminal so it knows the amount due
