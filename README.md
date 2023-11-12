@@ -32,6 +32,7 @@ General Config - for the POS website
 
 ## Feature TODO List
  - [ ] Redirect Logged in customer to homepage instead of dashboard
+ - [ ] Force all customers to allow force login for only the POS website
  - [ ] Ensure focus is always on search
  - [ ] Add something to the basket when there's no items in there (widget of popular products?)
  - [ ] Customer account changes - only show recent sales in customer account if customer is "walk-in" or "guest" (as above)
