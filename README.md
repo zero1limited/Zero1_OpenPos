@@ -28,6 +28,7 @@ General Config - for the POS website
 
 ## Required before trial with other stores
  - [ ] Admin input for Walkin Customer (email address) - currently hard-coded
+ - [ ] Receipt header to use store/website logo - currently hard-coded
 
 
 ## Snagging List
