@@ -26,15 +26,19 @@ General Config - for the POS website
  - Display Mini Cart - No
  - After Adding a Product Redirect to Shopping Cart	- Yes
 
+## Release Notes
+### 0.0.6
+ - [x] Order the POS menu item higher, cant get to it on iPad easily
+
+
+
 ## Required before trial with other stores
  - [ ] Admin input for Walkin Customer (email address) - currently hard-coded
  - [ ] Receipt header to use store/website logo - currently hard-coded
 
-
 ## Snagging List
- - [ ] Order the POS menu item higher, cant get to it on iPad easily
  - [ ] Redirect Logged in customer to homepage instead of dashboard
- - [ ] Force all customers to allow force login for only the POS website
+ - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
 
 ## Feature List - TBC
  - [ ] Ensure focus is always on search
