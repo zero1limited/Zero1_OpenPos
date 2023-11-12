@@ -30,9 +30,12 @@ General Config - for the POS website
  - [ ] Admin input for Walkin Customer (email address) - currently hard-coded
 
 
-## Feature TODO List
+## Snagging List
+ - [ ] Order the POS menu item higher, cant get to it on iPad easily
  - [ ] Redirect Logged in customer to homepage instead of dashboard
  - [ ] Force all customers to allow force login for only the POS website
+
+## Feature List - TBC
  - [ ] Ensure focus is always on search
  - [ ] Add something to the basket when there's no items in there (widget of popular products?)
  - [ ] Customer account changes - only show recent sales in customer account if customer is "walk-in" or "guest" (as above)
