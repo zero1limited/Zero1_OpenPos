@@ -38,6 +38,7 @@ General Config - for the POS website
 
 ## Snagging List
  - [ ] Redirect Logged in customer to homepage instead of dashboard
+ - [ ] Cant tell which payment method selected
  - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
 
 ## Feature List - TBC
