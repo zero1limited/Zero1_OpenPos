@@ -2,6 +2,14 @@
 
 ZERO-1 POS is a Free Magento 2 module & theme which uses Hyvä and Hyvä Checkout extensively to create an ultra-fast Point of Sale system for Mage-OS and Magento Open Source. You must purchase the core extension from ZERO-1 in order to install it. Composer keys will be provided.
 
+This extension comprises of the following additional packages
+
+ - POS Theme
+ - POS Pay Card
+ - POS Pay Cash
+ - POS Pay Multi?
+
+
 ## Installation & Configuration
 
 composer require zero1/pos
