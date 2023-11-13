@@ -39,12 +39,12 @@ General Config - for the POS website
  - [x] Order the POS menu item higher, cant get to it on iPad easily
 
 
-
 ## Required before trial with other stores
  - [ ] Admin input for Walkin Customer (email address) - currently hard-coded
  - [ ] Receipt header to use store/website logo - currently hard-coded
 
 ## Snagging List
+ - [ ] POS Payment method modules do not enable/disable according to config
  - [ ] Redirect Logged in customer to homepage instead of dashboard
  - [ ] Cant tell which payment method selected
  - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
