@@ -45,6 +45,7 @@ General Config - for the POS website
 
 ## Snagging List
  - [ ] POS Payment method modules do not enable/disable according to config
+ - [ ] POS Success Page code needs to show only if the current store ID matches the Assigned pos_store config
  - [ ] Redirect Logged in customer to homepage instead of dashboard
  - [ ] Cant tell which payment method selected
  - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
