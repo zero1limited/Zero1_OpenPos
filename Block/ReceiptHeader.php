@@ -4,7 +4,7 @@ namespace Zero1\Pos\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Zero1\Pos\Helper\Config as ConfigHelper;
+use Zero1\Pos\Helper\Data as PosHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Sales\Model\Order;
@@ -12,9 +12,9 @@ use Magento\Sales\Model\Order;
 class ReceiptHeader extends Template
 {
     /**
-     * @var ConfigHelper
+     * @var PosHelper
      */
-    protected $configHelper;
+    protected $posHelper;
 
     /**
      * @var CheckoutSession
@@ -26,7 +26,6 @@ class ReceiptHeader extends Template
      */
     protected $pricingHelper;
 
-
     /**
      * @var Order
      */
@@ -34,19 +33,19 @@ class ReceiptHeader extends Template
 
     /**
      * @param Context $context
-     * @param ConfigHelper $configHelper
+     * @param PosHelper $posHelper
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
-        ConfigHelper $configHelper,
+        PosHelper $posHelper,
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         array $data = []
     ) {
-        $this->configHelper = $configHelper;
+        $this->posHelper = $posHelper;
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         parent::__construct($context, $data);
@@ -57,7 +56,7 @@ class ReceiptHeader extends Template
      */
     public function getReceiptHeaderContents()
     {
-        return $this->configHelper->getReceiptHeader();
+        return $this->posHelper->getReceiptHeader();
     }
 
     /**
@@ -102,5 +101,19 @@ class ReceiptHeader extends Template
         }
 
         return $this->order;
+    }
+
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
+            return '';
+        }
+
+        return parent::_toHtml();
     }
 }

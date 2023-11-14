@@ -7,7 +7,6 @@ use Magento\Customer\Model\Session;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ActionFlag;
-use Zero1\Pos\Helper\Config as ConfigHelper;
 use Zero1\Pos\Helper\Data as PosHelper;
 
 class RestrictAccessObserver implements ObserverInterface
@@ -35,11 +34,6 @@ class RestrictAccessObserver implements ObserverInterface
     protected $actionFlag;
 
     /**
-     * @var ConfigHelper
-     */
-    protected $configHelper;
-
-    /**
      * @var PosHelper
      */
     protected $posHelper;
@@ -49,7 +43,6 @@ class RestrictAccessObserver implements ObserverInterface
      * @param StoreManagerInterface $storeManager
      * @param RedirectInterface $redirect
      * @param ActionFlag $actionFlag
-     * @param ConfigHelper $configHelper
      * @param PosHelper $posHelper
      */
     public function __construct(
@@ -57,26 +50,24 @@ class RestrictAccessObserver implements ObserverInterface
         StoreManagerInterface $storeManager,
         RedirectInterface $redirect,
         ActionFlag $actionFlag,
-        ConfigHelper $configHelper,
         PosHelper $posHelper
     ) {
         $this->customerSession = $customerSession;
         $this->storeManager = $storeManager;
         $this->redirect = $redirect;
         $this->actionFlag = $actionFlag;
-        $this->configHelper = $configHelper;
         $this->posHelper = $posHelper;
     }
 
     public function execute(Observer $observer)
     {
         // Check if module is enabled
-        if(!$this->configHelper->isEnabled()) {
+        if(!$this->posHelper->isEnabled()) {
             return;
         }
 
         // Check a POS store is set, and check if we are currently on it
-        if($this->posHelper->getPosStore() && $this->storeManager->getStore()->getId() !== $this->posHelper->getPosStore()->getId()) {
+        if($this->posHelper->getPosStore() && !$this->posHelper->currentlyOnPosStore()) {
             return;
         }
 
@@ -96,7 +87,16 @@ class RestrictAccessObserver implements ObserverInterface
             }
 
             $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
-            $this->redirect->redirect($controller->getResponse(), $redirectStore->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
+
+            // TODO: make this better, I think this is sometimes why the login from MAP doesnt work
+            // Not all controllers we can call getResponse on
+            // Quick fix for now, this does leave a hole in security
+            // Callum
+            if(is_callable([$controller, 'getResponse'])) {
+                $this->redirect->redirect($controller->getResponse(), $redirectStore->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
+            } else {
+                return;
+            }
         }
     }
 }

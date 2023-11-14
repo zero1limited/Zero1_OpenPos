@@ -38,11 +38,13 @@ General Config - for the POS website
 ### 0.0.6
  - [x] Order the POS menu item higher, cant get to it on iPad easily
 
-
+### 0.0.7
+ - [x] Snag fix: POS Payment method modules do not enable/disable according to config
+ - [x] Snag fix: POS Success Page code needs to show only if the current store ID matches the Assigned pos_store config
+ - [x] Snag fix: Admin input for Walkin Customer (email address) - currently hard-coded
+ - [x] Started to neaten up the guest login controller
+ 
 ## Snagging List
- - [ ] POS Payment method modules do not enable/disable according to config
- - [ ] POS Success Page code needs to show only if the current store ID matches the Assigned pos_store config
- - [ ] Admin input for Walkin Customer (email address) - currently hard-coded
  - [ ] Receipt header to use store/website logo - currently hard-coded
  - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
  - [ ] Redirect Logged in customer to homepage instead of dashboard

@@ -23,6 +23,10 @@
                     <source_model>Magento\Config\Model\Config\Source\Store</source_model>
                     <comment>A store to redirect to if the POS store URL is requested without a customer session in place.</comment>
                 </field>
+                <field id="walkin_customer_email" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Walk-in Customer Email</label>
+                    <comment>A Magento customer email for customers that do not have account / wish to purchase as a guest. This customer must exist in Magento. Example: guest@zero1.co.uk</comment>
+                </field>
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -32,7 +36,7 @@
                     <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
                 </field>
 
-                <field id="receipt_footer" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="receipt_footer" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt footer</label>
                     <comment>Please enter the text/html you wish to show at the receipt footer</comment>
                 </field>

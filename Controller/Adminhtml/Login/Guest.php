@@ -15,6 +15,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url;
+use Zero1\Pos\Helper\Data as PosHelper;
 use Magento\LoginAsCustomerApi\Api\ConfigInterface;
 use Magento\LoginAsCustomerApi\Api\Data\AuthenticationDataInterface;
 use Magento\LoginAsCustomerApi\Api\Data\AuthenticationDataInterfaceFactory;
@@ -39,7 +40,7 @@ class Guest extends Action
      *
      * THIS CLASS ISNT COMPLETE AND REQUIRES MORE WORK FROM CALLUM.
      *
-     * // TODO: fix hardcoded IDs for customer entity and store, remove anything we dont need, tidy up.
+     * // TODO: tidy up, return errors nicely in admin.
      */
 
 
@@ -91,6 +92,11 @@ class Guest extends Action
     private $url;
 
     /**
+     * @var PosHelper
+     */
+    private $posHelper;
+
+    /**
      * @var Share
      */
     private $share;
@@ -125,6 +131,7 @@ class Guest extends Action
      * @param SaveAuthenticationDataInterface $saveAuthenticationData
      * @param DeleteAuthenticationDataForUserInterface $deleteAuthenticationDataForUser
      * @param Url $url
+     * @param PosHelper $posHelper
      * @param Share|null $share
      * @param ManageStoreCookie|null $manageStoreCookie
      * @param SetLoggedAsCustomerCustomerIdInterface|null $setLoggedAsCustomerCustomerId
@@ -142,6 +149,7 @@ class Guest extends Action
         SaveAuthenticationDataInterface $saveAuthenticationData,
         DeleteAuthenticationDataForUserInterface $deleteAuthenticationDataForUser,
         Url $url,
+        PosHelper $posHelper,
         ?Share $share = null,
         ?ManageStoreCookie $manageStoreCookie = null,
         ?SetLoggedAsCustomerCustomerIdInterface $setLoggedAsCustomerCustomerId = null,
@@ -158,6 +166,7 @@ class Guest extends Action
         $this->saveAuthenticationData = $saveAuthenticationData;
         $this->deleteAuthenticationDataForUser = $deleteAuthenticationDataForUser;
         $this->url = $url;
+        $this->posHelper = $posHelper;
         $this->share = $share ?? ObjectManager::getInstance()->get(Share::class);
         $this->manageStoreCookie = $manageStoreCookie ?? ObjectManager::getInstance()->get(ManageStoreCookie::class);
         $this->setLoggedAsCustomerCustomerId = $setLoggedAsCustomerCustomerId
@@ -166,6 +175,8 @@ class Guest extends Action
             ?? ObjectManager::getInstance()->get(IsLoginAsCustomerEnabledForCustomerInterface::class);
         $this->generateAuthenticationSecret = $generateAuthenticationSecret
             ?? ObjectManager::getInstance()->get(GenerateAuthenticationSecretInterface::class);
+
+        // $this->custom
     }
 
     /**
@@ -177,45 +188,25 @@ class Guest extends Action
      */
     public function execute()
     {
-        $messages = [];
+        // Check module is enabled
+        if(!$this->posHelper->isEnabled()) {
+            throw new \Exception('POS system is not enabled!');
+        }
 
-        // TODO this class isnt complete, below IDs are hardcoded!
+        // Check POS store configured
+        $posStore = $this->posHelper->getPosStore();
+        if(!$posStore) {
+            throw new \Exception('POS store is not configured or is disabled!');
+        }
+        $storeId = (int)$posStore->getId();
 
-        // $customerId = (int)$this->_request->getParam('customer_id');
-        $customerId = 6911; // Divine Trash Walkin
-        $storeId = 9;
-
-        // if (!$customerId) {
-        //     $customerId = (int)$this->_request->getParam('entity_id');
-        // }
-
-        // $isLoginAsCustomerEnabled = $this->isLoginAsCustomerEnabled->execute($customerId);
-        // if (!$isLoginAsCustomerEnabled->isEnabled()) {
-        //     foreach ($isLoginAsCustomerEnabled->getMessages() as $message) {
-        //         $messages[] = __($message);
-        //     }
-
-        //     return $this->prepareJsonResult($messages);
-        // }
-
-        // try {
-        //     $customer = $this->customerRepository->getById($customerId);
-        // } catch (NoSuchEntityException $e) {
-        //     $messages[] = __('Customer with this ID no longer exists.');
-        //     return $this->prepareJsonResult($messages);
-        // }
-
-        // if ($this->config->isStoreManualChoiceEnabled()) {
-        //     $storeId = (int)$this->_request->getParam('store_id');
-        //     if (empty($storeId)) {
-        //         $messages[] = __('Please select a Store to login in.');
-        //         return $this->prepareJsonResult($messages);
-        //     }
-        // } elseif ($this->share->isGlobalScope()) {
-        //     $storeId = (int)$this->storeManager->getDefaultStoreView()->getId();
-        // } else {
-        //     $storeId = (int)$customer->getStoreId();
-        // }
+        // Check configured walk-in customer exists
+        try {
+            $customer = $this->customerRepository->get($this->posHelper->getWalkinCustomerEmail());
+            $customerId = (int)$customer->getId();
+        } catch (NoSuchEntityException $e) {
+            throw new \Exception('Configured walk-in customer does not exist!');
+        }
 
         $adminUser = $this->authSession->getUser();
         $userId = (int)$adminUser->getId();
@@ -236,7 +227,7 @@ class Guest extends Action
         $secret = $this->generateAuthenticationSecret->execute($authenticationData);
         $redirectUrl = $this->getLoginProceedRedirectUrl($secret, $storeId);
 
-        return $this->prepareJsonResult($messages, $redirectUrl);
+        return $this->prepareRedirectResult($redirectUrl);
     }
 
     /**
@@ -270,13 +261,33 @@ class Guest extends Action
      * @param string|null $redirectUrl
      * @return JsonResult
      */
-    private function prepareJsonResult(array $messages, ?string $redirectUrl = null)
+    private function prepareJsonResult(array $messages)
     {
+        // TODO fix this and return errors as messages in admin rather than exceptions.
         /** @var JsonResult $jsonResult */
-        $jsonResult = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $jsonResult = $this->resultFactory->create(ResultFactory::TYPE_JSON);
 
-        $jsonResult->setUrl($redirectUrl);
+        $jsonResult->setData([
+            'messages' => $messages,
+        ]);
 
         return $jsonResult;
+    }
+
+    /**
+     * Prepare redirect result
+     *
+     * @param array $messages
+     * @param string|null $redirectUrl
+     * @return JsonResult
+     */
+    private function prepareRedirectResult(string $redirectUrl)
+    {
+        /** @var JsonResult $jsonResult */
+        $redirectResult = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+
+        $redirectResult->setUrl($redirectUrl);
+
+        return $redirectResult;
     }
 }
