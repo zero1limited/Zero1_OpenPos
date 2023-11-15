@@ -8,6 +8,7 @@ use Zero1\Pos\Helper\Data as PosHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Sales\Model\Order;
+use Magento\Theme\Block\Html\Header\Logo as LogoBlock;
 
 class ReceiptHeader extends Template
 {
@@ -32,10 +33,16 @@ class ReceiptHeader extends Template
     protected $order;
 
     /**
+     * @var LogoBlock
+     */
+    protected $logoBlock;
+
+    /**
      * @param Context $context
      * @param PosHelper $posHelper
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
+     * @param LogoBlock $logoBlock
      * @param array $data
      */
     public function __construct(
@@ -43,11 +50,13 @@ class ReceiptHeader extends Template
         PosHelper $posHelper,
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
+        LogoBlock $logoBlock,
         array $data = []
     ) {
         $this->posHelper = $posHelper;
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
+        $this->logoBlock = $logoBlock;
         parent::__construct($context, $data);
     }
 
@@ -57,6 +66,16 @@ class ReceiptHeader extends Template
     public function getReceiptHeaderContents()
     {
         return $this->posHelper->getReceiptHeader();
+    }
+
+    /**
+     * Get logo URL
+     *
+     * @return string
+     */
+    public function getLogoUrl()
+    {
+        return $this->logoBlock->getLogoSrc();
     }
 
     /**
