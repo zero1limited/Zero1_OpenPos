@@ -43,6 +43,9 @@ General Config - for the POS website
  - [x] Snag fix: POS Success Page code needs to show only if the current store ID matches the Assigned pos_store config
  - [x] Snag fix: Admin input for Walkin Customer (email address) - currently hard-coded
  - [x] Started to neaten up the guest login controller
+
+### 0.0.8
+ - [x] Logo URL / src on receipt is now obtained from Magento
  
 ## Snagging List
  - [ ] Receipt header to use store/website logo - currently hard-coded
