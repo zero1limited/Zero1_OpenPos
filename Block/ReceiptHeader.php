@@ -95,6 +95,27 @@ class ReceiptHeader extends Template
     }
 
     /**
+     * @return string
+     */
+    public function getOrderPayment()
+    {
+        $payment = $this->getOrder()->getPayment()->getMethod();
+
+        switch ($payment) {
+            case 'zero1_pos_pay_card':
+                return "Credit/Debit Card";
+                break;
+            case 'zero1_pos_pay_cash':
+                return "Cash";
+                break;
+            default:
+                return "";
+                break;
+        }
+  
+    }
+
+    /**
      * @return float|string
      */
     public function getOrderGrandTotal()
