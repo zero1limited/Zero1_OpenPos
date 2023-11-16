@@ -11,17 +11,15 @@
         />
         <button class="btn" wire:click="addProduct">Search</button>
     </div>
-    <script>
-  // This function is called every time the focus is lost, reassigning it back
-  function keepFocus() {
-    document.getElementById("z1-auto-add").focus();
-  }
 
-  const password = document.querySelector('input[id="z1-auto-add"]');
-  password.addEventListener("blur", (event) => {
+<script>
+
+  const autoadd = document.querySelector('input[id="z1-auto-add"]');
+  autoadd.addEventListener("blur", (event) => {
+    document.getElementById("z1-auto-add").clear();
     document.getElementById("z1-auto-add").focus();
   });
-
+  document.getElementById("z1-auto-add").focus();
 
 </script>
 </div>
