@@ -69,6 +69,14 @@ class ReceiptHeader extends Template
     }
 
     /**
+     * @return string
+     */
+    public function getReceiptFooterContents()
+    {
+        return $this->posHelper->getReceiptFooter();
+    }
+
+    /**
      * Get logo URL
      *
      * @return string
