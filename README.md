@@ -46,10 +46,15 @@ General Config - for the POS website
 
 ### 0.0.8
  - [x] Logo URL / src on receipt is now obtained from Magento
+
+### 0.0.9
+
+### 0.0.10
+ - [x] Experimental support for stock check bypassing (Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912)
  
 ## Snagging List
- - [ ] Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912
- - [ ] Cash Payment Tender - https://zero1.teamwork.com/app/tasks/34766069
+ - [x] Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912
+ - [x] Cash Payment Tender - https://zero1.teamwork.com/app/tasks/34766069
  - [ ] Add Product with Custom Price - discussed with callum, price field shows with some clever shit, if visible/populated, that price is used
  - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
  - [ ] Redirect Logged in customer to homepage instead of dashboard

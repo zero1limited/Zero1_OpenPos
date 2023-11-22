@@ -12,6 +12,7 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
     const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
     const CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL = 'zero1_pos/general/walkin_customer_email';
+    const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'zero1_pos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'zero1_pos/customisation/receipt_footer';
@@ -124,5 +125,19 @@ class Data extends AbstractHelper
     public function currentlyOnPosStore()
     {
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
+    }
+
+    /**
+     * Check if we should bypass stock checks.
+     * 
+     * @return bool
+     */
+    public function bypassStock()
+    {
+        if(!$this->currentlyOnPosStore()) {
+            return false;
+        }
+
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
     }
 }

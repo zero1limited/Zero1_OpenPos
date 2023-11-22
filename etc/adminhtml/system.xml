@@ -27,6 +27,11 @@
                     <label>Walk-in Customer Email</label>
                     <comment>A Magento customer email for customers that do not have account / wish to purchase as a guest. This customer must exist in Magento. Example: guest@zero1.co.uk</comment>
                 </field>
+                <field id="bypass_stock" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Bypass stock checks</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>On the POS store products will be salable regardless of their stock status / QTY.</comment>
+                </field>
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">

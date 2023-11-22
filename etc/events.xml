@@ -3,4 +3,7 @@
     <event name="controller_action_predispatch">
         <observer name="restrict_access_observer" instance="Zero1\Pos\Observer\RestrictAccessObserver" />
     </event>
+    <event name="catalog_product_is_salable_after">
+        <observer name="product_is_salable_after_observer" instance="Zero1\Pos\Observer\ProductIsSalableAfterObserver" />
+    </event>
 </config>
