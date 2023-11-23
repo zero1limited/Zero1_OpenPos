@@ -7,12 +7,4 @@
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\Pos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
-
-    <type name="Magento\InventorySales\Model\IsProductSalableCondition\IsAnySourceItemInStockCondition">
-        <plugin name="zero1_pos_is_product_salable_bypass" type="Zero1\Pos\Plugin\IsProductSalableBypass" sortOrder="10"/>
-    </type>
-
-    <type name="Magento\InventorySales\Model\IsProductSalableCondition\BackOrderCondition">
-        <plugin name="zero1_pos_backorder_condition_bypass" type="Zero1\Pos\Plugin\BackorderConditionBypass" sortOrder="10"/>
-    </type>
 </config>

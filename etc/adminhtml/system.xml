@@ -45,6 +45,11 @@
                     <label>Receipt footer</label>
                     <comment>Please enter the text/html you wish to show at the receipt footer</comment>
                 </field>
+
+                <field id="super_barcode" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Super Barcode</label>
+                    <comment>When the super barcode is scanned it lets the till user to edit the price of a product, leave blank to disable this functionality</comment>
+                </field>
             </group>
         </section>
     </system>

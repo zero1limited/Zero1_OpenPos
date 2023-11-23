@@ -1,5 +1,9 @@
 <div id="zero-1-hyva-pos-auto-add" class="px-6">
     <div class="relative w-full flex">
+        <?php if($magewire->superMode): ?>
+          custom price:
+          <input id="custom-price-input" wire:model.defer="customPriceInput" />
+        <?php endif; ?>
         <input id="z1-auto-add"
             autocomplete="off"
             name="z1-auto-add"
