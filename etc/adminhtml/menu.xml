@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Zero1_Pos::pos" title="ZERO-1 POS" module="Zero1_Pos" sortOrder="10" resource="Zero1_Pos::pos"/>
-        <add id="Zero1_Pos::goto_guest" title="Enter the POS system as guest" module="Zero1_Pos" sortOrder="10" parent="Zero1_Pos::pos" action="zero1pos/login/guest" resource="Zero1_Pos::goto_guest"/>
+        <add id="Zero1_Pos::goto_guest" title="Enter the POS system as guest" module="Zero1_Pos" sortOrder="10" parent="Zero1_Pos::pos" action="zero1pos/login/guest" resource="Zero1_Pos::goto_guest" target="_blank"/>
         <add id="Zero1_Pos::goto_customer" title="Enter the POS system as existing customer" module="Zero1_Pos" sortOrder="20" parent="Zero1_Pos::pos" action="customer/index" resource="Zero1_Pos::goto_customer"/>
         <add id="Zero1_Pos::configuration" title="Configuration" module="Zero1_Pos" sortOrder="20" parent="Zero1_Pos::pos" action="adminhtml/system_config/edit/section/zero1_pos" resource="Zero1_Pos::configuration"/>
     </menu>

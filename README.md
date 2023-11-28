@@ -55,12 +55,18 @@ General Config - for the POS website
 ### 0.0.11
  - [x] Moved MSI based plugins to their own module
  - [x] Added initial support for 'super mode' / custom price entering
+
+### 0.0.12
+
+### 0.0.13
+ - [x] Remote shopping assistance is now forced enabled regardless of customer setting. THIS IS TEMPORARY
+ - [x] Logging in to POS system as guest from admin panel menu now opens a new tab
  
 ## Snagging List
  - [x] Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912
  - [x] Cash Payment Tender - https://zero1.teamwork.com/app/tasks/34766069
  - [x] Add Product with Custom Price - discussed with callum, price field shows with some clever shit, if visible/populated, that price is used
- - [ ] Assume all customers  'Allow Remote Support' login for only the POS website
+ - [x] Assume all customers  'Allow Remote Support' login for only the POS website
  - [ ] Redirect Logged in customer to homepage instead of dashboard
  - [ ] FED - Cant tell which payment method selected
 

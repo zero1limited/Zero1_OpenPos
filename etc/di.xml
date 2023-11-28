@@ -7,4 +7,8 @@
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\Pos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
+
+    <type name="Magento\LoginAsCustomerAssistance\Model\IsAssistanceEnabled">
+        <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\Pos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
+    </type>
 </config>
