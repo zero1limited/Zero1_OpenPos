@@ -61,6 +61,13 @@ General Config - for the POS website
 ### 0.0.13
  - [x] Remote shopping assistance is now forced enabled regardless of customer setting. THIS IS TEMPORARY
  - [x] Logging in to POS system as guest from admin panel menu now opens a new tab
+
+### 0.0.14
+
+### 0.0.15
+ - [x] (BREAKING CHANGE) Changed reciept_header template and block to just 'receipt'. Theme overrides of existing installations will need template renaming.
+ - [x] Added ability to add a QR code in the receipt footer. URL configurable by admin, order increment ID added as query string.
+
  
 ## Snagging List
  - [x] Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912

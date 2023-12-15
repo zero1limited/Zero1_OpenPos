@@ -9,8 +9,9 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Sales\Model\Order;
 use Magento\Theme\Block\Html\Header\Logo as LogoBlock;
+use chillerlan\QRCode\QRCode;
 
-class ReceiptHeader extends Template
+class Receipt extends Template
 {
     /**
      * @var PosHelper
@@ -38,11 +39,17 @@ class ReceiptHeader extends Template
     protected $logoBlock;
 
     /**
+     * @var QRCode
+     */
+    protected $qrCode;
+
+    /**
      * @param Context $context
      * @param PosHelper $posHelper
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param LogoBlock $logoBlock
+     * @param QRCode $qrCode
      * @param array $data
      */
     public function __construct(
@@ -51,12 +58,14 @@ class ReceiptHeader extends Template
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         LogoBlock $logoBlock,
+        QRCode $qrCode,
         array $data = []
     ) {
         $this->posHelper = $posHelper;
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->logoBlock = $logoBlock;
+        $this->qrCode = $qrCode;
         parent::__construct($context, $data);
     }
 
@@ -74,6 +83,18 @@ class ReceiptHeader extends Template
     public function getReceiptFooterContents()
     {
         return $this->posHelper->getReceiptFooter();
+    }
+
+    /**
+     * @return string
+     */
+    public function getReceiptFooterQrLinkImgSrc()
+    {
+        if(!$this->posHelper->getReceiptFooterQrLink()) {
+            return '';
+        }
+
+        return $this->qrCode->render($this->posHelper->getReceiptFooterQrLink().'?orderId='.$this->getOrderIncrementId());
     }
 
     /**

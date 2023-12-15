@@ -16,6 +16,7 @@ class Data extends AbstractHelper
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'zero1_pos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'zero1_pos/customisation/receipt_footer';
+    const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER_QR_LINK = 'zero1_pos/customisation/receipt_footer_qr_link';
     const CONFIG_PATH_CUSTOMISATION_SUPER_BARCODE = 'zero1_pos/customisation/super_barcode';
 
     /**
@@ -75,7 +76,6 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL);
     }
 
-
     /**
      * @return string
      */
@@ -90,6 +90,14 @@ class Data extends AbstractHelper
     public function getReceiptFooter()
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER);
+    }
+
+    /**
+     * @return string
+     */
+    public function getReceiptFooterQrLink()
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER_QR_LINK);
     }
 
     /**
