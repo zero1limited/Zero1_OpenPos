@@ -74,6 +74,7 @@ General Config - for the POS website
  - [x] Cash Payment Tender - https://zero1.teamwork.com/app/tasks/34766069
  - [x] Add Product with Custom Price - discussed with callum, price field shows with some clever shit, if visible/populated, that price is used
  - [x] Assume all customers  'Allow Remote Support' login for only the POS website
+ - [ ] Can we implement ACLs so master users can create roles so POS staff can only get to the customer page?
  - [ ] Redirect Logged in customer to homepage instead of dashboard
  - [ ] FED - Cant tell which payment method selected
 
