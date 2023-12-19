@@ -68,6 +68,10 @@ General Config - for the POS website
  - [x] (BREAKING CHANGE) Changed reciept_header template and block to just 'receipt'. Theme overrides of existing installations will need template renaming.
  - [x] Added ability to add a QR code in the receipt footer. URL configurable by admin, order increment ID added as query string.
 
+ ### 0.0.16
+ - [x] Fixed issue where a quote wasn't being seen as virtual (hardcoded store ID from debugging)
+
+
  
 ## Snagging List
  - [x] Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912
