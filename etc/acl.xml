@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Zero1_Pos::pos" title="OpenPOS" sortOrder="81">
+                    <resource id="Zero1_Pos::goto" title="Use POS system" sortOrder="10"/>
+                    <resource id="Zero1_Pos::configuration" title="Configure POS system" sortOrder="20"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

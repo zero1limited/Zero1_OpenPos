@@ -290,4 +290,9 @@ class Guest extends Action
 
         return $redirectResult;
     }
+
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('Zero1_Pos::goto');
+    }
 }
