@@ -8,7 +8,7 @@ Open POS is a Free Magento 2 module which includes several sub-packages to provi
  - FAQ
  - CHANGELOG
  - TODO
- - License
+ - [License](LICENSE.txt)
 
 
 ## Installation & Configuration
