@@ -1,10 +1,10 @@
 <?php
 
-namespace Zero1\Pos\Block;
+namespace Zero1\OpenPos\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Sales\Model\Order;
