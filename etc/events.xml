@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="controller_action_predispatch">
-        <observer name="restrict_access_observer" instance="Zero1\Pos\Observer\RestrictAccessObserver" />
+        <observer name="restrict_access_observer" instance="Zero1\OpenPos\Observer\RestrictAccessObserver" />
     </event>
     <event name="catalog_product_is_salable_after">
-        <observer name="product_is_salable_after_observer" instance="Zero1\Pos\Observer\ProductIsSalableAfterObserver" />
+        <observer name="product_is_salable_after_observer" instance="Zero1\OpenPos\Observer\ProductIsSalableAfterObserver" />
     </event>
 </config>
