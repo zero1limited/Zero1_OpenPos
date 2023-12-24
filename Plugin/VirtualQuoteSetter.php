@@ -1,9 +1,9 @@
 <?php
 
-namespace Zero1\Pos\Plugin;
+namespace Zero1\OpenPos\Plugin;
 
 use Magento\Quote\Model\Quote;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 
 class VirtualQuoteSetter
 {
