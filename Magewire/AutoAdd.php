@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\Pos\Magewire;
+namespace Zero1\OpenPos\Magewire;
 
 use Magewirephp\Magewire\Component;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 
 class AutoAdd extends Component
 {
