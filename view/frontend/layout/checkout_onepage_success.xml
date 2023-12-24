@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Zero1\Pos\Block\Receipt" name="zero1_pos_receipt" template="Zero1_Pos::receipt.phtml" before="-" />
+            <block class="Zero1\OpenPos\Block\Receipt" name="zero1_pos_receipt" template="Zero1_OpenPos::receipt.phtml" before="-" />
         </referenceContainer>
     </body>
 </page>
