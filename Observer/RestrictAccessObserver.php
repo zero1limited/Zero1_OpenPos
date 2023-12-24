@@ -1,5 +1,5 @@
 <?php
-namespace Zero1\Pos\Observer;
+namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
@@ -7,7 +7,7 @@ use Magento\Customer\Model\Session;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ActionFlag;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 
 class RestrictAccessObserver implements ObserverInterface
 {
