@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\Pos\Controller\Adminhtml\Login;
+namespace Zero1\OpenPos\Controller\Adminhtml\Login;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -15,7 +15,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Url;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\LoginAsCustomerApi\Api\ConfigInterface;
 use Magento\LoginAsCustomerApi\Api\Data\AuthenticationDataInterface;
 use Magento\LoginAsCustomerApi\Api\Data\AuthenticationDataInterfaceFactory;
