@@ -1,9 +1,9 @@
 <?php
-namespace Zero1\Pos\Observer;
+namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Zero1\Pos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Data as PosHelper;
 
 class ProductIsSalableAfterObserver implements ObserverInterface
 {
