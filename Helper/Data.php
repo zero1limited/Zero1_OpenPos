@@ -1,5 +1,5 @@
 <?php
-namespace Zero1\Pos\Helper;
+namespace Zero1\OpenPos\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
