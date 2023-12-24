@@ -15,7 +15,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Zero1\\Pos\\": ""
+            "Zero1\\OpenPos\\": ""
         }
     },
     "keywords": [
