@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Quote\Model\Quote">
-        <plugin name="zero1_pos_virtual_quote_setter" type="Zero1\Pos\Plugin\VirtualQuoteSetter" sortOrder="10" />
+        <plugin name="zero1_pos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
     </type>
     
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
-        <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\Pos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
+        <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
 
     <type name="Magento\LoginAsCustomerAssistance\Model\IsAssistanceEnabled">
-        <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\Pos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
+        <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\OpenPos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
     </type>
 </config>
