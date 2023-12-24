@@ -1,6 +1,6 @@
 <?php
 
-namespace Zero1\Pos\Plugin;
+namespace Zero1\OpenPos\Plugin;
 
 use Magento\LoginAsCustomerAssistance\Model\IsAssistanceEnabled;
 
