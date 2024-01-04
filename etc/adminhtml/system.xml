@@ -35,7 +35,7 @@
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                <label>Printed Receipt</label>
+                <label>Customisation</label>
                 <field id="receipt_header" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
                     <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
@@ -51,9 +51,14 @@
                     <comment>If populated a QR code will be rendered on the receipt linking to supplied URL. Example: https://www.zero1.co.uk</comment>
                 </field>
 
-                <field id="super_barcode" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Super Barcode</label>
-                    <comment>When the super barcode is scanned it lets the till user to edit the price of a product, leave blank to disable this functionality</comment>
+                <field id="price_editor_barcode" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Price Editor Barcode / SKU</label>
+                    <comment>When the price editor barcode is scanned it lets the till user to edit the price of a product, leave blank to disable this functionality</comment>
+                </field>
+
+                <field id="custom_product_barcode" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Custom Product Barcode / SKU</label>
+                    <comment>To be used when a physical item has no product within Magento. Description and price are ediable from the POS system. There needs to be a 'dummy' product in the Magento catalog with the above SKU.</comment>
                 </field>
             </group>
         </section>

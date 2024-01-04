@@ -1,19 +1,37 @@
 <div id="zero-1-hyva-pos-auto-add" class="px-6">
+
+  
+
     <div class="relative w-full flex">
-        <?php if($magewire->superMode): ?>
-          custom price:
-          <input id="custom-price-input" wire:model.defer="customPriceInput" />
-        <?php endif; ?>
-        <input id="z1-auto-add"
-            autocomplete="off"
-            name="z1-auto-add"
-            wire:blur="addProduct" 
-            placeholder="<?= $escaper->escapeHtmlAttr(__('Scan Barcode or enter SKU / search term')) ?>"
-            class="w-full p-2 text-sm leading-normal transition appearance-none text-grey-800
-            outline-none lg:text-lg border px-4"
-            wire:model.defer="skuInput"
-        />
-        <button class="btn">Search</button>
+
+            <?php if($magewire->priceEditorMode): ?>
+              <div class="w-2/6 grid grid-cols-2">
+                <span class="text-right mr-4 mt-3">Custom price:</span>
+                <input id="custom-price-input" wire:model.defer="customPriceInput" class="border px-4" />
+              </div>
+            <?php endif; ?>
+
+
+            <?php if($magewire->customProductMode): ?>
+              <div class="w-4/6 flex ml-6 pl-6">
+                <span class="text-right mr-4 mt-3 w-1/6">Description:</span>
+                <input id="description-input" wire:model.defer="descriptionInput" class="border px-4 w-3/6" />
+                <button class="btn btn-primary w-2/6" wire:click="parseSkuInput">Add custom product</button>
+              </div>
+            <?php endif; ?>
+
+            <?php if($magewire->showSkuField): ?>
+              <input id="z1-auto-add"
+                  autocomplete="off"
+                  name="z1-auto-add"
+                  wire:blur="parseSkuInput" 
+                  placeholder="<?= $escaper->escapeHtmlAttr(__('Scan Barcode or enter SKU / search term')) ?>"
+                  class="w-full p-2 text-sm leading-normal transition appearance-none text-grey-800
+                  outline-none lg:text-lg border px-4"
+                  wire:model.defer="skuInput"
+              />
+            <?php endif; ?>       
+        
     </div>
 
 <script>

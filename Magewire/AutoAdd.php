@@ -7,6 +7,7 @@ use Magewirephp\Magewire\Component;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Zero1\OpenPos\Helper\Data as PosHelper;
+use Magento\Framework\DataObject\Factory as ObjectFactory;
 
 class AutoAdd extends Component
 {
@@ -26,6 +27,16 @@ class AutoAdd extends Component
     protected $posHelper;
 
     /**
+     * @var ObjectFactory
+     */
+    protected $objectFactory;
+
+    /**
+     * @var bool
+     */
+    public $showSkuField = true;
+
+    /**
      * @var string
      */
     public $skuInput = '';
@@ -38,21 +49,34 @@ class AutoAdd extends Component
     /**
      * @var bool
      */
-    public $superMode = false;
+    public $priceEditorMode = false;
+
+    /**
+     * @var bool
+     */
+    public $customProductMode = false;
+
+    /**
+     * @var string
+     */
+    public $descriptionInput = '';
 
     /**
      * @param CheckoutSession $checkoutSession
      * @param ProductRepositoryInterface $productRepository
      * @param PosHelper $posHelper
+     * @param ObjectFactory $objectFactory
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         ProductRepositoryInterface $productRepository,
-        PosHelper $posHelper
+        PosHelper $posHelper,
+        ObjectFactory $objectFactory
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->productRepository = $productRepository;
         $this->posHelper = $posHelper;
+        $this->objectFactory = $objectFactory;
     }
 
     /**
@@ -60,16 +84,24 @@ class AutoAdd extends Component
      *
      * @return void
      */
-    public function addProduct(): void
-    {
+    public function parseSkuInput()
+    {        
         if($this->skuInput === ''){
             return;
         }
+        
+        if(!$this->customProductMode && $this->skuInput == $this->posHelper->getCustomProductBarcode() && $this->posHelper->getCustomProductBarcode() != '') {
+            $this->priceEditorMode = true;
+            $this->customProductMode = true;
+            $this->showSkuField = false;
+            $this->dispatchNoticeMessage('Custom product mode has been enabled.');
+            return;
+        }
 
-        if($this->skuInput == $this->posHelper->getSuperBarcode() && $this->posHelper->getSuperBarcode() != '') {
-            $this->superMode = true;
+        if($this->skuInput == $this->posHelper->getPriceEditorBarcode() && $this->posHelper->getPriceEditorBarcode() != '') {
+            $this->priceEditorMode = true;
             $this->skuInput = '';
-            $this->dispatchNoticeMessage('Super mode has been enabled.');
+            $this->dispatchNoticeMessage('Price editor mode has been enabled.');
             return;
         }
 
@@ -88,16 +120,7 @@ class AutoAdd extends Component
         }
 
         try {
-            $quote = $this->checkoutSession->getQuote();
-            $item = $quote->addProduct($product, 1);
-
-            if($this->superMode) {
-                $this->customPriceInput = (float)$this->customPriceInput;
-                $item->setCustomPrice($this->customPriceInput);
-                $item->setOriginalCustomPrice($this->customPriceInput);
-                $item->getProduct()->setIsSuperMode(true);
-            }
-            $quote->collectTotals()->save();
+            $item = $this->addProductToQuote($product);
             $this->redirect('/checkout/cart/index/');
         } catch(\Exception $e) {
             $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
@@ -106,4 +129,34 @@ class AutoAdd extends Component
 
         $this->dispatchSuccessMessage($this->skuInput.' has been added to cart.');
     }
+
+    public function addProductToQuote($product)
+    {
+        try {
+            $quote = $this->checkoutSession->getQuote();
+            $request = $this->objectFactory->create(['qty' => 1]);
+
+            if($this->customProductMode) {
+                foreach($product->getOptions() as $option) {
+                    if(strtolower($option->getTitle()) == 'description') {
+                        $request->setData('options', [$option->getId() => $this->descriptionInput]);
+                    }
+                }
+            }
+            $item = $quote->addProduct($product, $request);
+
+            if($this->priceEditorMode) {
+                $this->customPriceInput = (float)$this->customPriceInput;
+                $item->setCustomPrice($this->customPriceInput);
+                $item->setOriginalCustomPrice($this->customPriceInput);
+                $item->getProduct()->setIsSuperMode(true);
+            }
+            $quote->collectTotals()->save();
+
+            return $item;
+        } catch(\Exception $e) {
+            $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+        }
+    }
+
 }
