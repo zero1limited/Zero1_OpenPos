@@ -293,6 +293,6 @@ class Guest extends Action
 
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Zero1_Pos::goto');
+        return $this->_authorization->isAllowed('Zero1_OpenPos::goto');
     }
 }
