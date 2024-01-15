@@ -13,6 +13,7 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
     const CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL = 'zero1_pos/general/walkin_customer_email';
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
+    const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'zero1_pos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'zero1_pos/customisation/receipt_footer';
@@ -76,6 +77,29 @@ class Data extends AbstractHelper
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL);
     }
+
+    /**
+     * Check if we should bypass stock checks.
+     *
+     * @return bool
+     */
+    public function bypassStock()
+    {
+        if(!$this->currentlyOnPosStore()) {
+            return false;
+        }
+
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBarcodeAttribute()
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE);
+    }
+
 
     /**
      * @return string
@@ -145,25 +169,11 @@ class Data extends AbstractHelper
 
     /**
      * Check if we are currently on the POS store.
-     * 
+     *
      * @return bool
      */
     public function currentlyOnPosStore()
     {
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
-    }
-
-    /**
-     * Check if we should bypass stock checks.
-     * 
-     * @return bool
-     */
-    public function bypassStock()
-    {
-        if(!$this->currentlyOnPosStore()) {
-            return false;
-        }
-
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
     }
 }

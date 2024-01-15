@@ -6,6 +6,7 @@ namespace Zero1\OpenPos\Magewire;
 use Magewirephp\Magewire\Component;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Framework\DataObject\Factory as ObjectFactory;
 
@@ -20,6 +21,11 @@ class AutoAdd extends Component
      * @var ProductRepositoryInterface
      */
     protected $productRepository;
+
+    /**
+     * @var ProductCollectionFactory
+     */
+    protected $productCollectionFactory;
 
     /**
      * @var PosHelper
@@ -64,17 +70,20 @@ class AutoAdd extends Component
     /**
      * @param CheckoutSession $checkoutSession
      * @param ProductRepositoryInterface $productRepository
+     * @param ProductCollectionFactory $productCollectionFactory
      * @param PosHelper $posHelper
      * @param ObjectFactory $objectFactory
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         ProductRepositoryInterface $productRepository,
+        ProductCollectionFactory $productCollectionFactory,
         PosHelper $posHelper,
         ObjectFactory $objectFactory
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->productRepository = $productRepository;
+        $this->productCollectionFactory = $productCollectionFactory;
         $this->posHelper = $posHelper;
         $this->objectFactory = $objectFactory;
     }
@@ -85,11 +94,11 @@ class AutoAdd extends Component
      * @return void
      */
     public function parseSkuInput()
-    {        
+    {
         if($this->skuInput === ''){
             return;
         }
-        
+
         if(!$this->customProductMode && $this->skuInput == $this->posHelper->getCustomProductBarcode() && $this->posHelper->getCustomProductBarcode() != '') {
             $this->priceEditorMode = true;
             $this->customProductMode = true;
@@ -106,11 +115,24 @@ class AutoAdd extends Component
         }
 
         try {
+            $product = null;
             $product = $this->productRepository->get($this->skuInput);
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
-            // TODO - need to search on secondary field Ie Barcode/custom field
-            $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
-            return;
+            // Cannot find product by SKU, so use barcode attribute
+            $barcodeAttribute = $this->posHelper->getBarcodeAttribute();
+            if($barcodeAttribute) {
+                $productCollection = $this->productCollectionFactory->create();
+                $productCollection->addAttributeToFilter($barcodeAttribute, ['eq' => $this->skuInput]);
+                $productId = $productCollection->getFirstItem()->getId();
+                if($productId) {
+                    $product = $this->productRepository->getById($productId);
+                }
+            }
+
+            if(!$product) {
+                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput);
+                return;
+            }
         }
 
         if($product->getTypeId() != \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
