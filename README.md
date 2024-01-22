@@ -2,7 +2,7 @@
 
 Open POS is a Free Magento 2 module which includes several sub-packages to provide core functionality for a fully functional EPOS (Electronic Point Of Sale) for Magento Open Source, Adobe Commerce or Mage-OS. It uses Hyvä, Hyvä Checkout and MageWire extensively to create an ultra-fast experience. 
 
- - Installation
+ - [Installation](installation.md)
  - Usage
  - Tutorial
  - FAQ
@@ -10,12 +10,6 @@ Open POS is a Free Magento 2 module which includes several sub-packages to provi
  - TODO
  - [License](LICENSE.txt)
 
-
-## Installation & Configuration
-
-composer require zero1/pos
-php bin/magento setup:upgrade
-php bin/magento deploy:mode:set production
 
 ### Essential Steps
 Set website theme to 'Zero-1 POS'
