@@ -1,67 +1,41 @@
-<!-- Example on how to get shit from order. See: app/code/Zero1/Pos/Block/ReceiptHeader.php -->
-<!--
-
-Order Date: <?= $block->getOrderDate(); ?>
-
-Order grand total: <?= $block->getOrderGrandTotal() ?>
-
-
-Order Items:
-<?php foreach($block->getOrderItems() as $orderItem): ?>
-
--- ITEM START --
-SKU: <?= $orderItem->getSku() ?>
-
-Price: <?= $orderItem->getPrice() ?>
-
-Name: <?= $orderItem->getName() ?>
-
--- ITEM END --
-
-<?php endforeach ?>
-
--->
-<!-- Example on how to get shit from order. See: app/code/Zero1/Pos/Block/ReceiptHeader.php -->
-
-
-
-
-
-
-
 <script type="text/javascript" name="Ideal_Postcodes">
 window. print();
 </script>
-<script language="JavaScript" src="IDAutomation_Uni_C128.js"></script>
 
 <style>
     #receipt {
         display:none;
     }
-
-
 @media print {
 
     body {
         margin: 0;
         color: #000;
         background-color: #fff;
-        font-size: 8pt;
-        font-family: sans-serif;
+        font-size: 10pt;
+        font-family: "Arial Narrow", Arial, sans-serif;
     }
     #receipt {
         display:block;
     }
-
-
     /* print.css */
     #dashboard, .top-container, #header, .page-header, .checkout-success, h1.page-title, #LoginAsCustomer, #zero1-advanced-success  {
         display: none;
     }
     .page-wrapper, .page-main, .columns {
-        margin: 0; padding:0;    margin-left: 0rem;
+        margin: 0; padding:0; margin-left: 0rem;
+    }
+    #H2 {
+      font-size: 26px;
     }
 
+    table td {vertical-align: top;}
+
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
 
     @font-face {
       font-family: Zero1PosBarcode;
@@ -77,58 +51,41 @@ window. print();
 </style>
 
 
-<div id="receipt">
-    <div style="width:70%; margin:auto; text-align:centre;">
-    <a class="flex items-center justify-center text-xl font-medium tracking-wide text-gray-800
-    no-underline hover:no-underline font-title" href="https://www.divinetrash.co.uk/" title="Womens clothes, Mens clothes" aria-label="store logo">
-    <img src="<?= $block->getLogoUrl() ?>" title="Womens clothes, Mens clothes" alt="Womens clothes, Mens clothes" width="150px" height="52px">
-</a>
+<div id="receipt" style="text-transform:uppercase;">
+    <div style="width:100%; text-align: center;padding-bottom:20px">
+      <img class="center" src="<?= $block->getLogoUrl() ?>"  width="150px" height="52px">
+      <div style="padding-top:10px; ">
+        <?= $block->getReceiptHeaderContents(); ?>
+      </div>
+      <H2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></H2>
+      <span><?= $block->getOrderDate(); ?></span>
 
+    </div>
 
-
-<?= $block->getReceiptHeaderContents(); ?>
-
-<strong>Order # <?= $block->getOrderIncrementId() ?></strong><br>
-<strong><?= $block->getOrderDate(); ?></strong>
-
-</div>
-
-<table style="width:90%; margin-left:auto">
+<table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
     <tr>
-      <th style="text-align:right">Qty</th>
-      <th>Item</th>
+      <th style="text-align:left">Item</th>
       <th style="text-align:right">SubTotal</th>
     </tr>
-
-
     <?php foreach($block->getOrderItems() as $orderItem): ?>
     <tr>
-      <td style="text-align:right"><?= $orderItem->getQty() ?></td>
-      <td><?= $orderItem->getName() ?> </td>
-      <td style="text-align:right"><?= $orderItem->getPrice() ?></td>
+      <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
+      <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
     </tr>
     <?php endforeach ?>
-
-
-    <tr>
-      <td style="text-align:right"></td>
-      <td>TOTAL</td>
-      <td style="text-align:right">£12.23</td>
+    <tr  style="margin-top:25px">
+      <td>TOTAL PAID</td>
+      <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
     </tr>
   </table>
 
-
-  <div style="width:70%; margin:auto; text-align:centre;">
-    <h3>THANK YOU FOR SHOPPING WITH US</h3>
-    <h3>********************************</h3>
-
-<strong>DT Life / Cavendish Arcade, Buxton SK17 6AW<br>
-    sale@divinetrash.co.uk / 01298 79555</strong>
-    <h3>********************************</h3>
+  <span style="width:100%; margin-top:15pt; padding-bottom:15px">TENDER: <?= __($block->getOrderPayment()) ?> </span>
 
 
-    <h3 class="barcode">*<?= $block->getOrderIncrementId() ?>*</h3>
-
-
-
+  <div style="width:100%; padding-top:15px; padding-bottom:15px">
+  <?= $block->getReceiptFooterContents(); ?>
 </div>
+</div>
+
+
+<div class="bg-c-black hidden"></div>
