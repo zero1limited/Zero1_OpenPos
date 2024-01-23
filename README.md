@@ -5,47 +5,11 @@ Open POS is a Free Magento 2 module which includes several sub-packages to provi
  - [Installation](installation.md)
  - [Configuration](configuration.md)
  - FAQ
- - CHANGELOG
+ - [CHANGELOG](CHANGELOG.md)
  - TODO
  - [License](LICENSE.txt)
 
 
-## Release Notes
-### 0.0.6
- - [x] Order the POS menu item higher, cant get to it on iPad easily
-
-### 0.0.7
- - [x] Snag fix: POS Payment method modules do not enable/disable according to config
- - [x] Snag fix: POS Success Page code needs to show only if the current store ID matches the Assigned pos_store config
- - [x] Snag fix: Admin input for Walkin Customer (email address) - currently hard-coded
- - [x] Started to neaten up the guest login controller
-
-### 0.0.8
- - [x] Logo URL / src on receipt is now obtained from Magento
-
-### 0.0.9
-
-### 0.0.10
- - [x] Experimental support for stock check bypassing (Allow Back Orders - https://zero1.teamwork.com/app/tasks/34762912)
-
-### 0.0.11
- - [x] Moved MSI based plugins to their own module
- - [x] Added initial support for 'super mode' / custom price entering
-
-### 0.0.12
-
-### 0.0.13
- - [x] Remote shopping assistance is now forced enabled regardless of customer setting. THIS IS TEMPORARY
- - [x] Logging in to POS system as guest from admin panel menu now opens a new tab
-
-### 0.0.14
-
-### 0.0.15
- - [x] (BREAKING CHANGE) Changed reciept_header template and block to just 'receipt'. Theme overrides of existing installations will need template renaming.
- - [x] Added ability to add a QR code in the receipt footer. URL configurable by admin, order increment ID added as query string.
-
- ### 0.0.16
- - [x] Fixed issue where a quote wasn't being seen as virtual (hardcoded store ID from debugging)
 
 
  
