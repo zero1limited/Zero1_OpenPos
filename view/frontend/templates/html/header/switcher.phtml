@@ -1,0 +1,6 @@
+<div id="openpos-switcher">
+    <?php foreach($magewire->getBlocks() as $mode => $block): ?>
+        <button wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
+        <br>
+    <?php endforeach; ?>
+</div>
