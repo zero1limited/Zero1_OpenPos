@@ -1,6 +1,12 @@
-<div id="openpos-switcher">
+<div id="openpos-switcher" class="container pt-4 relative">
+    <div id="tabs"></div>
     <?php foreach($magewire->getBlocks() as $mode => $block): ?>
-        <button wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
-        <br>
+        <button class="border px-6 py-4 font-bold mr-2 bg-c-highlight text-slate-600" wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
     <?php endforeach; ?>
 </div>
+
+<style>
+    #openpos-switcher #tabs {position: absolute;left: 0;right: 0;border: 0;height: 2px;width: 100%;background: #e5e7eb;bottom: 0px;z-index: -1;}
+    #openpos-switcher button {border-radius: 4px 4px 0 0; border-width: 2px;}
+    #openpos-switcher button.active {border-bottom-color: #fff; color: #000; background: #fff;}
+</style>
