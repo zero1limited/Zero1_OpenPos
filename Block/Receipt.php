@@ -131,14 +131,14 @@ class Receipt extends Template
         $payment = $this->getOrder()->getPayment()->getMethod();
 
         switch ($payment) {
-            case 'zero1_pos_pay_card':
+            case 'openpos_pay_card':
                 return "Credit/Debit Card";
                 break;
-            case 'zero1_pos_pay_cash':
+            case 'openpos_pay_cash':
                 return "Cash";
                 break;
             default:
-                return "";
+                return $payment;
                 break;
         }
   
