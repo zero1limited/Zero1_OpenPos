@@ -12,6 +12,10 @@
         <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\OpenPos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
     </type>
 
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="zero1_pos_auto_invoice" type="Zero1\OpenPos\Plugin\AutoInvoice" sortOrder="10"/>
+    </type>
+
     <type name="Zero1\OpenPos\Magewire\Switcher">
         <arguments>
             <argument name="blocks" xsi:type="array">
