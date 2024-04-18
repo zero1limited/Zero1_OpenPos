@@ -176,4 +176,19 @@ class Data extends AbstractHelper
     {
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
     }
+
+    /**
+     * Check if an order is a POS order.
+     * 
+     * @param \Magento\Sales\Api\Data\OrderInterface
+     * @return bool
+     */
+    public function isPosOrder($order)
+    {
+        if($order->getStoreId() == $this->getPosStoreId() && strpos($order->getPayment()->getMethodInstance()->getCode(), 'pos') !== false) {
+            return true;
+        }
+
+        return false;
+    }
 }
