@@ -75,7 +75,7 @@ class AutoInvoice
             if ($order->canInvoice()) {
                 $invoice = $this->invoiceService->prepareInvoice($order);
                 $invoice->register();
-                $this->invoiceRepository->save($invoice);
+                //$this->invoiceRepository->save($invoice);
 
                 $transactionSave = $this->transaction->addObject(
                     $invoice
