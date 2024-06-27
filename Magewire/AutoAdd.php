@@ -134,7 +134,7 @@ class AutoAdd extends Component
             }
 
             if(!$product) {
-                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput);
+                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput . '&append=');
                 return;
             }
         }
