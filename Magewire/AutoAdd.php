@@ -12,6 +12,10 @@ use Magento\Framework\DataObject\Factory as ObjectFactory;
 
 class AutoAdd extends Component
 {
+    public $isVisible = true;
+
+    public $listeners = ['$set'];
+
     /**
      * @var CheckoutSession
      */
@@ -130,7 +134,7 @@ class AutoAdd extends Component
             }
 
             if(!$product) {
-                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput);
+                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput . '&append=');
                 return;
             }
         }
