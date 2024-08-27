@@ -3,12 +3,24 @@
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_pos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
     </type>
-    
+
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
 
     <type name="Magento\LoginAsCustomerAssistance\Model\IsAssistanceEnabled">
         <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\OpenPos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="zero1_pos_auto_invoice" type="Zero1\OpenPos\Plugin\AutoInvoice" sortOrder="10"/>
+    </type>
+
+    <type name="Zero1\OpenPos\Magewire\Switcher">
+        <arguments>
+            <argument name="blocks" xsi:type="array">
+                <item name="Standard mode" xsi:type="string">openpos.autoadd</item>
+            </argument>
+        </arguments>
     </type>
 </config>
