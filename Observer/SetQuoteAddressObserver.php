@@ -46,20 +46,6 @@ class SetQuoteAddressObserver implements ObserverInterface
 
         $this->setDefaultAddress($quote->getShippingAddress());
         $this->setDefaultAddress($quote->getBillingAddress());
-
-        // $address = $quote->getShippingAddress();
-        // if($address->getFirstname() !== 'OpenPOS') {
-        //     $address = $this->addressFactory->create();
-        //     $this->setDefaultAddress($address);
-        //     $quote->setShippingAddress($address);
-        // }
-
-        // $address = $quote->getBillingAddress();
-        // if($address->getFirstname() !== 'OpenPOS') {
-        //     $address = $this->addressFactory->create();
-        //     $this->setDefaultAddress($address);
-        //     $quote->setBillingAddress($address);
-        // }
     }
 
     protected function setDefaultAddress($address)

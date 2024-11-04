@@ -5,15 +5,21 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Data extends AbstractHelper
 {
     const CONFIG_PATH_GENERAL_ENABLE = 'zero1_pos/general/enable';
+    const CONFIG_PATH_GENERAL_TFA_ENABLE = 'zero1_pos/general/tfa_enable';
     const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
     const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
-    const CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL = 'zero1_pos/general/walkin_customer_email';
+    const CONFIG_PATH_GENERAL_EMAIL_DOMAIN = 'zero1_pos/general/email_domain';
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
+    const CONFIG_PATH_GENERAL_TILL_USERS = 'zero1_pos/general/till_users';
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'zero1_pos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'zero1_pos/customisation/receipt_footer';
@@ -32,18 +38,51 @@ class Data extends AbstractHelper
     protected $scopeConfig;
 
     /**
+     * @var CustomerRepositoryInterface
+     */
+    protected $customerRepository;
+
+    /**
+     * @var CustomerInterfaceFactory
+     */
+    protected $customerFactory;
+
+    /**
+     * @var EncryptorInterface
+     */
+    protected $encryptor;
+
+    /**
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param CustomerInterfaceFactory $customerFactory
+     * @param EncryptorInterface $encryptor
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        CustomerRepositoryInterface $customerRepository,
+        CustomerInterfaceFactory $customerFactory,
+        EncryptorInterface $encryptor
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
+        $this->customerRepository = $customerRepository;
+        $this->customerFactory = $customerFactory;
+        $this->encryptor = $encryptor;
         parent::__construct($context);
+    }
+
+    /**
+     * For OpenPOS extension use.
+     * @return mixed
+     */
+    public function getConfigValue($path)
+    {
+        return $this->scopeConfig->getValue('zero1_pos/'.$path);
     }
 
     /**
@@ -52,6 +91,14 @@ class Data extends AbstractHelper
     public function isEnabled()
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_ENABLE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTfaEnabled()
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TFA_ENABLE);
     }
 
     /**
@@ -73,9 +120,9 @@ class Data extends AbstractHelper
     /**
      * @return string
      */
-    public function getWalkinCustomerEmail()
+    public function getEmailDomain()
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL);
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_EMAIL_DOMAIN);
     }
 
     /**
@@ -100,6 +147,13 @@ class Data extends AbstractHelper
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE);
     }
 
+    /**
+     * @return array
+     */
+    public function getTillUsers()
+    {
+        return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TILL_USERS));
+    }
 
     /**
      * @return string
@@ -190,5 +244,32 @@ class Data extends AbstractHelper
         }
 
         return false;
+    }
+
+    public function getCustomerForAdminUser($adminUser)
+    {
+        // TODO build string better
+        $customerEmail = 'openpos-'.$adminUser->getUsername().'@'.$this->getEmailDomain();
+
+        try {
+            $customer = $this->customerRepository->get($customerEmail, $this->getPosStore()->getWebsiteId());
+        } catch(NoSuchEntityException $e) {
+            $customer = $this->createCustomerForAdminUser($adminUser, $customerEmail);
+        }
+
+        return $customer;
+    }
+
+    protected function createCustomerForAdminUser($adminUser, $email)
+    {
+        $customer = $this->customerFactory->create();
+        $customer->setWebsiteId($this->getPosStore()->getWebsiteId());
+
+        $customer->setEmail($email);
+        $customer->setFirstname($adminUser->getFirstname());
+        $customer->setLastname($adminUser->getLastname());
+
+        $password = $this->encryptor->getHash(substr(str_shuffle(MD5(microtime())), 0, 10), true);
+        return $this->customerRepository->save($customer, $password);
     }
 }

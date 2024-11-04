@@ -1,0 +1,30 @@
+<div id="openpos-receipt">
+
+    <?php if(!$magewire->printMode): ?>
+        <div id="wrapper">
+            <p>OpenPOS order complete!</p>
+            <button type="button" wire:click="print">Print receipt</button>
+
+            <br>
+            <br>
+            <br>
+
+            <input type="text" wire:model.defer="emailInput"/>
+            <button type="button" wire:click="email">Email receipt</button>
+
+            <br><br>
+            <!-- <button type="button" wire:click="serveNewCustomer">Serve new customer</button> -->
+            <button type="button" wire:click="newOrder">Start new order</button>
+        </div>
+    <?php endif; ?>
+
+    <?php if($magewire->printMode): ?>
+        <?= $block->getChildHtml('openpos.receipt.print'); ?>
+    <?php endif; ?>
+
+    <script type="text/javascript">
+        window.addEventListener('js-print', function() {
+            window.print();
+        });
+    </script>
+</div>

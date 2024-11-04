@@ -11,32 +11,38 @@
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General</label>
                 <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable Open POS system</label>
+                    <label>Enable OpenPOS system</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="pos_store" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="tfa_enable" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable 2FA on till login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Magento_TwoFactorAuth must be enabled!</comment>
+                </field>
+                <field id="pos_store" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>POS Store</label>
                     <source_model>Magento\Config\Model\Config\Source\Store</source_model>
                 </field>
-                <field id="redirect_store" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Redirect Store</label>
-                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
-                    <comment>A store to redirect to if the POS store URL is requested without authentication.</comment>
+                <field id="email_domain" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Till User Email Domain</label>
+                    <comment>Magento customer accounts will be created for till users using this domain. Example: zero1.co.uk</comment>
                 </field>
-                <field id="walkin_customer_email" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Walk-in Customer Email</label>
-                    <comment>A Magento customer email for customers that do not have account / wish to purchase as a guest. This customer must exist in Magento. Example: guest@zero1.co.uk</comment>
-                </field>
-                <field id="bypass_stock" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="bypass_stock" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Bypass stock checks</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                     <comment>On the POS store products will be salable regardless of their stock status / QTY.</comment>
                 </field>
 
-                <field id="barcode_attribute" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="barcode_attribute" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Barcode attribute</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\BarcodeAttribute</source_model>
                     <comment>The barcode scanner will first check if the scanned contents matches a product SKU within the catalog, if there is no match it will search the barcode attribute values.</comment>
+                </field>
+
+                <field id="till_users" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Till users</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\AdminUser</source_model>
+                    <comment>OpenPOS community allows 3 till users.</comment>
                 </field>
             </group>
 

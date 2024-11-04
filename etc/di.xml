@@ -23,4 +23,7 @@
             </argument>
         </arguments>
     </type>
+
+    <preference for="Zero1\OpenPos\Api\TillSessionRepositoryInterface" type="Zero1\OpenPos\Model\TillSessionRepository" />
+    <preference for="Zero1\OpenPos\Api\Data\TillSessionInterface" type="Zero1\OpenPos\Model\TillSession" />
 </config>

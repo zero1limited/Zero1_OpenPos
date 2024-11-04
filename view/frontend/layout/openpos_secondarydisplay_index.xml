@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <referenceBlock name="header.container" remove="true"/>
+            <referenceBlock name="footer-container" remove="true"/>
+            <referenceBlock name="page.main.title" remove="true"/>
+            <referenceBlock name="breadcrumbs" remove="true"/>
+            <block class="Magento\Framework\View\Element\Template" name="openpos.secondarydisplay" template="Zero1_OpenPos::secondarydisplay/main.phtml">
+                <arguments>
+                    <argument name="magewire" xsi:type="object">
+                        \Zero1\OpenPos\Magewire\SecondaryDisplay
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

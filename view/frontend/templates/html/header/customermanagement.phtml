@@ -1,0 +1,36 @@
+<div id="openpos-customermanagement" class="my-4 mx-6 px-1">
+    
+    <div class="bg-c-highlight p-4 border">
+        <p>You are currently serving: <span class="font-bold"><?= $magewire->getCurrentCustomerName().' ('.$magewire->getCurrentCustomerEmail().')'?></span></p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="flex items-center pt-4">
+            <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToGuest">Revert to walkin / guest mode</button>
+        </div>
+        <div class="items-center pt-4">
+            <input type="email" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Switch to customer - Enter customer's email address" wire:model.debounce.2000ms="emailInput" />
+
+            <?php if($magewire->foundCustomer !== null): ?>
+                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch to <?= $magewire->foundCustomer ?></button>
+            <?php else: ?>
+                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch</button>
+            <?php endif; ?>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.secondary-login {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+    height: 50px !important;
+    border-radius: 4px !important;
+}
+.secondary-login:hover {
+    background: #fff;
+    color: #000;
+}
+</style>
