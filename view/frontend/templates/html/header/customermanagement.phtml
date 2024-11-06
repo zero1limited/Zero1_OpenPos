@@ -1,8 +1,14 @@
 <div id="openpos-customermanagement" class="my-4 mx-6 px-1">
     
-    <div class="bg-c-highlight p-4 border">
-        <p>You are currently serving: <span class="font-bold"><?= $magewire->getCurrentCustomerName().' ('.$magewire->getCurrentCustomerEmail().')'?></span></p>
-    </div>
+    <?php if($magewire->isCurrentCustomerGuest()): ?>
+        <div class="bg-c-highlight p-4 border">
+            <p>You are currently serving a guest customer without an account.</p>
+        </div>
+    <?php else: ?>
+        <div class="bg-c-highlight p-4 border">
+            <p>You are currently serving: <span class="font-bold"><?= $magewire->getCurrentCustomerName().' ('.$magewire->getCurrentCustomerEmail().')'?></span></p>
+        </div>
+    <?php endif; ?>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="flex items-center pt-4">

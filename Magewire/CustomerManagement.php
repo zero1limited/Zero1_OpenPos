@@ -4,20 +4,14 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Magewire;
 
 use Magewirephp\Magewire\Component;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Model\Session as CustomerSession;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
-use Magento\Framework\DataObject\Factory as ObjectFactory;
 use Magento\Framework\Validator\EmailAddress;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class CustomerManagement extends Component
 {
-    public $isVisible = true;
-
     public $listeners = ['$set'];
 
     /**
@@ -26,38 +20,19 @@ class CustomerManagement extends Component
     protected $customerSession;
 
     /**
-     * @var CheckoutSession
-     */
-    protected $checkoutSession;
-
-    /**
-     * @var ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
-     * @var ProductCollectionFactory
-     */
-    protected $productCollectionFactory;
-
-    /**
      * @var OpenPosSessionHelper
      */
     protected $openPosSessionHelper;
 
     /**
-     * @var ObjectFactory
+     * @var EmailAddress
      */
-    protected $objectFactory;
-
     protected $emailValidator;
 
-    protected $customerRepository;
-
     /**
-     * @var bool
+     * @var CustomerRepositoryInterface
      */
-    public $showSkuField = true;
+    protected $customerRepository;
 
     /**
      * @var string
@@ -65,72 +40,78 @@ class CustomerManagement extends Component
     public $emailInput = '';
 
     /**
-     * @var string
+     * @var bool
      */
     public $foundCustomer = null;
 
     /**
-     * @var bool
-     */
-    public $priceEditorMode = false;
-
-    /**
-     * @var bool
-     */
-    public $customProductMode = false;
-
-    /**
-     * @var string
-     */
-    public $descriptionInput = '';
-
-    /**
-     * @param CheckoutSession $checkoutSession
      * @param CustomerSession $customerSession
-     * @param ProductRepositoryInterface $productRepository
-     * @param ProductCollectionFactory $productCollectionFactory
      * @param OpenPosSessionHelper $openPosSessionHelper
-     * @param ObjectFactory $objectFactory
+     * @param EmailAddress $emailValidator
+     * @param CustomerRepository $customerRepository
      */
     public function __construct(
-        CheckoutSession $checkoutSession,
         CustomerSession $customerSession,
-        ProductRepositoryInterface $productRepository,
-        ProductCollectionFactory $productCollectionFactory,
         OpenPosSessionHelper $openPosSessionHelper,
-        ObjectFactory $objectFactory,
         EmailAddress $emailValidator,
         CustomerRepositoryInterface $customerRepository
     ) {
-        $this->checkoutSession = $checkoutSession;
         $this->customerSession = $customerSession;
-        $this->productRepository = $productRepository;
-        $this->productCollectionFactory = $productCollectionFactory;
         $this->openPosSessionHelper = $openPosSessionHelper;
-        $this->objectFactory = $objectFactory;
         $this->emailValidator = $emailValidator;
         $this->customerRepository = $customerRepository;
     }
 
+    /**
+     * @return string
+     */
     public function getCurrentCustomerName()
     {
         return $this->customerSession->getCustomer()->getName();
     }
 
+    /**
+     * @return string
+     */
     public function getCurrentCustomerEmail()
     {
         return $this->customerSession->getCustomer()->getEmail();
     }
 
+    /**
+     * Check if we are currently serving guest.
+     * 
+     * @return bool
+     */
+    public function isCurrentCustomerGuest()
+    {
+        $guestCustomer = $this->openPosSessionHelper->getCustomerForAdminUser();
+        if($guestCustomer->getEmail() === $this->getCurrentCustomerEmail()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Switch to guest customer.
+     * 
+     * @return void
+     */
     public function changeToGuest()
     {
         $customer = $this->openPosSessionHelper->getCustomerForAdminUser();
         
         $this->customerSession->setCustomerDataAsLoggedIn($customer);
         $this->redirect('/');
-        $this->dispatchSuccessMessage('Successfully switched to '.$customer->getEmail());
+        $this->dispatchSuccessMessage('Successfully switched to guest customer.');
     }
 
+    /**
+     * Attempt switch to customer using provided email.
+     * 
+     * @return void
+     */
     public function changeToCustomer()
     {
         if(!$this->emailValidator->isValid($this->emailInput)) {
@@ -150,6 +131,11 @@ class CustomerManagement extends Component
         $this->dispatchSuccessMessage('Successfully switched to '.$customer->getEmail());
     }
 
+    /**
+     * Obtain customer details before switch
+     * 
+     * @return string
+     */
     public function updatedEmailInput(string $value)
     {
         if($this->emailValidator->isValid($this->emailInput)) {
@@ -165,6 +151,4 @@ class CustomerManagement extends Component
 
         return $value;
     }
-
-
 }
