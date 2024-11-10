@@ -4,7 +4,6 @@ namespace Zero1\OpenPos\Controller\TillSession;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\View\Result\PageFactory;
-use Magento\Framework\View\Result\Page;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 
 class Login implements HttpGetActionInterface
@@ -12,7 +11,7 @@ class Login implements HttpGetActionInterface
     /**
      * @var PageFactory
      */
-    private $pageFactory;
+    protected $pageFactory;
 
     /**
      * @var OpenPosSessionHelper
@@ -21,7 +20,7 @@ class Login implements HttpGetActionInterface
 
     /**
      * @param PageFactory $pageFactory
-     * @param OpenPosSessionHelper
+     * @param OpenPosSessionHelper $openPosSessionHelper
      */
     public function __construct(
         PageFactory $pageFactory,
@@ -32,7 +31,7 @@ class Login implements HttpGetActionInterface
     }
 
     /**
-     * @return Page
+     * @return \Magento\Framework\View\Result\Page
      */
     public function execute()
     {

@@ -245,31 +245,4 @@ class Data extends AbstractHelper
 
         return false;
     }
-
-    public function getCustomerForAdminUser($adminUser)
-    {
-        // TODO build string better
-        $customerEmail = 'openpos-'.$adminUser->getUsername().'@'.$this->getEmailDomain();
-
-        try {
-            $customer = $this->customerRepository->get($customerEmail, $this->getPosStore()->getWebsiteId());
-        } catch(NoSuchEntityException $e) {
-            $customer = $this->createCustomerForAdminUser($adminUser, $customerEmail);
-        }
-
-        return $customer;
-    }
-
-    protected function createCustomerForAdminUser($adminUser, $email)
-    {
-        $customer = $this->customerFactory->create();
-        $customer->setWebsiteId($this->getPosStore()->getWebsiteId());
-
-        $customer->setEmail($email);
-        $customer->setFirstname($adminUser->getFirstname());
-        $customer->setLastname($adminUser->getLastname());
-
-        $password = $this->encryptor->getHash(substr(str_shuffle(MD5(microtime())), 0, 10), true);
-        return $this->customerRepository->save($customer, $password);
-    }
 }

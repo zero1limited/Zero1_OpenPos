@@ -1,9 +1,7 @@
 <?php
+
 namespace Zero1\OpenPos\Model\ResourceModel;
 
-/**
- * Class TillSession
- */
 class TillSession extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

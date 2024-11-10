@@ -16,29 +16,80 @@ class Receipt extends Component
 {
     public $listeners = ['print', 'email'];
 
+    /**
+     * @var CheckoutSession
+     */
+    protected $checkoutSession;
+
+    /**
+     * @var CustomerSession
+     */
+    protected $customerSession;
+
+    /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
+     * @var OrderSender
+     */
+    protected $orderSender;
+
+    /**
+     * @var OpenPosSessionHelper
+     */
+    protected $openPosSessionHelper;
+
+    /**
+     * @var string
+     */
     public $emailInput = '';
 
+    /**
+     * @var bool
+     */
     public $printMode = false;
 
     public function __construct(
-        protected CheckoutSession $checkoutSession,
-        protected CustomerSession $customerSession,
-        protected OrderRepositoryInterface $orderRepository,
-        protected OrderSender $orderSender,
-        protected OpenPosSessionHelper $openPosSessionHelper
-    ) {}
+        CheckoutSession $checkoutSession,
+        CustomerSession $customerSession,
+        OrderRepositoryInterface $orderRepository,
+        OrderSender $orderSender,
+        OpenPosSessionHelper $openPosSessionHelper
+    ) {
+        $this->checkoutSession = $checkoutSession;
+        $this->customerSession = $customerSession;
+        $this->orderRepository = $orderRepository;
+        $this->orderSender = $orderSender;
+        $this->openPosSessionHelper = $openPosSessionHelper;
+    }
 
+    /**
+     * @return \Magento\Sales\Model\Order
+     */
     public function getOrder()
     {
         return $this->checkoutSession->getLastRealOrder();
     }
 
+    /**
+     * Enable print mode on Magewire block
+     * TODO: review functionality here
+     * 
+     * @return void
+     */
     public function print()
     {
         $this->printMode = true;
         $this->dispatchBrowserEvent('js-print');
     }
 
+    /**
+     * Email a reciept / Magento order email to specified email address.
+     * 
+     * @return void
+     */
     public function email()
     {
         if (!ValidatorChain::is($this->emailInput, EmailAddress::class)) {
@@ -56,6 +107,13 @@ class Receipt extends Component
         $this->orderSender->send($order, true);
     }
 
+    /**
+     * Revert till session back to guest user and start new order.
+     * At the moment this doesn't work, Callum to look into.
+     * TODO: fix!
+     * 
+     * @return void
+     */
     public function serveNewCustomer()
     {
         // TODO fix exception thrown when this is ran
@@ -64,6 +122,11 @@ class Receipt extends Component
         $this->redirect('/');
     }
 
+    /**
+     * Temporary method while in development to replace serveNewCustomer
+     * 
+     * @return void
+     */
     public function newOrder()
     {
         $this->redirect('/');

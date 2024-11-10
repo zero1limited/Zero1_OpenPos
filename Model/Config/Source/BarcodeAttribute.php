@@ -21,6 +21,8 @@ class BarcodeAttribute implements \Magento\Framework\Option\ArrayInterface
     }
 
     /**
+     * Return an array of attributes that can be used as barcodes.
+     * 
      * @return array
      */
     public function toOptionArray()

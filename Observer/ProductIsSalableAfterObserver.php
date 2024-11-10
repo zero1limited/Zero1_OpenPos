@@ -1,4 +1,5 @@
 <?php
+
 namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;

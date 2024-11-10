@@ -7,9 +7,9 @@ use Magento\Framework\View\Element\Template\Context;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
-use Magento\Sales\Model\Order;
 use Magento\Theme\Block\Html\Header\Logo as LogoBlock;
 use chillerlan\QRCode\QRCode;
+use Magento\Sales\Model\Order;
 
 class Receipt extends Template
 {
@@ -29,11 +29,6 @@ class Receipt extends Template
     protected $pricingHelper;
 
     /**
-     * @var Order
-     */
-    protected $order;
-
-    /**
      * @var LogoBlock
      */
     protected $logoBlock;
@@ -42,6 +37,11 @@ class Receipt extends Template
      * @var QRCode
      */
     protected $qrCode;
+
+    /**
+     * @var Order
+     */
+    protected $order;
 
     /**
      * @param Context $context
@@ -67,6 +67,20 @@ class Receipt extends Template
         $this->logoBlock = $logoBlock;
         $this->qrCode = $qrCode;
         parent::__construct($context, $data);
+    }
+
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
+            return '';
+        }
+
+        return parent::_toHtml();
     }
 
     /**
@@ -170,19 +184,5 @@ class Receipt extends Template
         }
 
         return $this->order;
-    }
-
-    /**
-     * Render block HTML
-     *
-     * @return string
-     */
-    protected function _toHtml()
-    {
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
-            return '';
-        }
-
-        return parent::_toHtml();
     }
 }

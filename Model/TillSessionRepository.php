@@ -1,4 +1,5 @@
 <?php
+
 namespace Zero1\OpenPos\Model;
 
 use Magento\Framework\Api\SearchCriteriaInterface;
@@ -6,34 +7,43 @@ use Magento\Framework\Api\SearchResultsInterfaceFactory;
 use Magento\Framework\Exception\CouldNotDeleteException;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
-
 use Zero1\OpenPos\Api\TillSessionRepositoryInterface;
 use Zero1\OpenPos\Api\Data\TillSessionInterface;
 use Zero1\OpenPos\Model\TillSessionFactory;
-use Zero1\OpenPos\Model\ResourceModel\TillSession as ObjectResourceModel;
+use Zero1\OpenPos\Model\ResourceModel\TillSession;
 use Zero1\OpenPos\Model\ResourceModel\TillSession\CollectionFactory;
 
-/**
- * Class TillSessionRepository
- */
 class TillSessionRepository implements TillSessionRepositoryInterface
 {
+    /**
+     * @var TillSessionFactory
+     */
     protected $objectFactory;
+
+    /**
+     * @var TillSession
+     */
     protected $objectResourceModel;
+
+    /**
+     * @var CollectionFactory
+     */
     protected $collectionFactory;
+
+    /**
+     * @var SearchResultsInterfaceFactory
+     */
     protected $searchResultsFactory;
 
     /**
-     * TillSessionRepository constructor.
-     *
      * @param TillSessionFactory $objectFactory
-     * @param ObjectResourceModel $objectResourceModel
+     * @param TillSession $objectResourceModel
      * @param CollectionFactory $collectionFactory
      * @param SearchResultsInterfaceFactory $searchResultsFactory
      */
     public function __construct(
         TillSessionFactory $objectFactory,
-        ObjectResourceModel $objectResourceModel,
+        TillSession $objectResourceModel,
         CollectionFactory $collectionFactory,
         SearchResultsInterfaceFactory $searchResultsFactory
     ) {

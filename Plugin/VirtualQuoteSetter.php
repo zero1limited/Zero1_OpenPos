@@ -2,8 +2,8 @@
 
 namespace Zero1\OpenPos\Plugin;
 
-use Magento\Quote\Model\Quote;
 use Zero1\OpenPos\Helper\Data as PosHelper;
+use Magento\Quote\Model\Quote;
 
 class VirtualQuoteSetter
 {
@@ -24,8 +24,7 @@ class VirtualQuoteSetter
     /**
      * @param Quote $quote
      * @param bool $result
-     * @return void
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return bool
      */
     public function afterIsVirtual(Quote $quote, $result)
     {

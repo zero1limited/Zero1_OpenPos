@@ -156,6 +156,11 @@ class AutoAdd extends Component
         $this->dispatchSuccessMessage($this->skuInput.' has been added to cart.');
     }
 
+    /**
+     * Add a product to the quote
+     * @param \Magento\Catalog\Model\Product $product
+     * @return \Magento\Quote\Model\Quote\Item|string
+     */
     public function addProductToQuote($product)
     {
         try {

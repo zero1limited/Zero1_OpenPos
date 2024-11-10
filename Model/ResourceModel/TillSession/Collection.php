@@ -1,9 +1,7 @@
 <?php
+
 namespace Zero1\OpenPos\Model\ResourceModel\TillSession;
 
-/**
- * Class Collection
- */
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**

@@ -1,9 +1,7 @@
 <?php
+
 namespace Zero1\OpenPos\Model;
 
-/**
- * Class Problem
- */
 class TillSession extends \Magento\Framework\Model\AbstractModel implements
     \Zero1\OpenPos\Api\Data\TillSessionInterface,
     \Magento\Framework\DataObject\IdentityInterface

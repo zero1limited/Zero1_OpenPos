@@ -2,9 +2,9 @@
 
 namespace Zero1\OpenPos\Plugin;
 
+use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\CatalogInventory\Model\Quote\Item\QuantityValidator;
 use Magento\Framework\Event\Observer;
-use Zero1\OpenPos\Helper\Data as PosHelper;
 
 class QuoteItemQuantityBypass
 {
@@ -28,10 +28,10 @@ class QuoteItemQuantityBypass
      */
     public function beforeValidate($qtyValidator, $observer)
     {
+        // TODO: Check if this is still required
+
         if($this->posHelper->bypassStock()) {
             $quoteItem = $observer->getEvent()->getItem();
-
-            // todo remove!
             if($quoteItem) {
                 $quoteItem->getQuote()->setIsSuperMode(true);
             }

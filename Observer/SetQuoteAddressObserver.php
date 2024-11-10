@@ -1,4 +1,5 @@
 <?php
+
 namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
@@ -30,6 +31,9 @@ class SetQuoteAddressObserver implements ObserverInterface
         $this->addressFactory = $addressFactory;
     }
 
+    /**
+     * @return void
+     */
     public function execute(Observer $observer)
     {
         // Check if module is enabled, and we are on the POS store
@@ -48,6 +52,9 @@ class SetQuoteAddressObserver implements ObserverInterface
         $this->setDefaultAddress($quote->getBillingAddress());
     }
 
+    /**
+     * @param \Magento\Quote\Model\Quote\Address $address
+     */
     protected function setDefaultAddress($address)
     {
         $address->setFirstname('OpenPOS');

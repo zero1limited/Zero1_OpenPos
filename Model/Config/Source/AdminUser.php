@@ -7,13 +7,22 @@ use \Magento\User\Model\ResourceModel\User\CollectionFactory as AdminUserCollect
 class AdminUser implements \Magento\Framework\Option\ArrayInterface
 {
     /**
+     * @var AdminUserCollectionFactory
+     */
+    protected $adminUserCollectionFactory;
+
+    /**
      * @param AdminUserCollectionFactory $adminUserCollectionFactory
      */
     public function __construct(
-        protected AdminUserCollectionFactory $adminUserCollectionFactory
-    ) {}
+        AdminUserCollectionFactory $adminUserCollectionFactory
+    ) {
+        $this->adminUserCollectionFactory = $adminUserCollectionFactory;
+    }
 
     /**
+     * Return an array of Magento admin users.
+     * 
      * @return array
      */
     public function toOptionArray()

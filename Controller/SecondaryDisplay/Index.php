@@ -10,7 +10,7 @@ class Index implements HttpGetActionInterface
     /**
      * @var PageFactory
      */
-    private $pageFactory;
+    protected $pageFactory;
 
     /**
      * @param PageFactory $pageFactory

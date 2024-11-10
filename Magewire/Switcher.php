@@ -11,19 +11,33 @@ class Switcher extends Component
 
     public $loader = 'Please wait...';
 
+    /**
+     * @var array
+     */
     protected $blocks;
 
+    /**
+     * @param array|null $blocks
+     */
     public function __construct(
         $blocks = null
     ) {
         $this->blocks = $blocks;
     }
 
+    /**
+     * @return array|null
+     */
     public function getBlocks()
     {
         return $this->blocks;
     }
 
+    /**
+     * Toggle selected data entry mode
+     * 
+     * @return void
+     */
     public function toggle($selectedBlock)
     {
         foreach($this->blocks as $mode => $block) {

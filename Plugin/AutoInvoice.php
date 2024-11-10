@@ -10,7 +10,6 @@ use Magento\Framework\DB\Transaction;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Api\OrderManagementInterface;
 
-
 class AutoInvoice
 {
     /**
@@ -19,12 +18,12 @@ class AutoInvoice
     protected $posHelper;
 
     /**
-     * @var OrderRepository
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @var InvoiceRepository
+     * @var InvoiceRepositoryInterface
      */
     protected $invoiceRepository;
 
@@ -45,6 +44,8 @@ class AutoInvoice
 
     /**
      * @param PosHelper $posHelper
+     * @param OrderRepositoryInterface $orderRepository
+     * @param InvoiceRepositoryInterface $invoiceRepository
      * @param InvoiceService $invoiceService
      * @param InvoiceSender $invoiceSender
      * @param Transaction $transaction

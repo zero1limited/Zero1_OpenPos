@@ -8,10 +8,6 @@
         <plugin name="zero1_pos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
 
-    <type name="Magento\LoginAsCustomerAssistance\Model\IsAssistanceEnabled">
-        <plugin name="zero1_pos_remote_assistance_bypass" type="Zero1\OpenPos\Plugin\RemoteAssistanceBypass" sortOrder="10"/>
-    </type>
-
     <type name="Magento\Sales\Api\OrderManagementInterface">
         <plugin name="zero1_pos_auto_invoice" type="Zero1\OpenPos\Plugin\AutoInvoice" sortOrder="10"/>
     </type>

@@ -19,7 +19,7 @@ use Magento\Framework\Phrase;
 class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     /**
-     * @var Magento\Backend\Model\Auth
+     * @var Auth
      */
     protected $auth;
 
@@ -146,7 +146,6 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                         );
                         throw new \Exception();
                     }
-
 
                     $resultRedirect->setUrl($this->_redirect->success('/'));
                     return $resultRedirect;

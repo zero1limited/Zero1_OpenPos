@@ -5,37 +5,35 @@ namespace Zero1\OpenPos\Magewire;
 
 use Magewirephp\Magewire\Component;
 use Zero1\OpenPos\Api\TillSessionRepositoryInterface;
-
-use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Quote\Api\CartRepositoryInterface;
 
-use Magento\Framework\DataObject\Factory as ObjectFactory;
-
+/**
+ * IN DEVELOPMENT
+ */
 class SecondaryDisplay extends Component
 {
+    public $listeners = ['fetch'];
+    
     public $isAuthenticated = false;
     public $quoteId = null;
-
     public $adminUser = '';
     public $tillSessionId = '';
     public $passcode = '';
-
     public $tillData = [];
-
-    public $listeners = ['fetch'];
 
     /**
      * @var TillSessionRepository
      */
     protected $tillSessionRepository;
 
+    /**
+     * @var CartRepositoryInterface
+     */
     protected $quoteRepository;
 
     /**
      * @param TillSessionRepositoryInterface $tillSessionRepository
+     * @param CartRepositoryInterface $quoteRepository
      */
     public function __construct(
         TillSessionRepositoryInterface $tillSessionRepository,
@@ -45,9 +43,16 @@ class SecondaryDisplay extends Component
         $this->quoteRepository = $quoteRepository;
     }
 
+    /**
+     * IN DEVELOPMENT
+     * 
+     * Login method for secondary display.
+     * This will likely change to normal login rather than custom ID & PIN.
+     * 
+     * @return void
+     */
     public function login()
     {
-        // if($mage)
         try {
             $tillSession = $this->tillSessionRepository->getById($this->tillSessionId);
         } catch(\Exception $e) {
@@ -66,6 +71,13 @@ class SecondaryDisplay extends Component
         $this->fetch();
     }
 
+    /**
+     * IN DEVELOPMENT
+     * 
+     * Fetch and store data from main till session quote
+     * 
+     * @return void
+     */
     public function fetch()
     {
         $quote = $this->quoteRepository->get($this->quoteId);
