@@ -6,7 +6,7 @@ $helper = $this->helper('Zero1\OpenPos\Helper\Data');
 
 <!-- form -->
 
-<div class="block block-customer-login border p-8 openpos-login-wrapper bg-white mx-auto">
+<div class="block block-customer-login p-8 openpos-login-wrapper bg-white mx-auto">
     <img src="https://miami.zero1.co.uk/static/version1727356620/frontend/z1/miami_demo/en_GB/images/logo.svg" width="400px" height="20px" class="mx-auto openpos-login-logo" />
     <p class="mb-4"><?= $block->escapeHtml(__('To login to this till, please enter your Magento Admin user credentials')) ?></p>
     <form class="form form-login"
@@ -46,41 +46,14 @@ $helper = $this->helper('Zero1\OpenPos\Helper\Data');
                 </div>
             <?php endif; ?>
             <div class="">
-                <div class="primary btn rounded-none btn-primary mt-6"><button type="submit" class="action login primary w-full text-center uppercase justify-center" name="send" id="send2"><span><?= $block->escapeHtml(__('Sign In')) ?></span></button></div>
+                <div class="primary btn rounded-none btn-primary mt-6"><button type="submit" class="action login primary w-full text-center justify-center text-xl" name="send" id="send2"><span><?= $block->escapeHtml(__('Sign In')) ?></span></button></div>
             </div>
         </fieldset>
     </form>
+    <?php /*
     <div class="border-t mt-4 py-4">
         <p class="mb-4"><?= $block->escapeHtml(__('Signing into a secondary display?')) ?></p>
         <a href="/openpos/secondarydisplay/index" class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center"><?= $block->escapeHtml(__('Sign in to secondary display')) ?></a>
     </div>
+    */ ?>
 </div>
-
-<style>
-body {
-    background: #efefef;
-}
-.openpos-login-wrapper {
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    width: 80%;
-    max-width: 580px;
-    margin-top: 4rem;
-}
-.page-title {
-    display: none;
-}
-.secondary-login {
-    background: #fff;
-    color: #000;
-    border: 2px solid #000;
-}
-.secondary-login:hover {
-    background: #fff;
-    color: #000;
-}
-
-.openpos-login-logo {
-    max-width: 170px;
-    margin-bottom: 2rem;
-}
-</style>

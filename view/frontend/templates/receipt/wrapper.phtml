@@ -2,19 +2,24 @@
 
     <?php if(!$magewire->printMode): ?>
         <div id="wrapper">
-            <p>OpenPOS order complete!</p>
-            <button type="button" wire:click="print">Print receipt</button>
+            
+            <div class="flex w-full justify-center my-6 py-6">
+                <span class="text-2xl font-bold"><span>&#128515</span> <?php echo __('Order complete!'); ?></span>
+            </div>
 
-            <br>
-            <br>
-            <br>
+            <div class="flex w-full my-6 py-6 justify-center">
+                <button class="btn btn-primary btn-secondary" type="button" wire:click="print">Print receipt</button>
+            </div>
 
-            <input type="text" wire:model.defer="emailInput"/>
-            <button type="button" wire:click="email">Email receipt</button>
+            <div class="flex w-full my-6 py-6 justify-center">
+                <input type="text" class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" placeholder="Customer email address" wire:model.defer="emailInput"/>
+                <button type="button" wire:click="email" class="btn btn-primary btn-secondary w-full">Email receipt</button>
+            </div>
 
-            <br><br>
-            <!-- <button type="button" wire:click="serveNewCustomer">Serve new customer</button> -->
-            <button type="button" wire:click="newOrder">Start new order</button>
+            <div class="flex w-full my-6 py-6">
+                <button type="button" class="w-full underline font-bold" wire:click="newOrder"><?php echo __('Start new order'); ?></button>
+            </div>
+
         </div>
     <?php endif; ?>
 

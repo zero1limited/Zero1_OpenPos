@@ -1,37 +1,43 @@
-<div id="zero-1-hyva-pos-auto-add">
+<div id="zero-1-hyva-pos-auto-add" class="relative w-full flex mt-6 px-6 mb-2">
 
 <?php if($magewire->isVisible): ?>
-    <div class="relative w-full flex px-6 py-6">
-            <?php if($magewire->priceEditorMode): ?>
-              <div class="w-2/6 grid grid-cols-2">
-                <span class="text-right mr-4 mt-3">Custom price:</span>
-                <input id="custom-price-input" wire:model.defer="customPriceInput" class="border px-4" />
-              </div>
-            <?php endif; ?>
-
-
-            <?php if($magewire->customProductMode): ?>
-              <div class="w-4/6 flex ml-6 pl-6">
-                <span class="text-right mr-4 mt-3 w-1/6">Description:</span>
-                <input id="description-input" wire:model.defer="descriptionInput" class="border px-4 w-3/6 form-input" />
-                <button class="btn btn-primary w-2/6" wire:click="parseSkuInput">Add custom product</button>
-              </div>
-            <?php endif; ?>
-
-            <?php if($magewire->showSkuField): ?>
-              <input id="z1-auto-add"
-                  autocomplete="off"
-                  name="z1-auto-add"
-                  wire:blur="parseSkuInput"
-                  placeholder="<?= $escaper->escapeHtmlAttr(__('Scan Barcode or enter SKU / search term to add to cart')) ?>"
-                  class="w-full p-2 text-sm leading-normal transition appearance-none text-grey-800
-                  outline-none lg:text-lg border px-4 form-input"
-                  wire:model.defer="skuInput"
-              />
-            <?php endif; ?>
-
+        
+  <?php if($magewire->priceEditorMode): ?>
+    <div class="relative w-full flex">
+          <div class="w-full mb-4">
+            <span class="font-bold inline-block mb-2 w-full">Custom pricing</span>
+            <span class="inline-block mb-2 text-grey-800">Please enter your custom price below</span>
+            <input id="custom-price-input" wire:model.defer="customPriceInput" class="bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
+          </div>
     </div>
-
+  <?php endif; ?>
+        
+  <?php if($magewire->customProductMode): ?>
+    <div class="relative w-full flex">
+      <div class="w-full mb-4">
+        <span class="font-bold inline-block mb-4 w-full">Custom Product</span>
+        <input id="description-input" placeholder="Enter the name / description of your custom product..." wire:model.defer="descriptionInput" class="bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
+        <button class="btn mt-4 c-secondary-cta" wire:click="parseSkuInput">Add</button>
+      </div>
+    </div>
+  <?php endif; ?>
+      
+  <?php // Don't show regular search field if in other modes ?>
+  <?php if ((!$magewire->customProductMode) || (!$magewire->priceEditorMode)): ?>
+    <?php if($magewire->showSkuField): ?>
+      <div class="relative w-full flex mb-4">
+        <input id="z1-auto-add"
+            autocomplete="off"
+            name="z1-auto-add"
+            wire:blur="parseSkuInput"
+            placeholder="<?= $escaper->escapeHtmlAttr(__('Start scanning or search for products...')) ?>"
+            class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input bg-c-highlight"
+            wire:model.defer="skuInput"
+        />
+      </div>
+    <?php endif; ?>
+  <?php endif; ?>
+        
 <script>
 
   const autoadd = document.querySelector('input[id="z1-auto-add"]');
