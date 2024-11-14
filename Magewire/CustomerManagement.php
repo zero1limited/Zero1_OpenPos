@@ -85,24 +85,17 @@ class CustomerManagement extends Component
      */
     public function isCurrentCustomerGuest()
     {
-        $guestCustomer = $this->openPosSessionHelper->getCustomerForAdminUser();
-        if($guestCustomer->getEmail() === $this->getCurrentCustomerEmail()) {
-            return true;
-        }
-
-        return false;
+        return $this->customerSession->isLoggedIn() === false;
     }
 
     /**
-     * Switch to guest customer.
+     * Switch to guest.
      * 
      * @return void
      */
     public function changeToGuest()
-    {
-        $customer = $this->openPosSessionHelper->getCustomerForAdminUser();
-        
-        $this->customerSession->setCustomerDataAsLoggedIn($customer);
+    {        
+        $this->customerSession->setCustomerId(null);
         $this->redirect('/');
         $this->dispatchSuccessMessage('Successfully switched to guest customer.');
     }

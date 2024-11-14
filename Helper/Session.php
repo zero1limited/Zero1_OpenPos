@@ -8,15 +8,12 @@ use Zero1\OpenPos\Helper\Data as PosHelper;
 use Zero1\OpenPos\Model\TillSessionFactory;
 use Zero1\OpenPos\Api\TillSessionRepositoryInterface;
 use Zero1\OpenPos\Model\ResourceModel\TillSession\CollectionFactory as TillSessionCollectionFactory;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\User\Model\User;
-use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class Session extends AbstractHelper
@@ -40,16 +37,6 @@ class Session extends AbstractHelper
      * @var TillSessionCollectionFactory
      */
     protected $tillSessionCollectionFactory;
-
-    /**
-     * @var CustomerInterfaceFactory
-     */
-    protected $customerFactory;
-
-    /**
-     * @var CustomerRepositoryInterface
-     */
-    protected $customerRepository;
 
     /**
      * @var CheckoutSession
@@ -82,25 +69,17 @@ class Session extends AbstractHelper
     protected $user;
 
     /**
-     * @var EncryptorInterface
-     */
-    protected $encryptor;
-
-    /**
      * @param Context $context
      * @param PosHelper $posHelper
      * @param TillSessionFactory $tillSessionFactory
      * @param TillSessionRepositoryInterface $tillSessionRepository
      * @param TillSessionCollectionFactory $tillSessionCollectionFactory
-     * @param CustomerInterfaceFactory $customerFactory
-     * @param CustomerRepositoryInterface $customerRepository
      * @param CheckoutSession $checkoutSession
      * @param QuoteManagement $quoteManagement
      * @param CartRepositoryInterface $quoteRepository
      * @param SessionManagerInterface $sessionManager
      * @param MessageManager $messageManager
      * @param User $user
-     * @param EncryptorInterface
      */
     public function __construct(
         Context $context,
@@ -108,29 +87,23 @@ class Session extends AbstractHelper
         TillSessionFactory $tillSessionFactory,
         TillSessionRepositoryInterface $tillSessionRepository,
         TillSessionCollectionFactory $tillSessionCollectionFactory,
-        CustomerInterfaceFactory $customerFactory,
-        CustomerRepositoryInterface $customerRepository,
         CheckoutSession $checkoutSession,
         QuoteManagement $quoteManagement,
         CartRepositoryInterface $quoteRepository,
         SessionManagerInterface $sessionManager,
         MessageManager $messageManager,
-        User $user,
-        EncryptorInterface $encryptor
+        User $user
     ) {
         $this->posHelper = $posHelper;
         $this->tillSessionFactory = $tillSessionFactory;
         $this->tillSessionRepository = $tillSessionRepository;
         $this->tillSessionCollectionFactory = $tillSessionCollectionFactory;
-        $this->customerFactory = $customerFactory;
-        $this->customerRepository = $customerRepository;
         $this->checkoutSession = $checkoutSession;
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
         $this->sessionManager = $sessionManager;
         $this->messageManager = $messageManager;
         $this->user = $user;
-        $this->encryptor = $encryptor;
         parent::__construct($context);
     }
 
@@ -222,11 +195,25 @@ class Session extends AbstractHelper
             $this->messageManager->addWarningMessage('Notice: you were logged into another till and have been logged out automatically.');
         }
 
+        // Check till session can be made with current license
+        // TODO: Create a proper system for retrieving and verifying this
+        $tillSessionCount = 1;
+        $maxTillSessionCount = 1;
+
+        $tillSessionCollection = $this->tillSessionCollectionFactory->create();
+        $tillSessionCollection->addFieldToFilter('is_active', ['eq' => 1]);
+        foreach($tillSessionCollection as $existingTillSession) {
+            $tillSessionCount++;
+            if($tillSessionCount > $maxTillSessionCount) {
+                $this->tillSessionRepository->delete($existingTillSession);
+                $this->messageManager->addWarningMessage('Notice: The maximum amount of concurrent till sessions with your current OpenPOS license is: '.$maxTillSessionCount.'. You have logged out: '.$existingTillSession->getAdminUser());
+            }
+        }
+
         $currentQuote = $this->checkoutSession->getQuote();
         $this->quoteRepository->delete($currentQuote);
 
-        $customer = $this->getCustomerForAdminUser($adminUser);
-		$newQuoteId = $this->quoteManagement->createEmptyCartForCustomer($customer->getId());
+        $newQuoteId = $this->quoteManagement->createEmptyCart();
 		$newQuote = $this->quoteRepository->get($newQuoteId);
 		$newQuote->setIsActive(true);
 		$this->quoteRepository->save($newQuote);
@@ -241,47 +228,5 @@ class Session extends AbstractHelper
         $this->setTillSessionId($tillSession->getId());
 
         return $tillSession;
-    }
-    
-    /**
-     * Return guest customer assigned to admin / till user
-     * 
-     * @return \Magento\Customer\Api\Data\CustomerInterface
-     */
-    public function getCustomerForAdminUser($adminUser = null)
-    {
-        if(!$adminUser) {
-            $tillSession = $this->getTillSession();
-            $adminUser = $this->user->loadByUsername($tillSession->getAdminUser());
-        }
-
-        // TODO build string better
-        $customerEmail = 'openpos-'.$adminUser->getUsername().'@'.$this->posHelper->getEmailDomain();
-
-        try {
-            $customer = $this->customerRepository->get($customerEmail, $this->posHelper->getPosStore()->getWebsiteId());
-        } catch(NoSuchEntityException $e) {
-            $customer = $this->createCustomerForAdminUser($adminUser, $customerEmail);
-        }
-
-        return $customer;
-    }
-
-    /**
-     * Create guest customer for admin / till user
-     * 
-     * @return \Magento\Customer\Api\Data\CustomerInterface
-     */
-    protected function createCustomerForAdminUser($adminUser, $email)
-    {
-        $customer = $this->customerFactory->create();
-        $customer->setWebsiteId($this->posHelper->getPosStore()->getWebsiteId());
-
-        $customer->setEmail($email);
-        $customer->setFirstname($adminUser->getFirstname());
-        $customer->setLastname($adminUser->getLastname());
-
-        $password = $this->encryptor->getHash(substr(str_shuffle(MD5(microtime())), 0, 10), true);
-        return $this->customerRepository->save($customer, $password);
     }
 }

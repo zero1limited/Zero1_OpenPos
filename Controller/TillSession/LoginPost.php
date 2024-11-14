@@ -123,19 +123,9 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                         }
                     }
 
-                    // Admin credentials correct, now login as customer
+                    // Admin credentials correct
                     $adminUser = $this->auth->getUser();
-                    $customer = $this->openPosSessionHelper->getCustomerForAdminUser($adminUser);
                     $this->auth->logout();
-
-                    $this->customerSession->setCustomerDataAsLoggedIn($customer);
-
-                    if(!$customer) {
-                        $this->messageManager->addErrorMessage(
-                            __('An error occurred logging into the till, please contact support.')
-                        );
-                        throw new \Exception();
-                    }
 
                     try {
                         $this->openPosSessionHelper->startTillSession($adminUser);
@@ -150,7 +140,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                     $resultRedirect->setUrl($this->_redirect->success('/'));
                     return $resultRedirect;
                 } catch (\Exception $e) {
-                    $resultRedirect->setUrl($this->_redirect->error('openpos/customer/login'));
+                    $resultRedirect->setUrl($this->_redirect->error('openpos/tillsession/login'));
                     return $resultRedirect;
                 }
             } else {
