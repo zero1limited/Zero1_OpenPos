@@ -1,30 +1,43 @@
-<div id="openpos-customermanagement" class="my-4 mx-6 px-1 hidden">
-    
-    <?php if($magewire->isCurrentCustomerGuest()): ?>
-        <div class="bg-c-highlight p-4 border">
-            <p>You are currently serving a guest customer without an account.</p>
-        </div>
-    <?php else: ?>
-        <div class="bg-c-highlight p-4 border">
-            <p>You are currently serving: <span class="font-bold"><?= $magewire->getCurrentCustomerName().' ('.$magewire->getCurrentCustomerEmail().')'?></span></p>
-        </div>
-    <?php endif; ?>
+<?php 
+use Hyva\Theme\ViewModel\HeroiconsSolid;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+/** @var HeroiconsSolid $heroicons */
+$heroiconsSolid = $viewModels->require(HeroiconsSolid::class);
+$heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
+?>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="flex items-center pt-4">
-            <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToGuest">Revert to walkin / guest mode</button>
-        </div>
-        <div class="items-center pt-4">
-            <input type="email" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Switch to customer - Enter customer's email address" wire:model.debounce.2000ms="emailInput" />
+<div id="openpos-customermanagement" class="my-4 mx-6 px-1">
+    <!-- <div class="customer customer flex items-center w-full" x-data="{ showLoginForm: false }"> -->
+    <div class="customer customer" x-data="{ showLoginForm: false }">
+        
+        <?php if($magewire->isCurrentCustomerGuest()): ?>
 
-            <?php if($magewire->foundCustomer !== null): ?>
-                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch to <?= $magewire->foundCustomer ?></button>
-            <?php else: ?>
-                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch</button>
-            <?php endif; ?>
-        </div>
+            <div class="flex items-center w-full">
+                <span class="mr-2">
+                    <?= $heroiconsOutline->userHtml('', 30, 30, ['aria-hidden' => 'true']); ?>
+                </span>
+                <span class="text-lg font-bold"><?php echo __('Guest'); ?></span>
+                <span class="ml-auto underline" x-on:click="showLoginForm = ! showLoginForm"><?php echo __('Login as customer'); ?></span>
+            </div>
+
+            <div id="loginform" class="mt-4" x-show="showLoginForm">
+                <input type="email" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Enter customer's email address" wire:model.debounce.2000ms="emailInput" />
+                <?php if($magewire->foundCustomer !== null): ?>
+                    <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch to <?= $magewire->foundCustomer ?></button>
+                <?php else: ?>
+                    <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch</button>
+                <?php endif; ?>
+            </div>
+        <?php else: ?>
+            <div class="flex items-center w-full">
+                <span class="mr-2">
+                    <?= $heroiconsSolid->userHtml('', 30, 30, ['aria-hidden' => 'true']); ?>
+                </span>
+                <span class="text-lg font-bold"><?php echo __($magewire->getCurrentCustomerName() ?? 'Unknown customer'); ?></span>
+                <span class="ml-auto underline" wire:click="changeToGuest"><?php echo __('Guest mode'); ?></span>
+            </div>
+        <?php endif; ?>
     </div>
-
 </div>
 
 <style>
