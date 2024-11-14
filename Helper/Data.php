@@ -1,4 +1,5 @@
 <?php
+
 namespace Zero1\OpenPos\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -8,7 +9,6 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\Encryption\EncryptorInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 
 class Data extends AbstractHelper
 {
@@ -16,7 +16,6 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_TFA_ENABLE = 'zero1_pos/general/tfa_enable';
     const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
     const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
-    const CONFIG_PATH_GENERAL_EMAIL_DOMAIN = 'zero1_pos/general/email_domain';
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
     const CONFIG_PATH_GENERAL_TILL_USERS = 'zero1_pos/general/till_users';
@@ -115,14 +114,6 @@ class Data extends AbstractHelper
     public function getRedirectStoreId()
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_REDIRECT_STORE);
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmailDomain()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_EMAIL_DOMAIN);
     }
 
     /**

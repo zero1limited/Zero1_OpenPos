@@ -23,10 +23,6 @@
                     <label>POS Store</label>
                     <source_model>Magento\Config\Model\Config\Source\Store</source_model>
                 </field>
-                <field id="email_domain" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Till User Email Domain</label>
-                    <comment>Magento customer accounts will be created for till users using this domain. Example: zero1.co.uk</comment>
-                </field>
                 <field id="bypass_stock" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Bypass stock checks</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>

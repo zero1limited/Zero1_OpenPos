@@ -45,13 +45,8 @@ class ConfigSavedObserver implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if(count($this->posHelper->getTillUsers()) > 3) {
-            $this->configWriter->save(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, null);
-            $this->messageManager->addErrorMessage('OpenPOS community allows a maximum of 3 till users. To continue using OpenPOS please re-configure.');
-        }
-
         $changedPaths = $observer->getEvent()->getData('changed_paths');
-        if(in_array(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths) && count($this->posHelper->getTillUsers()) <= 3) {
+        if(in_array(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
             $this->messageManager->addNoticeMessage('OpenPOS till users have been changed. Cache must be flushed before tills will allow logon.');
         }
 
