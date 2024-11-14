@@ -7,7 +7,9 @@ $helper = $this->helper('Zero1\OpenPos\Helper\Data');
 <!-- form -->
 
 <div class="block block-customer-login p-8 openpos-login-wrapper bg-white mx-auto">
-    <img src="https://miami.zero1.co.uk/static/version1727356620/frontend/z1/miami_demo/en_GB/images/logo.svg" width="400px" height="20px" class="mx-auto openpos-login-logo" />
+
+    <?= $block->getChildHtml('openpos.tillsession.login.logo') ?>
+
     <p class="mb-4"><?= $block->escapeHtml(__('To login to this till, please enter your Magento Admin user credentials')) ?></p>
     <form class="form form-login"
             action="<?= $block->escapeUrl($block->getData('form_post')) ?>"

@@ -12,6 +12,7 @@
                 <arguments>
                     <argument name="form_post" xsi:type="string">/openpos/tillsession/loginpost</argument>
                 </arguments>
+                <block class="Magento\Theme\Block\Html\Header\Logo" name="openpos.tillsession.login.logo" template="Zero1_OpenPos::html/header/logo.phtml"/>
             </block>
         </referenceContainer>
     </body>
