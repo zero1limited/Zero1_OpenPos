@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Helper;
 
@@ -13,6 +14,8 @@ use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
+use Magento\User\Model\UserFactory;
+use Zero1\OpenPos\Api\Data\TillSessionInterface;
 use Magento\User\Model\User;
 use Magento\Framework\Exception\NoSuchEntityException;
 
@@ -64,9 +67,9 @@ class Session extends AbstractHelper
     protected $messageManager;
 
     /**
-     * @var User
+     * @var UserFactory
      */
-    protected $user;
+    protected $userFactory;
 
     /**
      * @param Context $context
@@ -79,7 +82,7 @@ class Session extends AbstractHelper
      * @param CartRepositoryInterface $quoteRepository
      * @param SessionManagerInterface $sessionManager
      * @param MessageManager $messageManager
-     * @param User $user
+     * @param UserFactory $userFactory
      */
     public function __construct(
         Context $context,
@@ -92,7 +95,7 @@ class Session extends AbstractHelper
         CartRepositoryInterface $quoteRepository,
         SessionManagerInterface $sessionManager,
         MessageManager $messageManager,
-        User $user
+        UserFactory $userFactory
     ) {
         $this->posHelper = $posHelper;
         $this->tillSessionFactory = $tillSessionFactory;
@@ -103,7 +106,7 @@ class Session extends AbstractHelper
         $this->quoteRepository = $quoteRepository;
         $this->sessionManager = $sessionManager;
         $this->messageManager = $messageManager;
-        $this->user = $user;
+        $this->userFactory = $userFactory;
         parent::__construct($context);
     }
 
@@ -133,7 +136,7 @@ class Session extends AbstractHelper
     /**
      * Return till session object
      * 
-     * @return \Zero1\OpenPos\Api\Data\TillSessionInterface
+     * @return TillSessionInterface
      */
     public function getTillSession()
     {
@@ -169,7 +172,7 @@ class Session extends AbstractHelper
     /**
      * Start a still session
      * 
-     * @return \Zero1\OpenPos\Api\Data\TillSessionInterface
+     * @return TillSessionInterface
      */
     public function startTillSession($adminUser)
     {
@@ -228,5 +231,27 @@ class Session extends AbstractHelper
         $this->setTillSessionId($tillSession->getId());
 
         return $tillSession;
+    }
+
+    /**
+     * Return admin user from a till session
+     * 
+     * @param TillSessionInterface|null $tillSession
+     * @return User|null
+     */
+    public function getAdminUserFromTillSession(TillSessionInterface $tillSession = null): ?User
+    {
+        if(!$tillSession) {
+            $tillSession = $this->getTillSession();
+        }
+
+        $adminUser = $this->userFactory->create();
+        $adminUser->loadByUsername($tillSession->getAdminUser());
+
+        if($adminUser->getId()) {
+            return $adminUser;
+        }
+
+        return null;
     }
 }
