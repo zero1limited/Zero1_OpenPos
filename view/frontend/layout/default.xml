@@ -14,12 +14,14 @@
             </block>
         </referenceContainer>
 
-        <referenceBlock name="cart-drawer">
+        <!-- <referenceBlock name="cart-drawer"> -->
+        <referenceBlock name="footer">
             <block class="Magento\Framework\View\Element\Template" name="openpos.customermanagement" template="Zero1_OpenPos::html/header/customermanagement.phtml" cacheable="false">
                 <arguments>
                     <argument name="magewire" xsi:type="object">Zero1\OpenPos\Magewire\CustomerManagement</argument>
                 </arguments>
             </block>
         </referenceBlock>
+
     </body>
 </page>
