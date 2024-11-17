@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Block;
 
@@ -74,7 +75,7 @@ class Receipt extends Template
      *
      * @return string
      */
-    protected function _toHtml()
+    protected function _toHtml(): string
     {
         if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
             return '';
@@ -86,23 +87,23 @@ class Receipt extends Template
     /**
      * @return string
      */
-    public function getReceiptHeaderContents()
+    public function getReceiptHeaderContents(): string
     {
-        return $this->posHelper->getReceiptHeader();
+        return $this->posHelper->getReceiptHeader() ?? '';
     }
 
     /**
      * @return string
      */
-    public function getReceiptFooterContents()
+    public function getReceiptFooterContents(): string
     {
-        return $this->posHelper->getReceiptFooter();
+        return $this->posHelper->getReceiptFooter() ?? '';
     }
 
     /**
      * @return string
      */
-    public function getReceiptFooterQrLinkImgSrc()
+    public function getReceiptFooterQrLinkImgSrc(): string
     {
         if(!$this->posHelper->getReceiptFooterQrLink()) {
             return '';
@@ -116,7 +117,7 @@ class Receipt extends Template
      *
      * @return string
      */
-    public function getLogoUrl()
+    public function getLogoUrl(): string
     {
         return $this->logoBlock->getLogoSrc();
     }
@@ -124,7 +125,7 @@ class Receipt extends Template
     /**
      * @return string
      */
-    public function getOrderIncrementId()
+    public function getOrderIncrementId(): string
     {
         return $this->getOrder()->getIncrementId();
     }
@@ -132,7 +133,7 @@ class Receipt extends Template
     /**
      * @return string
      */
-    public function getOrderDate()
+    public function getOrderDate(): string
     {
         return $this->getOrder()->getCreatedAt();
     }
@@ -140,7 +141,7 @@ class Receipt extends Template
     /**
      * @return string
      */
-    public function getOrderPayment()
+    public function getOrderPayment(): string
     {
         $payment = $this->getOrder()->getPayment()->getMethod();
 
@@ -159,9 +160,9 @@ class Receipt extends Template
     }
 
     /**
-     * @return float|string
+     * @return string
      */
-    public function getOrderGrandTotal()
+    public function getOrderGrandTotal(): string
     {
         return $this->pricingHelper->currency($this->getOrder()->getGrandTotal(), true, false);
     }
@@ -169,7 +170,7 @@ class Receipt extends Template
     /**
      * @return array
      */
-    public function getOrderItems()
+    public function getOrderItems(): array
     {
         return $this->getOrder()->getAllVisibleItems();
     }
@@ -177,7 +178,7 @@ class Receipt extends Template
     /**
      * @return Order
      */
-    protected function getOrder()
+    protected function getOrder(): Order
     {
         if(!$this->order) {
             $this->order = $this->checkoutSession->getLastRealOrder();

@@ -51,7 +51,7 @@ class SecondaryDisplay extends Component
      * 
      * @return void
      */
-    public function login()
+    public function login(): void
     {
         try {
             $tillSession = $this->tillSessionRepository->getById($this->tillSessionId);
@@ -78,7 +78,7 @@ class SecondaryDisplay extends Component
      * 
      * @return void
      */
-    public function fetch()
+    public function fetch(): void
     {
         $quote = $this->quoteRepository->get($this->quoteId);
         // Get the last visible item

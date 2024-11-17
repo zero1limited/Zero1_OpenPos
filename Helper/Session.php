@@ -113,7 +113,7 @@ class Session extends AbstractHelper
     /**
      * Return till session ID
      * 
-     * @return int
+     * @return int|null
      */
     public function getTillSessionId()
     {
@@ -123,22 +123,21 @@ class Session extends AbstractHelper
     /**
      * Set till session ID
      * 
-     * @return $this
+     * @param int $sessionId
+     * @return void
      */
-    public function setTillSessionId($sessionId)
+    public function setTillSessionId($sessionId): void
     {
         $this->sessionManager->start();
         $this->sessionManager->setOpenPosTillSessionId($sessionId);
-
-        return $this;
     }
 
     /**
      * Return till session object
      * 
-     * @return TillSessionInterface
+     * @return TillSessionInterface|null
      */
-    public function getTillSession()
+    public function getTillSession(): ?TillSessionInterface
     {
         $tillSessionId = $this->getTillSessionId();
         try {
@@ -155,7 +154,7 @@ class Session extends AbstractHelper
      * 
      * @return void
      */
-    public function destroySession()
+    public function destroySession(): void
     {
         if($this->getTillSessionId()) {
             try {
@@ -172,9 +171,10 @@ class Session extends AbstractHelper
     /**
      * Start a still session
      * 
+     * @param User $adminUser
      * @return TillSessionInterface
      */
-    public function startTillSession($adminUser)
+    public function startTillSession(User $adminUser): TillSessionInterface
     {
         if($this->getTillSessionId()) {
             try {

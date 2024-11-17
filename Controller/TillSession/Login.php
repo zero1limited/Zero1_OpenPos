@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Controller\TillSession;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Magento\Framework\View\Result\Page;
 
 class Login implements HttpGetActionInterface
 {
@@ -31,9 +33,9 @@ class Login implements HttpGetActionInterface
     }
 
     /**
-     * @return \Magento\Framework\View\Result\Page
+     * @return Page
      */
-    public function execute()
+    public function execute(): Page
     {
         $this->openPosSessionHelper->destroySession();
         

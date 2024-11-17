@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
@@ -26,7 +27,7 @@ class VirtualQuoteSetter
      * @param bool $result
      * @return bool
      */
-    public function afterIsVirtual(Quote $quote, $result)
+    public function afterIsVirtual(Quote $quote, bool $result): bool
     {
         if($this->posHelper->currentlyOnPosStore()) {
             return true;

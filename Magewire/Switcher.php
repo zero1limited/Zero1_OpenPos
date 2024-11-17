@@ -28,7 +28,7 @@ class Switcher extends Component
     /**
      * @return array|null
      */
-    public function getBlocks()
+    public function getBlocks(): ?array
     {
         return $this->blocks;
     }
@@ -36,9 +36,10 @@ class Switcher extends Component
     /**
      * Toggle selected data entry mode
      * 
+     * @param string $selectedBlock
      * @return void
      */
-    public function toggle($selectedBlock)
+    public function toggle(string $selectedBlock): void
     {
         foreach($this->blocks as $mode => $block) {
             if($block == $selectedBlock) {

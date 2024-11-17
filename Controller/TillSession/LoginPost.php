@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Controller\TillSession;
 
@@ -68,9 +69,11 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     }
 
     /**
+     * Login to OpenPOS using provided admin credentials
+     * 
      * @return Redirect
      */
-    public function execute()
+    public function execute() : Redirect
     {
         $resultRedirect = $this->resultRedirectFactory->create();
         if($this->getRequest()->isPost()) {
@@ -145,7 +148,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                 }
             } else {
                 $this->messageManager->addErrorMessage(__('A usernane and a password are required to login to this till.'));
-                $resultRedirect->setUrl($this->_redirect->error('openpos/customer/login'));
+                $resultRedirect->setUrl($this->_redirect->error('openpos/tillsession/login'));
                 return $resultRedirect;
             }
         }
@@ -159,7 +162,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     ): ?InvalidRequestException {
         /** @var Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
-        $resultRedirect->setPath('openpos/customer/login');
+        $resultRedirect->setPath('openpos/tillsession/login');
 
         return new InvalidRequestException(
             $resultRedirect,

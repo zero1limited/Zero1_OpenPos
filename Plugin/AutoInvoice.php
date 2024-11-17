@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
@@ -9,6 +10,7 @@ use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Framework\DB\Transaction;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Api\OrderManagementInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 class AutoInvoice
 {
@@ -68,9 +70,10 @@ class AutoInvoice
 
     /**
      * @param OrderManagementInterface $orderManagement
-     * @param Observer $observer
+     * @param OrderInterface $order
+     * @return OrderInterface
      */
-    public function afterPlace(OrderManagementInterface $orderManagement, $order)
+    public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
         if($this->posHelper->isPosOrder($order)) {
             if ($order->canInvoice()) {

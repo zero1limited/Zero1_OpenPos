@@ -7,6 +7,8 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Magento\Quote\Model\Quote\Address;
+use Magento\User\Model\User;
 
 class SetQuoteAddressObserver implements ObserverInterface
 {
@@ -57,9 +59,10 @@ class SetQuoteAddressObserver implements ObserverInterface
     }
 
     /**
-     * @param \Magento\Quote\Model\Quote\Address $address
+     * @param Address $address
+     * @param User $adminUser
      */
-    protected function setDefaultAddress($address, $adminUser): void
+    protected function setDefaultAddress(Address $address, User $adminUser): void
     {
         $address->setEmail($adminUser->getEmail());
         $address->setFirstname($adminUser->getFirstName());

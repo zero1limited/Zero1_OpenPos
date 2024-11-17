@@ -11,6 +11,7 @@ use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Magento\Framework\Validator\ValidatorChain;
 use Magento\Framework\Validator\EmailAddress;
+use Magento\Sales\Model\Order;
 
 class Receipt extends Component
 {
@@ -66,9 +67,9 @@ class Receipt extends Component
     }
 
     /**
-     * @return \Magento\Sales\Model\Order
+     * @return Order
      */
-    public function getOrder()
+    public function getOrder(): Order
     {
         return $this->checkoutSession->getLastRealOrder();
     }
@@ -79,7 +80,7 @@ class Receipt extends Component
      * 
      * @return void
      */
-    public function print()
+    public function print(): void
     {
         $this->printMode = true;
         $this->dispatchBrowserEvent('js-print');
@@ -90,7 +91,7 @@ class Receipt extends Component
      * 
      * @return void
      */
-    public function email()
+    public function email(): void
     {
         if (!ValidatorChain::is($this->emailInput, EmailAddress::class)) {
             $this->dispatchErrorMessage('Please enter a valid email address.');
@@ -114,7 +115,7 @@ class Receipt extends Component
      * 
      * @return void
      */
-    public function serveNewCustomer()
+    public function serveNewCustomer(): void
     {
         // TODO fix exception thrown when this is ran
         $customer = $this->openPosSessionHelper->getCustomerForAdminUser();
@@ -127,7 +128,7 @@ class Receipt extends Component
      * 
      * @return void
      */
-    public function newOrder()
+    public function newOrder(): void
     {
         $this->redirect('/');
     }

@@ -9,6 +9,8 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Framework\DataObject\Factory as ObjectFactory;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Catalog\Model\Product;
 
 class AutoAdd extends Component
 {
@@ -97,7 +99,7 @@ class AutoAdd extends Component
      *
      * @return void
      */
-    public function parseSkuInput()
+    public function parseSkuInput(): void
     {
         if($this->skuInput === ''){
             return;
@@ -158,10 +160,10 @@ class AutoAdd extends Component
 
     /**
      * Add a product to the quote
-     * @param \Magento\Catalog\Model\Product $product
-     * @return \Magento\Quote\Model\Quote\Item|string
+     * @param Product $product
+     * @return Item|null
      */
-    public function addProductToQuote($product)
+    public function addProductToQuote(Product $product): ?Item
     {
         try {
             $quote = $this->checkoutSession->getQuote();
@@ -187,6 +189,7 @@ class AutoAdd extends Component
             return $item;
         } catch(\Exception $e) {
             $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+            return null;
         }
     }
 

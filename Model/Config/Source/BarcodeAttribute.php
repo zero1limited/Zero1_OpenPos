@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Model\Config\Source;
 
@@ -25,7 +26,7 @@ class BarcodeAttribute implements \Magento\Framework\Option\ArrayInterface
      * 
      * @return array
      */
-    public function toOptionArray()
+    public function toOptionArray(): array
     {
         $values = array();
         $attributeCollection = $this->productAttributeCollectionFactory->create();

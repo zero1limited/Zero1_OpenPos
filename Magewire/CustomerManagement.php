@@ -65,7 +65,7 @@ class CustomerManagement extends Component
     /**
      * @return string
      */
-    public function getCurrentCustomerName()
+    public function getCurrentCustomerName(): string
     {
         return $this->customerSession->getCustomer()->getName();
     }
@@ -73,7 +73,7 @@ class CustomerManagement extends Component
     /**
      * @return string
      */
-    public function getCurrentCustomerEmail()
+    public function getCurrentCustomerEmail(): string
     {
         return $this->customerSession->getCustomer()->getEmail();
     }
@@ -83,7 +83,7 @@ class CustomerManagement extends Component
      * 
      * @return bool
      */
-    public function isCurrentCustomerGuest()
+    public function isCurrentCustomerGuest(): bool
     {
         return $this->customerSession->isLoggedIn() === false;
     }
@@ -93,7 +93,7 @@ class CustomerManagement extends Component
      * 
      * @return void
      */
-    public function changeToGuest()
+    public function changeToGuest(): void
     {        
         $this->customerSession->setCustomerId(null);
         $this->redirect('/');
@@ -105,7 +105,7 @@ class CustomerManagement extends Component
      * 
      * @return void
      */
-    public function changeToCustomer()
+    public function changeToCustomer(): void
     {
         if(!$this->emailValidator->isValid($this->emailInput)) {
             $this->dispatchErrorMessage('Email is not valid, cannot switch customer.');
@@ -129,7 +129,7 @@ class CustomerManagement extends Component
      * 
      * @return string
      */
-    public function updatedEmailInput(string $value)
+    public function updatedEmailInput(string $value): string
     {
         if($this->emailValidator->isValid($this->emailInput)) {
             try {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Model;
 
@@ -12,6 +13,7 @@ use Zero1\OpenPos\Api\Data\TillSessionInterface;
 use Zero1\OpenPos\Model\TillSessionFactory;
 use Zero1\OpenPos\Model\ResourceModel\TillSession;
 use Zero1\OpenPos\Model\ResourceModel\TillSession\CollectionFactory;
+use Magento\Framework\Api\SearchResultsInterface;
 
 class TillSessionRepository implements TillSessionRepositoryInterface
 {
@@ -58,7 +60,7 @@ class TillSessionRepository implements TillSessionRepositoryInterface
      *
      * @throws CouldNotSaveException
      */
-    public function save(TillSessionInterface $object)
+    public function save(TillSessionInterface $object): TillSessionInterface
     {
         try {
             $this->objectResourceModel->save($object);
@@ -71,7 +73,7 @@ class TillSessionRepository implements TillSessionRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getById($id)
+    public function getById($id): TillSessionInterface
     {
         $object = $this->objectFactory->create();
         $this->objectResourceModel->load($object, $id);
@@ -84,7 +86,7 @@ class TillSessionRepository implements TillSessionRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function delete(TillSessionInterface $object)
+    public function delete(TillSessionInterface $object): bool
     {
         try {
             $this->objectResourceModel->delete($object);
@@ -97,7 +99,7 @@ class TillSessionRepository implements TillSessionRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function deleteById($id)
+    public function deleteById($id): bool
     {
         return $this->delete($this->getById($id));
     }
@@ -105,7 +107,7 @@ class TillSessionRepository implements TillSessionRepositoryInterface
     /**
      * @inheritDoc
      */
-    public function getList(SearchCriteriaInterface $criteria)
+    public function getList(SearchCriteriaInterface $criteria): SearchResultsInterface
     {
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);

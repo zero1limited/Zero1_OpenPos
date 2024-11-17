@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
@@ -25,8 +26,9 @@ class QuoteItemQuantityBypass
     /**
      * @param QuantityValidator $qtyValidator
      * @param Observer $observer
+     * @return void
      */
-    public function beforeValidate($qtyValidator, $observer)
+    public function beforeValidate(QuantityValidator $qtyValidator, Observer $observer): void
     {
         // TODO: Check if this is still required
 

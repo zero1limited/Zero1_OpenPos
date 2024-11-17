@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Observer;
 
@@ -43,7 +44,7 @@ class ConfigSavedObserver implements ObserverInterface
     /**
      * @return void
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         $changedPaths = $observer->getEvent()->getData('changed_paths');
         if(in_array(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {

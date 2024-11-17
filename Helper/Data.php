@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Helper;
 
@@ -9,13 +10,14 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 class Data extends AbstractHelper
 {
     const CONFIG_PATH_GENERAL_ENABLE = 'zero1_pos/general/enable';
     const CONFIG_PATH_GENERAL_TFA_ENABLE = 'zero1_pos/general/tfa_enable';
     const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
-    const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
     const CONFIG_PATH_GENERAL_TILL_USERS = 'zero1_pos/general/till_users';
@@ -77,9 +79,11 @@ class Data extends AbstractHelper
 
     /**
      * For OpenPOS extension use.
+     * 
+     * @param string $path
      * @return mixed
      */
-    public function getConfigValue($path)
+    public function getConfigValue(string $path)
     {
         return $this->scopeConfig->getValue('zero1_pos/'.$path);
     }
@@ -87,33 +91,29 @@ class Data extends AbstractHelper
     /**
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_ENABLE);
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_ENABLE);
     }
 
     /**
      * @return bool
      */
-    public function isTfaEnabled()
+    public function isTfaEnabled(): bool
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TFA_ENABLE);
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TFA_ENABLE);
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getPosStoreId()
+    public function getPosStoreId(): ?int
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_POS_STORE);
-    }
-
-    /**
-     * @return int
-     */
-    public function getRedirectStoreId()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_REDIRECT_STORE);
+        $storeId = $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_POS_STORE);
+        if($storeId) {
+            return (int)$storeId;
+        }
+        return null;
     }
 
     /**
@@ -121,19 +121,19 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function bypassStock()
+    public function bypassStock(): bool
     {
         if(!$this->currentlyOnPosStore()) {
             return false;
         }
 
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBarcodeAttribute()
+    public function getBarcodeAttribute(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE);
     }
@@ -141,71 +141,58 @@ class Data extends AbstractHelper
     /**
      * @return array
      */
-    public function getTillUsers()
+    public function getTillUsers(): array
     {
         return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TILL_USERS));
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptHeader()
+    public function getReceiptHeader(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptFooter()
+    public function getReceiptFooter(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptFooterQrLink()
+    public function getReceiptFooterQrLink(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER_QR_LINK);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPriceEditorBarcode()
+    public function getPriceEditorBarcode(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCustomProductBarcode()
+    public function getCustomProductBarcode(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE);
     }
 
     /**
-     * @return mixed
+     * @return StoreInterface|null
      */
-    public function getPosStore()
+    public function getPosStore(): ?StoreInterface
     {
         try {
             $storeId = $this->getPosStoreId();
-            return $this->storeManager->getStore($storeId);
-        } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRedirectStore()
-    {
-        try {
-            $storeId = $this->getRedirectStoreId();
             return $this->storeManager->getStore($storeId);
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
             return null;
@@ -217,7 +204,7 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function currentlyOnPosStore()
+    public function currentlyOnPosStore(): bool
     {
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
     }
@@ -225,10 +212,10 @@ class Data extends AbstractHelper
     /**
      * Check if an order is a POS order.
      * 
-     * @param \Magento\Sales\Api\Data\OrderInterface
+     * @param OrderInterface $order
      * @return bool
      */
-    public function isPosOrder($order)
+    public function isPosOrder(OrderInterface $order): bool
     {
         if($order->getStoreId() == $this->getPosStoreId() && strpos($order->getPayment()->getMethodInstance()->getCode(), 'pos') !== false) {
             return true;
