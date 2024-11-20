@@ -87,7 +87,7 @@ class AutoInvoice
                     $invoice->getOrder()
                 );
                 $transactionSave->save();
-                $this->invoiceSender->send($invoice);
+                // $this->invoiceSender->send($invoice);
 
                 $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
                 $order->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);
