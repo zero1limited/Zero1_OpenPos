@@ -1,8 +1,10 @@
 <div id="openpos-switcher" class="relative px-6 pl-0">
     <div id="tabs"></div>
+    
     <?php foreach($magewire->getBlocks() as $mode => $block): ?>
         <div class="flex justify-center">
             <button class="inline-flex py-4 px-6 btn btn-secondary text-sm w-full justify-center" wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
         </div>
     <?php endforeach; ?>
+
 </div>

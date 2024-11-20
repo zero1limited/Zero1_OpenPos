@@ -3,7 +3,6 @@
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_openpos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
     </type>
-
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_openpos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
     </type>
