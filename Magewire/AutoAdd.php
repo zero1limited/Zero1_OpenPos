@@ -109,14 +109,12 @@ class AutoAdd extends Component
             $this->priceEditorMode = true;
             $this->customProductMode = true;
             $this->showSkuField = false;
-            $this->dispatchNoticeMessage('Custom product mode has been enabled.');
             return;
         }
 
         if($this->skuInput == $this->posHelper->getPriceEditorBarcode() && $this->posHelper->getPriceEditorBarcode() != '') {
             $this->priceEditorMode = true;
             $this->skuInput = '';
-            $this->dispatchNoticeMessage('Price editor mode has been enabled.');
             return;
         }
 
@@ -149,13 +147,11 @@ class AutoAdd extends Component
 
         try {
             $item = $this->addProductToQuote($product);
-            $this->redirect('/checkout/cart/index/');
+            $this->redirect('/');
         } catch(\Exception $e) {
             $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
             return;
         }
-
-        $this->dispatchSuccessMessage($this->skuInput.' has been added to cart.');
     }
 
     /**

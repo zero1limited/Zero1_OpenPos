@@ -97,7 +97,6 @@ class CustomerManagement extends Component
     {        
         $this->customerSession->setCustomerId(null);
         $this->redirect('/');
-        $this->dispatchSuccessMessage('Successfully switched to guest customer.');
     }
 
     /**
@@ -121,7 +120,6 @@ class CustomerManagement extends Component
 
         $this->customerSession->setCustomerDataAsLoggedIn($customer);
         $this->redirect('/');
-        $this->dispatchSuccessMessage('Successfully switched to '.$customer->getEmail());
     }
 
     /**

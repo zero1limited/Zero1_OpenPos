@@ -109,27 +109,13 @@ class Receipt extends Component
     }
 
     /**
-     * Revert till session back to guest user and start new order.
-     * At the moment this doesn't work, Callum to look into.
-     * TODO: fix!
-     * 
-     * @return void
-     */
-    public function serveNewCustomer(): void
-    {
-        // TODO fix exception thrown when this is ran
-        $customer = $this->openPosSessionHelper->getCustomerForAdminUser();
-        $this->customerSession->setCustomerAsLoggedIn($customer);
-        $this->redirect('/');
-    }
-
-    /**
-     * Temporary method while in development to replace serveNewCustomer
+     * Start new order - log out of current customer and redirect to homepage.
      * 
      * @return void
      */
     public function newOrder(): void
     {
+        $this->customerSession->setCustomerId(null);
         $this->redirect('/');
     }
 }
