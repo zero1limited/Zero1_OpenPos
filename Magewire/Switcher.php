@@ -44,7 +44,6 @@ class Switcher extends Component
         foreach($this->blocks as $mode => $block) {
             if($block == $selectedBlock) {
                 $this->emitTo($block, '$set', 'isVisible', true);
-                $this->dispatchSuccessMessage('You are now in: '.$mode);
             } else {
                 $this->emitTo($block, '$set', 'isVisible', false);
             }
