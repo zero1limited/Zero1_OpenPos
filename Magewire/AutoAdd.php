@@ -56,7 +56,7 @@ class AutoAdd extends Component
     /**
      * @var string
      */
-    public $customPriceInput = 0;
+    public $customPriceInput = '';
 
     /**
      * @var bool

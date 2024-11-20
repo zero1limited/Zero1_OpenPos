@@ -1,25 +1,51 @@
-<div id="zero-1-hyva-pos-auto-add" class="relative w-full flex mt-6 px-6 mb-2">
+<div id="zero-1-hyva-pos-auto-add" class="relative w-full flex mt-6 px-6 mb-2 flex-col">
 
 <?php if($magewire->isVisible): ?>
         
-  <?php if($magewire->priceEditorMode): ?>
-    <div class="relative w-full flex">
-          <div class="w-full mb-4">
-            <span class="font-bold inline-block mb-2 w-full">Custom pricing</span>
-            <span class="inline-block mb-2 text-grey-800">Please enter your custom price below</span>
-            <input id="custom-price-input" wire:model.defer="customPriceInput" class="bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
-          </div>
-    </div>
-  <?php endif; ?>
-        
   <?php if($magewire->customProductMode): ?>
-    <div class="relative w-full flex">
+    <div class="relative w-full flex flex-col">
       <div class="w-full mb-4">
-        <span class="font-bold inline-block mb-4 w-full">Custom Product</span>
-        <input id="description-input" placeholder="Enter the name / description of your custom product..." wire:model.defer="descriptionInput" class="bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
-        <button class="btn mt-4 c-secondary-cta" wire:click="parseSkuInput">Add</button>
+        <span class="font-bold inline-block mb-4 w-full"><?php echo __('Add A Custom Product'); ?></span>
+        <input id="description-input" placeholder="Name / description..." wire:model.defer="descriptionInput" class="bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
+        <input id="custom-price-input" wire:model.defer="customPriceInput" type="number" placeholder="Price..." class="mt-4 bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
+        <button class="btn mt-4 c-secondary-cta" wire:click="parseSkuInput"><?php echo __('Add'); ?></button>
+      </div>
+      <div class="w-full flex">
+        <span class="cancel underline p-6 w-full text-center text-sm"><?php echo __('Cancel'); ?></span>
       </div>
     </div>
+  <?php endif; ?>
+  
+  <?php if($magewire->priceEditorMode): ?>
+    <div class="relative w-full flex flex-col">
+        <div class="w-full mb-4">
+          <span class="font-bold inline-block mb-2 w-full"><?php echo __('Custom Pricing'); ?></span>
+          <span class="inline-block text-grey-800"><?php echo __('Enter a custom price below of the product you are about to scan'); ?></span>
+          <input id="custom-price-input" wire:model.defer="customPriceInput" type="number" placeholder="Price..." class="mt-4 bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
+          <span class="cp-message-wrapper" wire:ignore >
+            <span class="inline-block text-grey-800 cp-message mt-4 hidden"><?php echo __('Now scan a product and it will be added to the basket at your custom price'); ?></span>
+          </span>
+        </div>
+        <div class="w-full flex">
+          <span class="cancel underline p-6 w-full text-center text-sm"><?php echo __('Cancel'); ?></span>
+        </div>
+
+        <?php // Focus back on regular field and then hidden ?>
+        <script>
+          const customPriceInput = document.getElementById("custom-price-input");
+          const z1AutoAddInput = document.getElementById("z1-auto-add");
+          const cpMessage = document.querySelector(".cp-message");
+
+          if (customPriceInput && z1AutoAddInput && cpMessage) {
+            customPriceInput.addEventListener("blur", () => {
+              z1AutoAddInput.focus();
+              cpMessage.classList.remove("hidden");
+            });
+          }
+        </script>
+
+    </div>
+    <style>#z1-auto-add {opacity: 0;}</style>
   <?php endif; ?>
       
   <?php // Don't show regular search field if in other modes ?>
