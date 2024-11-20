@@ -147,7 +147,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                     return $resultRedirect;
                 }
             } else {
-                $this->messageManager->addErrorMessage(__('A usernane and a password are required to login to this till.'));
+                $this->messageManager->addErrorMessage(__('A username and a password are required to login to this till.'));
                 $resultRedirect->setUrl($this->_redirect->error('openpos/tillsession/login'));
                 return $resultRedirect;
             }

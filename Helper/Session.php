@@ -195,7 +195,6 @@ class Session extends AbstractHelper
         $tillSessionCollection->addFieldToFilter('admin_user', ['eq' => $adminUser->getUserName()]);
         foreach($tillSessionCollection as $existingTillSession) {
             $this->tillSessionRepository->delete($existingTillSession);
-            $this->messageManager->addWarningMessage('Notice: you were logged into another till and have been logged out automatically.');
         }
 
         // Check till session can be made with current license
