@@ -1,10 +1,6 @@
 <div id="zero-1-hyva-pos-auto-add" class="relative w-full flex px-6 flex-col <?= !$magewire->isVisible ? 'hidden' : '' ?>">
     <?php if ($magewire->isVisible): ?>
-        <style>
-            .switcher-button-openposautoadd {
-                display: none;
-            }
-        </style>
+        <style>.switcher-button-openposautoadd {display: none;}</style>
 
         <?php if ($magewire->customProductMode): ?>
             <div class="relative w-full flex flex-col">
@@ -18,6 +14,7 @@
                     <span class="cancel underline p-6 w-full text-center text-sm" wire:click="resetInput"><?php echo __('Cancel'); ?></span>
                 </div>
             </div>
+            <style>#openpos-switcher {display: none;}</style>
         <?php endif; ?>
 
         <?php if ($magewire->priceEditorMode): ?>
@@ -27,7 +24,7 @@
                     <span class="inline-block text-grey-800"><?php echo __('Enter a custom price below of the product you are about to scan'); ?></span>
                     <input id="custom-price-input" wire:model.defer="customPriceInput" type="number" placeholder="Price..." class="mt-4 bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
                     <span class="cp-message-wrapper" wire:ignore>
-                        <span class="inline-block text-grey-800 cp-message mt-4 hidden"><?php echo __('Now scan a product and it will be added to the basket at your custom price'); ?></span>
+                        <span class="inline-block text-grey-800 cp-message mt-4 hidden"><?php echo __('Now scan a product and it will be added to the cart at your custom price'); ?></span>
                     </span>
                 </div>
                 <div class="w-full flex">
@@ -49,11 +46,7 @@
                     }
                 </script>
             </div>
-            <style>
-                #z1-auto-add {
-                    opacity: 0;
-                }
-            </style>
+            <style>#z1-auto-add {opacity: 0;} #openpos-switcher {display: none;}</style>
         <?php endif; ?>
 
         <?php // Don't show regular search field if in other modes 
@@ -69,11 +62,6 @@
                         class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input bg-c-highlight"
                         wire:model.defer="skuInput" />
                     <script>
-                        const autoadd = document.querySelector('input[id="z1-auto-add"]');
-                        autoadd.addEventListener("blur", (event) => {
-                            document.getElementById("z1-auto-add").clear();
-                            document.getElementById("z1-auto-add").focus();
-                        });
                         document.getElementById("z1-auto-add").focus();
                     </script>
 
