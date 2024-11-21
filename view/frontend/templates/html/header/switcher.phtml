@@ -2,7 +2,7 @@
     <div id="tabs"></div>
     
     <?php foreach($magewire->getBlocks() as $mode => $block): ?>
-        <div class="flex justify-center">
+        <div class="flex justify-center switcher-button-<?php echo str_replace('.','',$block); ?>">
             <button class="inline-flex py-4 px-6 btn btn-secondary text-sm w-full justify-center" wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
         </div>
     <?php endforeach; ?>
