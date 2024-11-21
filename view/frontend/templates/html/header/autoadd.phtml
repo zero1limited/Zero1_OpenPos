@@ -15,7 +15,7 @@
                     <button class="btn mt-4 c-secondary-cta" wire:click="parseSkuInput"><?php echo __('Add'); ?></button>
                 </div>
                 <div class="w-full flex">
-                    <span class="cancel underline p-6 w-full text-center text-sm"><?php echo __('Cancel'); ?></span>
+                    <span class="cancel underline p-6 w-full text-center text-sm" wire:click="resetInput"><?php echo __('Cancel'); ?></span>
                 </div>
             </div>
         <?php endif; ?>
@@ -31,7 +31,7 @@
                     </span>
                 </div>
                 <div class="w-full flex">
-                    <span class="cancel underline p-6 w-full text-center text-sm"><?php echo __('Cancel'); ?></span>
+                    <span class="cancel underline p-6 w-full text-center text-sm" wire:click="resetInput"><?php echo __('Cancel'); ?></span>
                 </div>
 
                 <?php // Focus back on regular field and then hidden 

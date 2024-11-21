@@ -106,13 +106,14 @@ class AutoAdd extends Component
         }
 
         if(!$this->customProductMode && $this->skuInput == $this->posHelper->getCustomProductBarcode() && $this->posHelper->getCustomProductBarcode() != '') {
-            $this->priceEditorMode = true;
+            $this->priceEditorMode = false;
             $this->customProductMode = true;
             $this->showSkuField = false;
             return;
         }
 
         if($this->skuInput == $this->posHelper->getPriceEditorBarcode() && $this->posHelper->getPriceEditorBarcode() != '') {
+            $this->customProductMode = false;
             $this->priceEditorMode = true;
             $this->skuInput = '';
             return;
@@ -141,7 +142,6 @@ class AutoAdd extends Component
 
         if($product->getTypeId() != \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
             $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
-            //$this->dispatchErrorMessage('The SKU you are trying to add isn\'t a simple product, so cannot be added to the cart.');
             return;
         }
 
@@ -149,7 +149,7 @@ class AutoAdd extends Component
             $item = $this->addProductToQuote($product);
             $this->redirect('/');
         } catch(\Exception $e) {
-            $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+            $this->dispatchErrorMessage(__('There was a problem adding this product to the cart.'));
             return;
         }
     }
@@ -184,9 +184,18 @@ class AutoAdd extends Component
 
             return $item;
         } catch(\Exception $e) {
-            $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+            $this->dispatchErrorMessage(__('There was a problem adding this product to the cart.'));
             return null;
         }
     }
 
+    /**
+     * Reset whole block / SKU input
+     * 
+     * @return void
+     */
+    public function resetInput(): void
+    {
+        $this->reset();
+    }
 }
