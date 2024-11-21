@@ -38,7 +38,6 @@
                 <field id="till_users" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Till users</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\AdminUser</source_model>
-                    <comment>OpenPOS community allows 3 till users.</comment>
                 </field>
             </group>
 

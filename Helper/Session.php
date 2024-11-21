@@ -169,7 +169,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Start a still session
+     * Start a till session
      * 
      * @param User $adminUser
      * @return TillSessionInterface

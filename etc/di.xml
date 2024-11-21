@@ -14,7 +14,7 @@
     <type name="Zero1\OpenPos\Magewire\Switcher">
         <arguments>
             <argument name="blocks" xsi:type="array">
-                <item name="Exit Returns" xsi:type="string">openpos.autoadd</item>
+                <item name="Go back" xsi:type="string">openpos.autoadd</item>
             </argument>
         </arguments>
     </type>
