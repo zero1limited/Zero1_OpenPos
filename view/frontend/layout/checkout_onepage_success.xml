@@ -10,5 +10,7 @@
                 <block class="Zero1\OpenPos\Block\Receipt" name="openpos.receipt.print" template="Zero1_OpenPos::receipt/print.phtml" />
             </block>
         </referenceContainer>
+
+        <referenceBlock name="checkout.registration" remove="true" />
     </body>
 </page>
