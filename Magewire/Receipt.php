@@ -67,6 +67,17 @@ class Receipt extends Component
     }
 
     /**
+     * @return void
+     */
+    public function boot(): void
+    {
+        // Prefill email input with customers email if logged in
+        if($this->customerSession->getCustomerId() && $this->emailInput === '') {
+            $this->emailInput = $this->customerSession->getCustomer()->getEmail();
+        }
+    }
+
+    /**
      * @return Order
      */
     public function getOrder(): Order
