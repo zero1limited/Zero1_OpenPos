@@ -48,7 +48,7 @@ class ConfigSavedObserver implements ObserverInterface
     {
         $changedPaths = $observer->getEvent()->getData('changed_paths');
         if(in_array(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
-            $this->messageManager->addNoticeMessage('OpenPOS till users have been changed. Cache must be flushed before tills will allow logon.');
+            $this->messageManager->addNoticeMessage(__('OpenPOS till users have been changed. Cache must be flushed before tills will allow logon.'));
         }
 
     }

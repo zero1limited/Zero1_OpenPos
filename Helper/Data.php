@@ -18,6 +18,7 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_ENABLE = 'zero1_pos/general/enable';
     const CONFIG_PATH_GENERAL_TFA_ENABLE = 'zero1_pos/general/tfa_enable';
     const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
+    const CONFIG_PATH_GENERAL_SESSION_LIFETIME = 'zero1_pos/general/session_lifetime';
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
     const CONFIG_PATH_GENERAL_TILL_USERS = 'zero1_pos/general/till_users';
@@ -114,6 +115,14 @@ class Data extends AbstractHelper
             return (int)$storeId;
         }
         return null;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSessionLifetime(): int
+    {
+        return (int)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_SESSION_LIFETIME);
     }
 
     /**

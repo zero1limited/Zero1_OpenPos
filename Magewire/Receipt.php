@@ -105,7 +105,7 @@ class Receipt extends Component
     public function email(): void
     {
         if (!ValidatorChain::is($this->emailInput, EmailAddress::class)) {
-            $this->dispatchErrorMessage('Please enter a valid email address.');
+            $this->dispatchErrorMessage(__('Please enter a valid email address.'));
             return;
         }
 

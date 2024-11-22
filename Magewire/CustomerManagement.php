@@ -107,14 +107,14 @@ class CustomerManagement extends Component
     public function changeToCustomer(): void
     {
         if(!$this->emailValidator->isValid($this->emailInput)) {
-            $this->dispatchErrorMessage('Email is not valid, cannot switch customer.');
+            $this->dispatchErrorMessage(__('Email is not valid, cannot switch customer.'));
             return;
         }
 
         try {
             $customer = $this->customerRepository->get($this->emailInput);
         } catch(NoSuchEntityException $e) {
-            $this->dispatchErrorMessage('Customer cannot be found, cannot switch customer.');
+            $this->dispatchErrorMessage(__('Customer cannot be found, cannot switch customer.'));
             return;
         }
 

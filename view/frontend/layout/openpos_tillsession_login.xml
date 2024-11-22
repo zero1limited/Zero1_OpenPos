@@ -8,7 +8,7 @@
             <referenceBlock name="header.container" remove="true"/>
             <referenceBlock name="footer-container" remove="true"/>
             <referenceBlock name="breadcrumbs" remove="true"/>
-            <block class="Magento\Framework\View\Element\Template" name="openpos.tillsession.login" template="Zero1_OpenPos::tillsession/login.phtml">
+            <block class="Magento\Framework\View\Element\Template" name="openpos.tillsession.login" template="Zero1_OpenPos::tillsession/login.phtml" cacheable="false">
                 <arguments>
                     <argument name="form_post" xsi:type="string">/openpos/tillsession/loginpost</argument>
                 </arguments>

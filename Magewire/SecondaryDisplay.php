@@ -57,12 +57,12 @@ class SecondaryDisplay extends Component
             $tillSession = $this->tillSessionRepository->getById($this->tillSessionId);
         } catch(\Exception $e) {
             $this->dispatchErrorMessage($e->getMessage());
-            $this->dispatchErrorMessage('Till session doesnt exist');
+            $this->dispatchErrorMessage(__('Till session doesnt exist'));
             return;
         }
 
         if($tillSession->getSecondaryDisplayPasscode() !== $this->passcode) {
-            $this->dispatchErrorMessage('Passcode incorrect');
+            $this->dispatchErrorMessage(__('Passcode incorrect'));
             return;
         }
 

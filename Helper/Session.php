@@ -17,6 +17,7 @@ use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\User\Model\UserFactory;
 use Zero1\OpenPos\Api\Data\TillSessionInterface;
 use Magento\User\Model\User;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class Session extends AbstractHelper
@@ -133,7 +134,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Return till session object
+     * Return current till session object (if valid)
      * 
      * @return TillSessionInterface|null
      */
@@ -142,6 +143,19 @@ class Session extends AbstractHelper
         $tillSessionId = $this->getTillSessionId();
         try {
             $tillSession = $this->tillSessionRepository->getById($tillSessionId);
+
+            $tillSessionLifetime = $this->posHelper->getSessionLifetime();
+            if($tillSessionLifetime !== 0) {
+                $currentDateTime = new \DateTime();
+                $tillSessionExpiry = new \DateTime($tillSession->getCreatedAt());
+                $tillSessionExpiry->modify("$tillSessionLifetime minutes");
+
+                if($currentDateTime > $tillSessionExpiry) {
+                    $this->destroySession();
+                    return null;
+                }
+            }
+
         } catch(NoSuchEntityException $e) {
             return null;
         }
@@ -187,7 +201,7 @@ class Session extends AbstractHelper
 
         $tillUsers = $this->posHelper->getTillUsers();
         if(!in_array($adminUser->getId(), $tillUsers)) {
-            throw new \Exception('This admin user doesn\'t have permission to use a till.');
+            throw new LocalizedException(__('This admin user doesn\'t have permission to use a till.'));
         }
 
         // Delete other till sessions for same admin user
@@ -203,12 +217,11 @@ class Session extends AbstractHelper
         $maxTillSessionCount = 1;
 
         $tillSessionCollection = $this->tillSessionCollectionFactory->create();
-        $tillSessionCollection->addFieldToFilter('is_active', ['eq' => 1]);
         foreach($tillSessionCollection as $existingTillSession) {
             $tillSessionCount++;
             if($tillSessionCount > $maxTillSessionCount) {
                 $this->tillSessionRepository->delete($existingTillSession);
-                $this->messageManager->addWarningMessage('Notice: The maximum amount of concurrent till sessions with your current OpenPOS license is: '.$maxTillSessionCount.'. You have logged out: '.$existingTillSession->getAdminUser());
+                $this->messageManager->addWarningMessage(__('Notice: The maximum amount of concurrent till sessions with your current OpenPOS license is: '.$maxTillSessionCount.'. You have logged out: '.$existingTillSession->getAdminUser()));
             }
         }
 
