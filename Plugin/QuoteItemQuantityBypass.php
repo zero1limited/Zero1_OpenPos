@@ -32,7 +32,7 @@ class QuoteItemQuantityBypass
     {
         // TODO: Check if this is still required
 
-        if($this->posHelper->bypassStock()) {
+        if($this->posHelper->bypassStock() && $this->posHelper->currentlyOnPosStore()) {
             $quoteItem = $observer->getEvent()->getItem();
             if($quoteItem) {
                 $quoteItem->getQuote()->setIsSuperMode(true);

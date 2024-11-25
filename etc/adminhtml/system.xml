@@ -54,10 +54,6 @@
                     <label>Receipt footer</label>
                     <comment>Please enter the text/html you wish to show at the receipt footer</comment>
                 </field>
-                <field id="receipt_footer_qr_link" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Receipt footer QR link</label>
-                    <comment>If populated a QR code will be rendered on the receipt linking to supplied URL. Example: https://www.zero1.co.uk</comment>
-                </field>
                 <field id="price_editor_barcode" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Price Editor Barcode / SKU</label>
                     <comment>When the price editor barcode is scanned it lets the till user to edit the price of a product, leave blank to disable this functionality</comment>

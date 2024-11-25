@@ -47,11 +47,6 @@ class Receipt extends Component
      */
     public $emailInput = '';
 
-    /**
-     * @var bool
-     */
-    public $printMode = false;
-
     public function __construct(
         CheckoutSession $checkoutSession,
         CustomerSession $customerSession,
@@ -86,14 +81,12 @@ class Receipt extends Component
     }
 
     /**
-     * Enable print mode on Magewire block
-     * TODO: review functionality here
+     * Perform a print from browser / operating system.
      * 
      * @return void
      */
     public function print(): void
     {
-        $this->printMode = true;
         $this->dispatchBrowserEvent('js-print');
     }
 

@@ -1,35 +1,44 @@
 <div id="openpos-receipt">
-
-    <?php if(!$magewire->printMode): ?>
-        <div id="wrapper">
-            
-            <div class="flex w-full justify-center my-6 py-6">
-                <span class="text-2xl font-bold"><span>&#128515</span> <?php echo __('Order complete!'); ?></span>
-            </div>
-
-            <div class="flex w-full my-6 py-6 justify-center">
-                <button class="btn btn-primary btn-secondary" type="button" wire:click="print">Print receipt</button>
-            </div>
-
-            <div class="flex w-full my-6 py-6 justify-center">
-                <input type="text" class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" placeholder="Customer email address" wire:model.defer="emailInput"/>
-                <button type="button" wire:click="email" class="btn btn-primary btn-secondary w-full">Email receipt</button>
-            </div>
-
-            <div class="flex w-full my-6 py-6">
-                <button type="button" class="w-full underline font-bold" wire:click="newOrder"><?php echo __('Start new order'); ?></button>
-            </div>
-
-        </div>
-    <?php endif; ?>
-
-    <?php if($magewire->printMode): ?>
-        <?= $block->getChildHtml('openpos.receipt.print'); ?>
-    <?php endif; ?>
-
     <script type="text/javascript">
         window.addEventListener('js-print', function() {
             window.print();
         });
     </script>
+    <div id="wrapper">
+        <div class="flex w-full justify-center my-6 py-6">
+            <span class="text-2xl font-bold"><span>&#128515</span> <?php echo __('Order complete!'); ?></span>
+        </div>
+        <div class="flex w-full my-6 py-6 justify-center">
+            <button class="btn btn-primary btn-secondary" type="button" wire:click="print">Print receipt</button>
+        </div>
+        <div class="flex w-full my-6 py-6 justify-center">
+            <input type="text" class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" placeholder="Customer email address" wire:model.defer="emailInput"/>
+            <button type="button" wire:click="email" class="btn btn-primary btn-secondary w-full">Email receipt</button>
+        </div>
+        <div class="flex w-full my-6 py-6">
+            <button type="button" class="w-full underline font-bold" wire:click="newOrder"><?php echo __('Start new order'); ?></button>
+        </div>
+    </div>
+
+    <div id="printed-receipt">
+        <?= $block->getChildHtml('openpos.receipt.print'); ?>
+    </div>
+
+    <style>
+        #printed-receipt {
+            display: none;
+        }
+        #wrapper {
+            display: block;
+        }
+
+        @media print {
+            #printed-receipt {
+                display: block;
+            }
+            #wrapper {
+                display: none;
+            }
+        }
+    </style>
 </div>

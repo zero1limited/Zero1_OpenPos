@@ -1,0 +1,81 @@
+<div id="openpos-receipt">
+
+    <div id="wrapper">
+        <div class="flex w-full justify-center my-6 py-6">
+            <span class="text-2xl font-bold"><span>&#128515</span> <?php echo __('Order complete!'); ?></span>
+        </div>
+        <div class="flex w-full my-6 py-6 justify-center">
+            <button class="btn btn-primary btn-secondary" type="button" wire:click="print">Print receipt</button>
+        </div>
+        <div class="flex w-full my-6 py-6 justify-center">
+            <input type="text" class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" placeholder="Customer email address" wire:model.defer="emailInput"/>
+            <button type="button" wire:click="email" class="btn btn-primary btn-secondary w-full">Email receipt</button>
+        </div>
+        <div class="flex w-full my-6 py-6">
+            <button type="button" class="w-full underline font-bold" wire:click="newOrder"><?php echo __('Start new order'); ?></button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        window.addEventListener('js-print', function() {
+            window.print();
+        });
+    </script>
+
+    <div id="printed-receipt" style="text-transform:uppercase;">
+        <div style="width:100%; text-align: center;padding-bottom:20px">
+            <img class="center" src="<?= $block->getLogoUrl() ?>" width="150px" height="52px">
+            <div style="padding-top:10px; ">
+                <?= $block->getReceiptHeaderContents(); ?>
+            </div>
+            <H2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></H2>
+            <span><?= $block->getOrderDate(); ?></span>
+
+        </div>
+
+        <table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
+            <tr>
+                <th style="text-align:left">Item</th>
+                <th style="text-align:right">SubTotal</th>
+            </tr>
+            <?php foreach ($block->getOrderItems() as $orderItem) : ?>
+                <tr>
+                    <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
+                    <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
+                </tr>
+            <?php endforeach ?>
+            <tr style="margin-top:25px">
+                <td>TOTAL PAID</td>
+                <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
+            </tr>
+        </table>
+
+        <span style="width:100%; margin-top:15pt; padding-bottom:15px">TENDER: <?= __($block->getOrderPayment()) ?> </span>
+
+
+        <div style="width:100%; padding-top:15px; padding-bottom:15px">
+            <?= $block->getReceiptFooterContents(); ?>
+        </div>
+    </div>
+
+
+    <div class="bg-c-black hidden"></div>
+
+    <style>
+        #printed-receipt {
+            display: none;
+        }
+        #wrapper {
+            display: block;
+        }
+
+        @media print {
+            #printed-receipt {
+                display: block;
+            }
+            #wrapper {
+                display: none;
+            }
+        }
+    </style>
+</div>

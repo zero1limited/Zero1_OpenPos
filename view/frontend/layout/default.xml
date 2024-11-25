@@ -14,7 +14,6 @@
             </block>
         </referenceContainer>
 
-        <!-- <referenceBlock name="cart-drawer"> -->
         <referenceBlock name="footer">
             <block class="Magento\Framework\View\Element\Template" name="openpos.customermanagement" template="Zero1_OpenPos::html/header/customermanagement.phtml" cacheable="false">
                 <arguments>
@@ -22,6 +21,5 @@
                 </arguments>
             </block>
         </referenceBlock>
-
     </body>
 </page>

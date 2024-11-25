@@ -9,10 +9,9 @@ use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Theme\Block\Html\Header\Logo as LogoBlock;
-use chillerlan\QRCode\QRCode;
 use Magento\Sales\Model\Order;
 
-class Receipt extends Template
+class ReceiptPrint extends Template
 {
     /**
      * @var PosHelper
@@ -35,11 +34,6 @@ class Receipt extends Template
     protected $logoBlock;
 
     /**
-     * @var QRCode
-     */
-    protected $qrCode;
-
-    /**
      * @var Order
      */
     protected $order;
@@ -50,7 +44,6 @@ class Receipt extends Template
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param LogoBlock $logoBlock
-     * @param QRCode $qrCode
      * @param array $data
      */
     public function __construct(
@@ -59,29 +52,13 @@ class Receipt extends Template
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         LogoBlock $logoBlock,
-        QRCode $qrCode,
         array $data = []
     ) {
         $this->posHelper = $posHelper;
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->logoBlock = $logoBlock;
-        $this->qrCode = $qrCode;
         parent::__construct($context, $data);
-    }
-
-    /**
-     * Render block HTML
-     *
-     * @return string
-     */
-    protected function _toHtml(): string
-    {
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
-            return '';
-        }
-
-        return parent::_toHtml();
     }
 
     /**
@@ -98,18 +75,6 @@ class Receipt extends Template
     public function getReceiptFooterContents(): string
     {
         return $this->posHelper->getReceiptFooter() ?? '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getReceiptFooterQrLinkImgSrc(): string
-    {
-        if(!$this->posHelper->getReceiptFooterQrLink()) {
-            return '';
-        }
-
-        return $this->qrCode->render($this->posHelper->getReceiptFooterQrLink().'?orderId='.$this->getOrderIncrementId());
     }
 
     /**

@@ -1,104 +1,34 @@
-<div id="printed-receipt" style="text-transform:uppercase;">
-    <div style="width:100%; text-align: center;padding-bottom:20px">
-        <img class="center" src="<?= $block->getLogoUrl() ?>" width="150px" height="52px">
-        <div style="padding-top:10px; ">
-            <?= $block->getReceiptHeaderContents(); ?>
+<div style="width:100%; text-align: center;padding-bottom:20px">
+            <img class="center" src="<?= $block->getLogoUrl() ?>" width="150px" height="52px">
+            <div style="padding-top:10px; ">
+                <?= $block->getReceiptHeaderContents(); ?>
+            </div>
+            <H2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></H2>
+            <span><?= $block->getOrderDate(); ?></span>
+
         </div>
-        <H2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></H2>
-        <span><?= $block->getOrderDate(); ?></span>
 
-    </div>
-
-    <table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
-        <tr>
-            <th style="text-align:left">Item</th>
-            <th style="text-align:right">SubTotal</th>
-        </tr>
-        <?php foreach ($block->getOrderItems() as $orderItem) : ?>
+        <table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
             <tr>
-                <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
-                <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
+                <th style="text-align:left">Item</th>
+                <th style="text-align:right">SubTotal</th>
             </tr>
-        <?php endforeach ?>
-        <tr style="margin-top:25px">
-            <td>TOTAL PAID</td>
-            <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
-        </tr>
-    </table>
+            <?php foreach ($block->getOrderItems() as $orderItem) : ?>
+                <tr>
+                    <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
+                    <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
+                </tr>
+            <?php endforeach ?>
+            <tr style="margin-top:25px">
+                <td>TOTAL PAID</td>
+                <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
+            </tr>
+        </table>
 
-    <span style="width:100%; margin-top:15pt; padding-bottom:15px">TENDER: <?= __($block->getOrderPayment()) ?> </span>
+        <span style="width:100%; margin-top:15pt; padding-bottom:15px">TENDER: <?= __($block->getOrderPayment()) ?> </span>
 
 
-    <div style="width:100%; padding-top:15px; padding-bottom:15px">
-        <?= $block->getReceiptFooterContents(); ?>
-    </div>
+        <div style="width:100%; padding-top:15px; padding-bottom:15px">
+            <?= $block->getReceiptFooterContents(); ?>
+        </div>
 </div>
-
-
-<div class="bg-c-black hidden"></div>
-
-<style>
-    #receipt {
-        display: none;
-    }
-
-    @media print {
-
-        body {
-            margin: 0;
-            color: #000;
-            background-color: #fff;
-            font-size: 10pt;
-            font-family: "Arial Narrow", Arial, sans-serif;
-        }
-
-        #receipt {
-            display: block;
-        }
-
-        /* print.css */
-        #dashboard,
-        .top-container,
-        #header,
-        .page-header,
-        .checkout-success,
-        h1.page-title,
-        #LoginAsCustomer,
-        #zero1-advanced-success {
-            display: none;
-        }
-
-        .page-wrapper,
-        .page-main,
-        .columns {
-            margin: 0;
-            padding: 0;
-            margin-left: 0rem;
-        }
-
-        #H2 {
-            font-size: 26px;
-        }
-
-        table td {
-            vertical-align: top;
-        }
-
-        .center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        @font-face {
-            font-family: Zero1PosBarcode;
-            src: url(/LibreBarcode39-Regular.ttf);
-        }
-
-        .barcode {
-            font-family: Zero1PosBarcode;
-            font-size: 38px;
-        }
-
-    }
-</style>
