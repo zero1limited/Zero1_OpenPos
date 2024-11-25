@@ -1,34 +1,29 @@
 <div style="width:100%; text-align: center;padding-bottom:20px">
-            <img class="center" src="<?= $block->getLogoUrl() ?>" width="150px" height="52px">
-            <div style="padding-top:10px; ">
-                <?= $block->getReceiptHeaderContents(); ?>
-            </div>
-            <H2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></H2>
-            <span><?= $block->getOrderDate(); ?></span>
+    <div style="padding-top:10px; ">
+        <?= $block->getReceiptHeaderContents(); ?>
+    </div>
+    <h2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></h2>
+    <span><?= $block->getOrderDate(); ?></span><br />
+    <span>Paid by <?= __($block->getOrderPayment()) ?></span>
+</div>
 
-        </div>
+<table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
+    <tr>
+        <th style="text-align:left">Item</th>
+        <th style="text-align:right">SubTotal</th>
+    </tr>
+    <?php foreach ($block->getOrderItems() as $orderItem) : ?>
+        <tr>
+            <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
+            <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
+        </tr>
+    <?php endforeach ?>
+    <tr style="margin-top:25px; padding-top: 20px;">
+        <td>TOTAL PAID</td>
+        <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
+    </tr>
+</table>
 
-        <table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
-            <tr>
-                <th style="text-align:left">Item</th>
-                <th style="text-align:right">SubTotal</th>
-            </tr>
-            <?php foreach ($block->getOrderItems() as $orderItem) : ?>
-                <tr>
-                    <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
-                    <td style="text-align:right">£<?= number_format($orderItem->getRowTotalInclTax(), 2, '.', '') ?></td>
-                </tr>
-            <?php endforeach ?>
-            <tr style="margin-top:25px">
-                <td>TOTAL PAID</td>
-                <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
-            </tr>
-        </table>
-
-        <span style="width:100%; margin-top:15pt; padding-bottom:15px">TENDER: <?= __($block->getOrderPayment()) ?> </span>
-
-
-        <div style="width:100%; padding-top:15px; padding-bottom:15px">
-            <?= $block->getReceiptFooterContents(); ?>
-        </div>
+<div style="width:100%; padding-top:15px; padding-bottom:15px">
+    <?= $block->getReceiptFooterContents(); ?>
 </div>
