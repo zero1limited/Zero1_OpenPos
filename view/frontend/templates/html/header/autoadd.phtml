@@ -23,35 +23,24 @@
                     <span class="font-bold inline-block mb-2 w-full"><?php echo __('Custom Pricing'); ?></span>
                     <span class="inline-block text-grey-800"><?php echo __('Enter a custom price below of the product you are about to scan'); ?></span>
                     <input id="custom-price-input" wire:model.defer="customPriceInput" type="number" placeholder="Price..." class="mt-4 bg-c-highlight w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input" />
-                    <span class="cp-message-wrapper" wire:ignore>
-                        <span class="inline-block text-grey-800 cp-message mt-4 hidden"><?php echo __('Now scan a product and it will be added to the cart at your custom price'); ?></span>
-                    </span>
+                    <input id="z1-auto-add"
+                        autocomplete="off"
+                        name="z1-auto-add"
+                        wire:blur="parseSkuInput"
+                        placeholder="<?= $escaper->escapeHtmlAttr(__('Scan product or enter SKU...')) ?>"
+                        class="mt-6 w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input bg-c-highlight"
+                        wire:model.defer="skuInput" />
                 </div>
                 <div class="w-full flex">
                     <span class="cancel underline p-6 w-full text-center text-sm" wire:click="resetInput"><?php echo __('Cancel'); ?></span>
                 </div>
-
-                <?php // Focus back on regular field and then hidden 
-                ?>
-                <script>
-                    const customPriceInput = document.getElementById("custom-price-input");
-                    const z1AutoAddInput = document.getElementById("z1-auto-add");
-                    const cpMessage = document.querySelector(".cp-message");
-
-                    if (customPriceInput && z1AutoAddInput && cpMessage) {
-                        customPriceInput.addEventListener("blur", () => {
-                            z1AutoAddInput.focus();
-                            cpMessage.classList.remove("hidden");
-                        });
-                    }
-                </script>
             </div>
-            <style>#z1-auto-add {opacity: 0;} #openpos-switcher {display: none;}</style>
+            <style>#openpos-switcher {display: none;}</style>
         <?php endif; ?>
 
         <?php // Don't show regular search field if in other modes 
         ?>
-        <?php if ((!$magewire->customProductMode) || (!$magewire->priceEditorMode)): ?>
+        <?php if (!$magewire->customProductMode && !$magewire->priceEditorMode): ?>
             <?php if ($magewire->showSkuField): ?>
                 <div class="relative w-full flex mb-4">
                     <input id="z1-auto-add"
