@@ -19,10 +19,13 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                 <span class="inline-block text-sm"><?php echo __('Login as customer'); ?></span>
             </button>
         <?php else: ?>
-            <span class="text-lg font-bold"><?php echo __($magewire->getCurrentCustomerName() ?? 'Unknown customer'); ?></span>
-            <?php /*
-            <span class="underline text-sm ml-4" @click="open = true"><?php echo __('Customer details'); ?></span>
-            */ ?>
+            <?php
+            if ($magewire->getCurrentCustomerName()) {
+                echo '<a href="/customer/account/"><span class="text-lg font-bold">' . $magewire->getCurrentCustomerName() . '</span><span class="underline text-sm ml-4">' . __('View Account') . '</span></a>';
+            } else {
+                echo '<span class="text-lg font-bold">Unknown customer</span>';
+            }
+            ?>
             <button wire:click="changeToGuest" class="ml-auto p-4 underline">
                 <span class="inline-block text-sm underline"><?php echo __('Switch to guest mode'); ?></span>
             </button>
