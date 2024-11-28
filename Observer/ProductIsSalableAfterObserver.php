@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
@@ -21,7 +23,10 @@ class ProductIsSalableAfterObserver implements ObserverInterface
         $this->posHelper = $posHelper;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * @return void
+     */
+    public function execute(Observer $observer): void
     {
         // Check if module is enabled
         if(!$this->posHelper->isEnabled()) {

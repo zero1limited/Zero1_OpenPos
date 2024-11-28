@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="openpos_till_session" resource="default" engine="innodb" comment="Zero1_OpenPos till session table">
+        <column xsi:type="int" name="session_id" unsigned="true" nullable="false" identity="true" comment="Session ID"/>
+        <column xsi:type="int" name="quote_id" unsigned="true" nullable="true" identity="false" comment="Quote ID"/>
+        <column xsi:type="text" name="admin_user" nullable="false" comment="Admin user name"/>
+        <column xsi:type="text" name="secondary_display_passcode" nullable="true" comment="Secondary display passcode"/>
+        <column xsi:type="text" name="secondary_display_data" nullable="true" comment="Data for secondary display"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="session_id"/>
+        </constraint>
+    </table>
+</schema>

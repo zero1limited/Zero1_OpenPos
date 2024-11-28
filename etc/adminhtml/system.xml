@@ -1,68 +1,64 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="zero1_pos" translate="label" sortOrder="600">
-            <label>Open POS</label>
+        <tab id="openpos" translate="label" sortOrder="600">
+            <label>OpenPOS</label>
         </tab>
-        <section id="zero1_pos" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+        <section id="openpos" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
             <label>Configuration</label>
-            <tab>zero1_pos</tab>
+            <tab>openpos</tab>
             <resource>Zero1_OpenPos::configuration</resource>
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General</label>
                 <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable Open POS system</label>
+                    <label>Enable OpenPOS system</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
                 <field id="pos_store" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>POS Store</label>
                     <source_model>Magento\Config\Model\Config\Source\Store</source_model>
                 </field>
-                <field id="redirect_store" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Redirect Store</label>
-                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
-                    <comment>A store to redirect to if the POS store URL is requested without authentication.</comment>
+                <field id="tfa_enable" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable 2FA on till login</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Magento_TwoFactorAuth must be enabled!</comment>
                 </field>
-                <field id="walkin_customer_email" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Walk-in Customer Email</label>
-                    <comment>A Magento customer email for customers that do not have account / wish to purchase as a guest. This customer must exist in Magento. Example: guest@zero1.co.uk</comment>
+                <field id="session_lifetime" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Till session lifetime</label>
+                    <comment>How long a till session can remain active (minutes) (default: 240). Magento's core cookie / session lifetime should also be taken into consideration.</comment>
+                    <validate>validate-number</validate>
                 </field>
-                <field id="bypass_stock" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="bypass_stock" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Bypass stock checks</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                     <comment>On the POS store products will be salable regardless of their stock status / QTY.</comment>
                 </field>
-
-                <field id="barcode_attribute" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="barcode_attribute" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Barcode attribute</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\BarcodeAttribute</source_model>
                     <comment>The barcode scanner will first check if the scanned contents matches a product SKU within the catalog, if there is no match it will search the barcode attribute values.</comment>
+                </field>
+                <field id="till_users" translate="label" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Till users</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\AdminUser</source_model>
                 </field>
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Customisation</label>
-                <field id="receipt_header" translate="label" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="receipt_header" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
                     <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
                 </field>
-
-                <field id="receipt_footer" translate="label" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="receipt_footer" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt footer</label>
                     <comment>Please enter the text/html you wish to show at the receipt footer</comment>
                 </field>
-
-                <field id="receipt_footer_qr_link" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Receipt footer QR link</label>
-                    <comment>If populated a QR code will be rendered on the receipt linking to supplied URL. Example: https://www.zero1.co.uk</comment>
-                </field>
-
-                <field id="price_editor_barcode" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="price_editor_barcode" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Price Editor Barcode / SKU</label>
                     <comment>When the price editor barcode is scanned it lets the till user to edit the price of a product, leave blank to disable this functionality</comment>
                 </field>
-
-                <field id="custom_product_barcode" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="custom_product_barcode" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Custom Product Barcode / SKU</label>
                     <comment>To be used when a physical item has no product within Magento. Description and price are ediable from the POS system. There needs to be a 'dummy' product in the Magento catalog with the above SKU.</comment>
                 </field>

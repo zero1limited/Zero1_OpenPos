@@ -1,25 +1,32 @@
 <?php
+declare(strict_types=1);
+
 namespace Zero1\OpenPos\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 class Data extends AbstractHelper
 {
-    const CONFIG_PATH_GENERAL_ENABLE = 'zero1_pos/general/enable';
-    const CONFIG_PATH_GENERAL_POS_STORE = 'zero1_pos/general/pos_store';
-    const CONFIG_PATH_GENERAL_REDIRECT_STORE = 'zero1_pos/general/redirect_store';
-    const CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL = 'zero1_pos/general/walkin_customer_email';
-    const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'zero1_pos/general/bypass_stock';
-    const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'zero1_pos/general/barcode_attribute';
+    const CONFIG_PATH_GENERAL_ENABLE = 'openpos/general/enable';
+    const CONFIG_PATH_GENERAL_TFA_ENABLE = 'openpos/general/tfa_enable';
+    const CONFIG_PATH_GENERAL_POS_STORE = 'openpos/general/pos_store';
+    const CONFIG_PATH_GENERAL_SESSION_LIFETIME = 'openpos/general/session_lifetime';
+    const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'openpos/general/bypass_stock';
+    const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'openpos/general/barcode_attribute';
+    const CONFIG_PATH_GENERAL_TILL_USERS = 'openpos/general/till_users';
 
-    const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'zero1_pos/customisation/receipt_header';
-    const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'zero1_pos/customisation/receipt_footer';
-    const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER_QR_LINK = 'zero1_pos/customisation/receipt_footer_qr_link';
-    const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'zero1_pos/customisation/price_editor_barcode';
-    const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'zero1_pos/customisation/custom_product_barcode';
+    const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'openpos/customisation/receipt_header';
+    const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
+    const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'openpos/customisation/price_editor_barcode';
+    const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'openpos/customisation/custom_product_barcode';
 
     /**
      * @var StoreManagerInterface
@@ -32,50 +39,89 @@ class Data extends AbstractHelper
     protected $scopeConfig;
 
     /**
+     * @var CustomerRepositoryInterface
+     */
+    protected $customerRepository;
+
+    /**
+     * @var CustomerInterfaceFactory
+     */
+    protected $customerFactory;
+
+    /**
+     * @var EncryptorInterface
+     */
+    protected $encryptor;
+
+    /**
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
+     * @param CustomerRepositoryInterface $customerRepository
+     * @param CustomerInterfaceFactory $customerFactory
+     * @param EncryptorInterface $encryptor
      */
     public function __construct(
         Context $context,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        CustomerRepositoryInterface $customerRepository,
+        CustomerInterfaceFactory $customerFactory,
+        EncryptorInterface $encryptor
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
+        $this->customerRepository = $customerRepository;
+        $this->customerFactory = $customerFactory;
+        $this->encryptor = $encryptor;
         parent::__construct($context);
+    }
+
+    /**
+     * For OpenPOS extension use.
+     * 
+     * @param string $path
+     * @return mixed
+     */
+    public function getConfigValue(string $path)
+    {
+        return $this->scopeConfig->getValue('zero1_pos/'.$path);
     }
 
     /**
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_ENABLE);
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_ENABLE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTfaEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TFA_ENABLE);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPosStoreId(): ?int
+    {
+        $storeId = $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_POS_STORE);
+        if($storeId) {
+            return (int)$storeId;
+        }
+        return null;
     }
 
     /**
      * @return int
      */
-    public function getPosStoreId()
+    public function getSessionLifetime(): int
     {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_POS_STORE);
-    }
-
-    /**
-     * @return int
-     */
-    public function getRedirectStoreId()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_REDIRECT_STORE);
-    }
-
-    /**
-     * @return string
-     */
-    public function getWalkinCustomerEmail()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_WALKIN_CUSTOMER_EMAIL);
+        return (int)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_SESSION_LIFETIME);
     }
 
     /**
@@ -83,84 +129,70 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function bypassStock()
+    public function bypassStock(): bool
     {
         if(!$this->currentlyOnPosStore()) {
             return false;
         }
 
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBarcodeAttribute()
+    public function getBarcodeAttribute(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE);
     }
 
+    /**
+     * @return array
+     */
+    public function getTillUsers(): array
+    {
+        return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TILL_USERS));
+    }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptHeader()
+    public function getReceiptHeader(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptFooter()
+    public function getReceiptFooter(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReceiptFooterQrLink()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER_QR_LINK);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPriceEditorBarcode()
+    public function getPriceEditorBarcode(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCustomProductBarcode()
+    public function getCustomProductBarcode(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE);
     }
 
     /**
-     * @return mixed
+     * @return StoreInterface|null
      */
-    public function getPosStore()
+    public function getPosStore(): ?StoreInterface
     {
         try {
             $storeId = $this->getPosStoreId();
-            return $this->storeManager->getStore($storeId);
-        } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRedirectStore()
-    {
-        try {
-            $storeId = $this->getRedirectStoreId();
             return $this->storeManager->getStore($storeId);
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
             return null;
@@ -172,7 +204,7 @@ class Data extends AbstractHelper
      *
      * @return bool
      */
-    public function currentlyOnPosStore()
+    public function currentlyOnPosStore(): bool
     {
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
     }
@@ -180,10 +212,10 @@ class Data extends AbstractHelper
     /**
      * Check if an order is a POS order.
      * 
-     * @param \Magento\Sales\Api\Data\OrderInterface
+     * @param OrderInterface $order
      * @return bool
      */
-    public function isPosOrder($order)
+    public function isPosOrder(OrderInterface $order): bool
     {
         if($order->getStoreId() == $this->getPosStoreId() && strpos($order->getPayment()->getMethodInstance()->getCode(), 'pos') !== false) {
             return true;

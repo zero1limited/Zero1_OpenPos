@@ -1,0 +1,89 @@
+<?php 
+use Hyva\Theme\ViewModel\HeroiconsSolid;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+/** @var HeroiconsSolid $heroicons */
+$heroiconsSolid = $viewModels->require(HeroiconsSolid::class);
+$heroicons = $viewModels->require(HeroiconsOutline::class);
+?>
+
+<div x-data="{ open: false }" class="order-last px-6 w-full" id="openpos-customermanagement">
+
+    <div class="flex items-center w-full">
+        <span class="mr-2">
+            <?= $heroiconsSolid->userHtml('', 30, 30, ['aria-hidden' => 'true']); ?>
+        </span>
+
+        <?php if($magewire->isCurrentCustomerGuest()): ?>
+            <span class="text-lg font-bold"><?php echo __('Guest'); ?></span>
+            <button @click="open = true" class="ml-auto p-4 btn btn-secondary">
+                <span class="inline-block text-sm"><?php echo __('Login as customer'); ?></span>
+            </button>
+        <?php else: ?>
+            <?php
+            if ($magewire->getCurrentCustomerName()) {
+                echo '<a href="/customer/account/"><span class="text-lg font-bold">' . $magewire->getCurrentCustomerName() . '</span><span class="underline text-sm ml-4">' . __('View Account') . '</span></a>';
+            } else {
+                echo '<span class="text-lg font-bold">Unknown customer</span>';
+            }
+            ?>
+            <button wire:click="changeToGuest" class="ml-auto p-4 underline">
+                <span class="inline-block text-sm underline"><?php echo __('Switch to guest mode'); ?></span>
+            </button>
+        <?php endif; ?>
+    </div>
+
+    <div
+        x-show="open"
+        x-cloak
+        @click.away="open = false"
+        @keydown.window.escape="open = false"
+        class="fixed inset-0 z-30 justify-center bg-white openpos-popup"
+    >
+        <div class="flex w-full flex-wrap">
+
+            <div class="flex justify-end w-full border-b">
+                <button @click="open = false" class="text-black bg-white p-4 stroke-1 font-normal">
+                    <?= $heroicons->xHtml('w-8 h-8 stroke-1'); ?>
+                </button>
+            </div>
+
+            <div class="w-full openpos-popup-content">
+                
+
+                <?php if($magewire->isCurrentCustomerGuest()): ?>
+
+                    <div class="w-full p-8 text-center text-xl">
+                        <p>Currently serving a <span class="font-bold">Guest Customer</span></p>
+                    </div>
+                    <div class="px-6 text-center mt-4">
+                        <p class="text-lg mb-4">Login as a customer to give them an enhanced experience...</p>
+                        <div id="loginform" class="px-8">
+                            <input type="email" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Enter customer's email address" wire:model.debounce.2000ms="emailInput" />
+                            <?php if($magewire->foundCustomer !== null): ?>
+                                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch to <?= $magewire->foundCustomer ?></button>
+                            <?php else: ?>
+                                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch</button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                <?php else: ?>
+
+                    <?php /*
+                    <div class="w-full p-8 text-center text-xl">
+                        <p>Customer: <span class="font-bold"><?php echo __($magewire->getCurrentCustomerName() ?? 'Unknown customer'); ?></span></p>
+                    </div>
+                    <div class="px-6 text-center mt-4">
+                        <div class="px-8">
+                            <p>Here are some customer account details</p>
+                        </div>
+                    </div>
+                    */ ?>
+
+                <?php endif; ?>
+
+            </div>
+
+        </div>
+    </div>
+</div>

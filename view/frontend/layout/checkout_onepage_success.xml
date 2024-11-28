@@ -2,7 +2,12 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Zero1\OpenPos\Block\Receipt" name="zero1_pos_receipt" template="Zero1_OpenPos::receipt.phtml" before="-" />
+            <block class="Zero1\OpenPos\Block\ReceiptWrapper" name="openpos.receipt.wrapper" template="Zero1_OpenPos::receipt/wrapper.phtml" cacheable="false">
+                <arguments>
+                    <argument name="magewire" xsi:type="object">Zero1\OpenPos\Magewire\Receipt</argument>
+                </arguments>
+                <block class="Zero1\OpenPos\Block\ReceiptPrint" name="openpos.receipt.print" template="Zero1_OpenPos::receipt/print.phtml" />
+            </block>
         </referenceContainer>
     </body>
 </page>

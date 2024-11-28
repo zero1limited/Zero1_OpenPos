@@ -1,0 +1,58 @@
+<div id="secondarydisplay" class="border p-8 mx-auto bg-white">
+    
+    <img src="https://miami.zero1.co.uk/static/version1727356620/frontend/z1/miami_demo/en_GB/images/logo.svg" width="400px" height="20px" class="mx-auto openpos-login-logo" />
+    
+    <p class="mb-4"><?= $block->escapeHtml(__('Secondary display login')) ?></p>
+    
+    <?php if(!$magewire->isAuthenticated): ?>
+
+        <label class="font-bold">Till session ID</label>
+        <input class="input-text w-full p-4" type="text" id="till_session_id" wire:model.defer="tillSessionId" />
+
+        <label class="font-bold mt-4 inline-block">Till session passcode</label>
+        <input class="input-text w-full p-4" type="text" id="passcode" wire:model.defer="passcode" />
+
+        <button class="btn btn-primary action login primary w-full text-center uppercase justify-center mt-6" id="login" wire:click="login">Login</button>
+    <?php endif; ?>
+
+    <?php if($magewire->isAuthenticated): ?>
+
+        <script>
+            setInterval(function(){
+                Magewire.emit('fetch');
+            }, 2000);
+        </script>
+
+        <p>quote ID of till: </p><?=$magewire->quoteId?>
+        <p>data: </p><?=print_r($magewire->tillData, true)?>
+    <?php endif; ?>
+</div>
+
+<style>
+body {
+    background: #efefef;
+}
+#secondarydisplay {
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    width: 80%;
+    max-width: 580px;
+    margin-top: 4rem;
+}
+.page-title {
+    display: none;
+}
+.secondary-login {
+    background: #fff;
+    color: #000;
+    border: 2px solid #000;
+}
+.secondary-login:hover {
+    background: #fff;
+    color: #000;
+}
+
+.openpos-login-logo {
+    max-width: 170px;
+    margin-bottom: 2rem;
+}
+</style>

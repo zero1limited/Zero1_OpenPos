@@ -1,12 +1,10 @@
-<div id="openpos-switcher" class="container pt-4 relative">
+<div id="openpos-switcher" class="relative px-6 pl-0">
     <div id="tabs"></div>
+    
     <?php foreach($magewire->getBlocks() as $mode => $block): ?>
-        <button class="border px-6 py-4 font-bold mr-2 bg-c-highlight text-slate-600" wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
+        <div class="flex justify-center switcher-button-<?php echo str_replace('.','',$block); ?>">
+            <button class="inline-flex py-4 px-6 btn btn-secondary text-sm w-full justify-center" wire:click="$emit('toggle', '<?= $block ?>')"><?= $mode ?></button>
+        </div>
     <?php endforeach; ?>
-</div>
 
-<style>
-    #openpos-switcher #tabs {position: absolute;left: 0;right: 0;border: 0;height: 2px;width: 100%;background: #e5e7eb;bottom: 0px;z-index: -1;}
-    #openpos-switcher button {border-radius: 4px 4px 0 0; border-width: 2px;}
-    #openpos-switcher button.active {border-bottom-color: #fff; color: #000; background: #fff;}
-</style>
+</div>

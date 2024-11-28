@@ -6,7 +6,10 @@
     <event name="catalog_product_is_salable_after">
         <observer name="product_is_salable_after_observer" instance="Zero1\OpenPos\Observer\ProductIsSalableAfterObserver" />
     </event>
-        <event name="sales_quote_save_before">
+    <event name="sales_quote_save_before">
         <observer name="openpos_set_quote_address" instance="Zero1\OpenPos\Observer\SetQuoteAddressObserver" />
+    </event>
+    <event name="admin_system_config_changed_section_zero1_pos">
+        <observer name="openpos_config_saved" instance="Zero1\OpenPos\Observer\ConfigSavedObserver" />
     </event>
 </config>

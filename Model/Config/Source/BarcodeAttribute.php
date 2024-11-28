@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Model\Config\Source;
 
@@ -21,9 +22,11 @@ class BarcodeAttribute implements \Magento\Framework\Option\ArrayInterface
     }
 
     /**
+     * Return an array of attributes that can be used as barcodes.
+     * 
      * @return array
      */
-    public function toOptionArray()
+    public function toOptionArray(): array
     {
         $values = array();
         $attributeCollection = $this->productAttributeCollectionFactory->create();

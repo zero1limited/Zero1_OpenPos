@@ -1,0 +1,61 @@
+<?php
+$helper = $this->helper('Zero1\OpenPos\Helper\Data');
+
+// TODO, SEAN NEEDS TO CLEAN THIS UP :)
+?>
+
+<!-- form -->
+
+<div class="block block-customer-login p-8 openpos-login-wrapper bg-white mx-auto">
+
+    <?= $block->getChildHtml('openpos.tillsession.login.logo') ?>
+
+    <p class="mb-4"><?= $block->escapeHtml(__('To login to this till, please enter your Magento Admin user credentials')) ?></p>
+    <form class="form form-login"
+            action="<?= $block->escapeUrl($block->getData('form_post')) ?>"
+            method="post"
+            id="login-form"
+            data-mage-init='{"validation":{}}'>
+        <?= $block->getBlockHtml('formkey') ?>
+            <div class="field username required">
+                <label class="label font-bold" for="username"><span><?= $block->escapeHtml(__('Username')) ?></span></label>
+                <div class="control">
+                    <input name="login[username]"
+                            id="username" type="text" class="input-text w-full p-4"
+                            title="<?= $block->escapeHtmlAttr(__('Username')) ?>"
+                            data-mage-init='{"mage/trim-input":{}}'
+                            data-validate="{required:true}">
+                </div>
+            </div>
+            <div class="field password required my-6">
+                <label for="pass" class="label font-bold"><span><?= $block->escapeHtml(__('Password')) ?></span></label>
+                <div class="control">
+                    <input name="login[password]" type="password"
+                            class="input-text w-full p-4" id="login"
+                            title="<?= $block->escapeHtmlAttr(__('Password')) ?>"
+                            data-validate="{required:true}">
+                </div>
+            </div>
+            <?php if($helper->isTfaEnabled()): ?>
+                <div class="field 2fa required">
+                    <label for="tfa_code" class="label font-bold"><span><?= $block->escapeHtml(__('2FA code')) ?></span></label>
+                    <div class="control">
+                        <input name="login[tfa_code]" type="text"
+                            class="input-text w-full p-4" id="tfa_code"
+                            title="<?= $block->escapeHtmlAttr(__('2FA code')) ?>"
+                            data-validate="{required:true}">
+                    </div>
+                </div>
+            <?php endif; ?>
+            <div class="">
+                <div class="primary btn rounded-none btn-primary mt-6"><button type="submit" class="action login primary w-full text-center justify-center text-xl" name="send" id="send2"><span><?= $block->escapeHtml(__('Sign In')) ?></span></button></div>
+            </div>
+        </fieldset>
+    </form>
+    <?php /*
+    <div class="border-t mt-4 py-4">
+        <p class="mb-4"><?= $block->escapeHtml(__('Signing into a secondary display?')) ?></p>
+        <a href="/openpos/secondarydisplay/index" class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center"><?= $block->escapeHtml(__('Sign in to secondary display')) ?></a>
+    </div>
+    */ ?>
+</div>

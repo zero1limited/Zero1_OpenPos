@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
@@ -9,7 +10,7 @@ use Magento\Sales\Model\Service\InvoiceService;
 use Magento\Framework\DB\Transaction;
 use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Api\OrderManagementInterface;
-
+use Magento\Sales\Api\Data\OrderInterface;
 
 class AutoInvoice
 {
@@ -19,12 +20,12 @@ class AutoInvoice
     protected $posHelper;
 
     /**
-     * @var OrderRepository
+     * @var OrderRepositoryInterface
      */
     protected $orderRepository;
 
     /**
-     * @var InvoiceRepository
+     * @var InvoiceRepositoryInterface
      */
     protected $invoiceRepository;
 
@@ -45,6 +46,8 @@ class AutoInvoice
 
     /**
      * @param PosHelper $posHelper
+     * @param OrderRepositoryInterface $orderRepository
+     * @param InvoiceRepositoryInterface $invoiceRepository
      * @param InvoiceService $invoiceService
      * @param InvoiceSender $invoiceSender
      * @param Transaction $transaction
@@ -67,9 +70,10 @@ class AutoInvoice
 
     /**
      * @param OrderManagementInterface $orderManagement
-     * @param Observer $observer
+     * @param OrderInterface $order
+     * @return OrderInterface
      */
-    public function afterPlace(OrderManagementInterface $orderManagement, $order)
+    public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
         if($this->posHelper->isPosOrder($order)) {
             if ($order->canInvoice()) {
@@ -83,7 +87,7 @@ class AutoInvoice
                     $invoice->getOrder()
                 );
                 $transactionSave->save();
-                $this->invoiceSender->send($invoice);
+                // $this->invoiceSender->send($invoice);
 
                 $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
                 $order->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);

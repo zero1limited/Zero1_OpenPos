@@ -1,32 +1,29 @@
 <?php
+declare(strict_types=1);
+
 namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Customer\Model\Session;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\ActionFlag;
 use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 
 class RestrictAccessObserver implements ObserverInterface
 {
-    const LOGIN_ACTION_NAME = 'loginascustomer_login_index';
-
-    /**
-     * @var CustomerSession
-     */
-    protected $customerSession;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    protected $storeManager;
+    const CONTROLLER_ACTION_WHITELIST = ['openpos_tillsession_login', 'openpos_tillsession_loginpost', 'openpos_secondarydisplay_index'];
 
     /**
      * @var RedirectInterface
      */
     protected $redirect;
+
+    /**
+     * @var ResponseInterface
+     */
+    protected $response;
 
     /**
      * @var ActionFlag
@@ -39,27 +36,34 @@ class RestrictAccessObserver implements ObserverInterface
     protected $posHelper;
 
     /**
-     * @param CustomerSession $customerSession
-     * @param StoreManagerInterface $storeManager
+     * @var OpenPosSessionHelper
+     */
+    protected $openPosSessionHelper;
+
+    /**
      * @param RedirectInterface $redirect
      * @param ActionFlag $actionFlag
      * @param PosHelper $posHelper
+     * @param OpenPosSessionHelper $openPosSessionHelper
      */
     public function __construct(
-        Session $customerSession,
-        StoreManagerInterface $storeManager,
         RedirectInterface $redirect,
+        ResponseInterface $response,
         ActionFlag $actionFlag,
-        PosHelper $posHelper
+        PosHelper $posHelper,
+        OpenPosSessionHelper $openPosSessionHelper
     ) {
-        $this->customerSession = $customerSession;
-        $this->storeManager = $storeManager;
         $this->redirect = $redirect;
+        $this->response = $response;
         $this->actionFlag = $actionFlag;
         $this->posHelper = $posHelper;
+        $this->openPosSessionHelper = $openPosSessionHelper;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * @return void
+     */
+    public function execute(Observer $observer): void
     {
         // Check if module is enabled
         if(!$this->posHelper->isEnabled()) {
@@ -71,32 +75,18 @@ class RestrictAccessObserver implements ObserverInterface
             return;
         }
 
-        // Check we aren't currently logging in from admin
-        if($observer->getRequest()->getFullActionName() === self::LOGIN_ACTION_NAME) {
+        // Check we aren't currently logging in
+        if(in_array($observer->getRequest()->getFullActionName(), self::CONTROLLER_ACTION_WHITELIST)) {
             return;
         }
 
-        // Check we aren't logged in
-        if (!$this->customerSession->isLoggedIn()) {
-            $controller = $observer->getControllerAction();
-            $redirectStore = $this->posHelper->getRedirectStore();
-
-            // If there isn't a valid store to redirect to, throw an exception.
-            if(!$redirectStore) {
-                throw new \Exception('Customer session is required for POS system.');
-            }
-
-            $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
-
-            // TODO: make this better, I think this is sometimes why the login from MAP doesnt work
-            // Not all controllers we can call getResponse on
-            // Quick fix for now, this does leave a hole in security
-            // Callum
-            if(is_callable([$controller, 'getResponse'])) {
-                $this->redirect->redirect($controller->getResponse(), $redirectStore->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB));
-            } else {
-                return;
-            }
+        // Check till session exists
+        if($this->openPosSessionHelper->getTillSession() !== null) {
+            return;
         }
+
+        // Redirect
+        $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
+        $this->redirect->redirect($this->response, 'openpos/tillsession/login');      
     }
 }

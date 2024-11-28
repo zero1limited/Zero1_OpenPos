@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Zero1\OpenPos\Helper\Data as PosHelper;
-use Magento\Quote\Model\Quote\AddressFactory;
+use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Magento\Quote\Model\Quote\Address;
+use Magento\User\Model\User;
 
 class SetQuoteAddressObserver implements ObserverInterface
 {
@@ -14,23 +18,26 @@ class SetQuoteAddressObserver implements ObserverInterface
     protected $posHelper;
 
     /**
-     * @var AddressFactory
+     * @var OpenPosSessionHelper
      */
-    protected $addressFactory;
+    protected $openPosSessionHelper;
 
     /**
      * @param PosHelper $posHelper
-     * @param AddressFactory $addressFactory
+     * @param OpenPosSessionHelper $openPosSessionHelper
      */
     public function __construct(
         PosHelper $posHelper,
-        AddressFactory $addressFactory
+        OpenPosSessionHelper $openPosSessionHelper
     ) {
         $this->posHelper = $posHelper;
-        $this->addressFactory = $addressFactory;
+        $this->openPosSessionHelper = $openPosSessionHelper;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * @return void
+     */
+    public function execute(Observer $observer): void
     {
         // Check if module is enabled, and we are on the POS store
         if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
@@ -44,33 +51,28 @@ class SetQuoteAddressObserver implements ObserverInterface
             return;
         }
 
-        $this->setDefaultAddress($quote->getShippingAddress());
-        $this->setDefaultAddress($quote->getBillingAddress());
+        $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession();
 
-        // $address = $quote->getShippingAddress();
-        // if($address->getFirstname() !== 'OpenPOS') {
-        //     $address = $this->addressFactory->create();
-        //     $this->setDefaultAddress($address);
-        //     $quote->setShippingAddress($address);
-        // }
-
-        // $address = $quote->getBillingAddress();
-        // if($address->getFirstname() !== 'OpenPOS') {
-        //     $address = $this->addressFactory->create();
-        //     $this->setDefaultAddress($address);
-        //     $quote->setBillingAddress($address);
-        // }
+        $quote->setCustomerEmail($adminUser->getEmail());
+        $this->setDefaultAddress($quote->getShippingAddress(), $adminUser);
+        $this->setDefaultAddress($quote->getBillingAddress(), $adminUser);
     }
 
-    protected function setDefaultAddress($address)
+    /**
+     * @param Address $address
+     * @param User $adminUser
+     */
+    protected function setDefaultAddress(Address $address, User $adminUser): void
     {
-        $address->setFirstname('OpenPOS');
-        $address->setLastname('Customer');
+        $address->setEmail($adminUser->getEmail());
+        $address->setFirstname($adminUser->getFirstName());
+        $address->setLastname($adminUser->getLastName());
+
+        // TODO: add admin fields for below
         $address->setStreet(['openpos', 'openpos']);
         $address->setCity('openpos');
         $address->setPostcode('openpos');
         $address->setCountryId('GB');
         $address->setTelephone('123456789');
-        $address->save();
     }
 }

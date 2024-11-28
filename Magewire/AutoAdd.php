@@ -9,6 +9,8 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Magento\Framework\DataObject\Factory as ObjectFactory;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Catalog\Model\Product;
 
 class AutoAdd extends Component
 {
@@ -54,7 +56,7 @@ class AutoAdd extends Component
     /**
      * @var string
      */
-    public $customPriceInput = 0;
+    public $customPriceInput = '';
 
     /**
      * @var bool
@@ -97,24 +99,23 @@ class AutoAdd extends Component
      *
      * @return void
      */
-    public function parseSkuInput()
+    public function parseSkuInput(): void
     {
         if($this->skuInput === ''){
             return;
         }
 
         if(!$this->customProductMode && $this->skuInput == $this->posHelper->getCustomProductBarcode() && $this->posHelper->getCustomProductBarcode() != '') {
-            $this->priceEditorMode = true;
+            $this->priceEditorMode = false;
             $this->customProductMode = true;
             $this->showSkuField = false;
-            $this->dispatchNoticeMessage('Custom product mode has been enabled.');
             return;
         }
 
         if($this->skuInput == $this->posHelper->getPriceEditorBarcode() && $this->posHelper->getPriceEditorBarcode() != '') {
+            $this->customProductMode = false;
             $this->priceEditorMode = true;
             $this->skuInput = '';
-            $this->dispatchNoticeMessage('Price editor mode has been enabled.');
             return;
         }
 
@@ -134,29 +135,31 @@ class AutoAdd extends Component
             }
 
             if(!$product) {
-                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput . '&append=');
+                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput);
                 return;
             }
         }
 
         if($product->getTypeId() != \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
             $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
-            //$this->dispatchErrorMessage('The SKU you are trying to add isn\'t a simple product, so cannot be added to the cart.');
             return;
         }
 
         try {
             $item = $this->addProductToQuote($product);
-            $this->redirect('/checkout/cart/index/');
+            $this->redirect('/');
         } catch(\Exception $e) {
-            $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+            $this->dispatchErrorMessage(__('There was a problem adding this product to the cart.'));
             return;
         }
-
-        $this->dispatchSuccessMessage($this->skuInput.' has been added to cart.');
     }
 
-    public function addProductToQuote($product)
+    /**
+     * Add a product to the quote
+     * @param Product $product
+     * @return Item|null
+     */
+    public function addProductToQuote(Product $product): ?Item
     {
         try {
             $quote = $this->checkoutSession->getQuote();
@@ -181,8 +184,18 @@ class AutoAdd extends Component
 
             return $item;
         } catch(\Exception $e) {
-            $this->dispatchErrorMessage('There was a problem adding this product to the cart.');
+            $this->dispatchErrorMessage(__('There was a problem adding this product to the cart.'));
+            return null;
         }
     }
 
+    /**
+     * Reset whole block / SKU input
+     * 
+     * @return void
+     */
+    public function resetInput(): void
+    {
+        $this->reset();
+    }
 }

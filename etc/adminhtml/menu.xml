@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Zero1_OpenPos::pos" title="Open POS" module="Zero1_OpenPos" sortOrder="20" resource="Zero1_OpenPos::pos"/>
-        <add id="Zero1_OpenPos::configuration" title="Configuration" module="Zero1_OpenPos" sortOrder="10" parent="Zero1_OpenPos::pos" action="adminhtml/system_config/edit/section/zero1_pos" resource="Zero1_OpenPos::configuration"/>
-        <add id="Zero1_OpenPos::goto_guest" title="Enter POS as Guest" module="Zero1_OpenPos" sortOrder="20" parent="Zero1_OpenPos::pos" action="zero1pos/login/guest" resource="Zero1_OpenPos::goto" target="_blank"/>
-        <add id="Zero1_OpenPos::goto_customer" title="Enter POS as Customer" module="Zero1_OpenPos" sortOrder="30" parent="Zero1_OpenPos::pos" action="customer/index" resource="Magento_Customer::manage"/>
+        <add id="Zero1_OpenPos::pos" title="OpenPOS" module="Zero1_OpenPos" sortOrder="10" resource="Zero1_OpenPos::pos"/>
+        <add id="Zero1_OpenPos::configuration" title="Configuration" module="Zero1_OpenPos" sortOrder="20" parent="Zero1_OpenPos::pos" action="adminhtml/system_config/edit/section/openpos" resource="Zero1_OpenPos::configuration"/>
     </menu>
 </config>
