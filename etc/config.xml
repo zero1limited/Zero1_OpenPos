@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <zero1_pos>
+        <openpos>
             <general>
                 <session_lifetime>240</session_lifetime>
             </general>
-        </zero1_pos>
+        </openpos>
      </default>
 </config>

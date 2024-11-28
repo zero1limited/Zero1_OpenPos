@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="zero1_pos" translate="label" sortOrder="600">
-            <label>Open POS</label>
+        <tab id="openpos" translate="label" sortOrder="600">
+            <label>OpenPOS</label>
         </tab>
-        <section id="zero1_pos" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+        <section id="openpos" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
             <label>Configuration</label>
-            <tab>zero1_pos</tab>
+            <tab>openpos</tab>
             <resource>Zero1_OpenPos::configuration</resource>
             <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>General</label>
@@ -14,14 +14,14 @@
                     <label>Enable OpenPOS system</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                 </field>
-                <field id="tfa_enable" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="pos_store" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>POS Store</label>
+                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
+                </field>
+                <field id="tfa_enable" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable 2FA on till login</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                     <comment>Magento_TwoFactorAuth must be enabled!</comment>
-                </field>
-                <field id="pos_store" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>POS Store</label>
-                    <source_model>Magento\Config\Model\Config\Source\Store</source_model>
                 </field>
                 <field id="session_lifetime" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Till session lifetime</label>
