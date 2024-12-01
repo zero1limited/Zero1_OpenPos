@@ -42,6 +42,18 @@
                     <label>Till users</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\AdminUser</source_model>
                 </field>
+                <field id="module_integration_mode" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Module integration mode</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationMode</source_model>
+                    <comment>Allow Magento modules to make changes to the frontend of OpenPOS. If you are facing issues select 'None'.</comment>
+                </field>
+                <field id="module_integration_modules" translate="label" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Specific modules</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationModules</source_model>
+                    <depends>
+                        <field id="module_integration_mode">specific</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">

@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Model\Config\Source;
 
+use Magento\Framework\Data\OptionSourceInterface;
 use \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as ProductAttributeCollectionFactory;
 
-class BarcodeAttribute implements \Magento\Framework\Option\ArrayInterface
+class BarcodeAttribute implements OptionSourceInterface
 {
     /**
      * @var ProductAttributeCollectionFactory

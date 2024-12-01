@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Zero1\OpenPos\Api\TillSessionRepositoryInterface" type="Zero1\OpenPos\Model\TillSessionRepository" />
+    <preference for="Zero1\OpenPos\Api\Data\TillSessionInterface" type="Zero1\OpenPos\Model\TillSession" />
+
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_openpos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
     </type>
@@ -11,14 +14,6 @@
         <plugin name="zero1_openpos_auto_invoice" type="Zero1\OpenPos\Plugin\AutoInvoice" sortOrder="10"/>
     </type>
 
-    <type name="Zero1\OpenPos\Magewire\Switcher">
-        <arguments>
-            <argument name="blocks" xsi:type="array">
-                <item name="Go back" xsi:type="string">openpos.autoadd</item>
-            </argument>
-        </arguments>
-    </type>
-
     <type name="Magento\Quote\Observer\SubmitObserver">
         <plugin name="zero1_openpos_disable_order_emails" type="Zero1\OpenPos\Plugin\DisableOrderEmails" sortOrder="10" />
     </type>
@@ -27,6 +22,22 @@
         <plugin name="zero1_openpos_disable_order_emails" type="Zero1\OpenPos\Plugin\DisableInvoiceEmails" sortOrder="10" />
     </type>
 
-    <preference for="Zero1\OpenPos\Api\TillSessionRepositoryInterface" type="Zero1\OpenPos\Model\TillSessionRepository" />
-    <preference for="Zero1\OpenPos\Api\Data\TillSessionInterface" type="Zero1\OpenPos\Model\TillSession" />
+    <type name="Zero1\OpenPos\Helper\ModuleIntegration">
+        <arguments>
+            <argument name="openPosModules" xsi:type="array">
+                <item name="Zero1_OpenPos" xsi:type="string">Zero1_OpenPos</item>
+                <item name="Hyva_Theme" xsi:type="string">Hyva_Theme</item>
+                <item name="Hyva_Checkout" xsi:type="string">Hyva_Checkout</item>
+                <item name="Magewirephp_Magewire" xsi:type="string">Magewirephp_Magewire</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Zero1\OpenPos\Magewire\Switcher">
+        <arguments>
+            <argument name="blocks" xsi:type="array">
+                <item name="Go back" xsi:type="string">openpos.autoadd</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

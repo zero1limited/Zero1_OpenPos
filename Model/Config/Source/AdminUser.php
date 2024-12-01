@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Model\Config\Source;
 
+use Magento\Framework\Data\OptionSourceInterface;
 use \Magento\User\Model\ResourceModel\User\CollectionFactory as AdminUserCollectionFactory;
 
-class AdminUser implements \Magento\Framework\Option\ArrayInterface
+class AdminUser implements OptionSourceInterface
 {
     /**
      * @var AdminUserCollectionFactory
