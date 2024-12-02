@@ -42,8 +42,8 @@ class ModuleBlockRestriction implements ObserverInterface
             return;
         }
 
-        // Check a POS store is set, and check if we are currently on it
-        if($this->openPosHelper->getPosStore() && !$this->openPosHelper->currentlyOnPosStore()) {
+        // Check we are currently on POS store
+        if(!$this->openPosHelper->currentlyOnPosStore()) {
             return;
         }
 
@@ -54,7 +54,7 @@ class ModuleBlockRestriction implements ObserverInterface
 
         foreach ($allBlocks as $block) {
             $moduleName = $this->getModuleFromBlock($block);
-            if (!in_array($moduleName, $allowedModules)) {
+            if ($moduleName && !in_array($moduleName, $allowedModules)) {
                 $layout->unsetElement($block->getNameInLayout());
             }
         }
@@ -62,13 +62,12 @@ class ModuleBlockRestriction implements ObserverInterface
 
     /**
      * Return a module name from a block
-     * Using $block->getModuleName() doesn't seem to reliable
      * 
      * @return string|null
      */
     protected function getModuleFromBlock($block): ?string
     {
-        $module = $block->getModule();
+        $module = $block->getModuleName();
         if(!$module) {
             $template = $block->getTemplate();
             if ($template && strpos($template, '::') !== false) {

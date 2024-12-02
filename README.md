@@ -10,6 +10,8 @@ Everything you need to know about OpenPOS [is here](https://www.zero1.co.uk/blog
 
 [Configuration](#configuration)
 
+[Changelog](CHANGELOG.md)
+
 
 # Installation
 
@@ -44,6 +46,7 @@ ZERO-1 POS > Configuration - General
  - Set 'Enable POS system' to 'Enable'
  - Set 'POS Store' to whichever Web Store you wish - IMPORTANT - this will prevent unauthorised access to the site
  - Choose admin users you would like to have access to a till under 'Till users'
+ - If you would like a core OpenPOS experience, or you are noticing issues, please set 'Module integration mode' to 'None'
 
 General Magento Config - for the POS website only
  - Allow Guest Checkout	- Yes
