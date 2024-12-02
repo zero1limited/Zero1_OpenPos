@@ -22,6 +22,8 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'openpos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'openpos/general/barcode_attribute';
     const CONFIG_PATH_GENERAL_TILL_USERS = 'openpos/general/till_users';
+    const CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODE = 'openpos/general/module_integration_mode';
+    const CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODULES = 'openpos/general/module_integration_modules';
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'openpos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
@@ -152,6 +154,22 @@ class Data extends AbstractHelper
     public function getTillUsers(): array
     {
         return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_TILL_USERS));
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getModuleIntegrationMode(): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODE);
+    }
+
+    /**
+     * @return array
+     */
+    public function getModuleIntegrationModules(): array
+    {
+        return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODULES));
     }
 
     /**
