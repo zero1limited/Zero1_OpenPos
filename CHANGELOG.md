@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.0.2] - 2024-12-31
+
+### Fixed
+
+- Resolved an issue where a custom products price would not save when adding to cart.
+
 ## [2.0.1] - 2024-12-02
 
 ### Added
