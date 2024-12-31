@@ -174,7 +174,7 @@ class AutoAdd extends Component
             }
             $item = $quote->addProduct($product, $request);
 
-            if($this->priceEditorMode) {
+            if($this->priceEditorMode || $this->customProductMode) {
                 $this->customPriceInput = (float)$this->customPriceInput;
                 $item->setCustomPrice($this->customPriceInput);
                 $item->setOriginalCustomPrice($this->customPriceInput);
