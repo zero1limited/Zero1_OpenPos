@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.0.3] - 2025-01-14
+
+### Changed
+- Removed hardcoded pound sign on receipt print template.
+- When a product was not successfully added to the cart from a barcode scan, the till user will now be redirected to the PDP (for entering required options etc).
+
 ## [2.0.2] - 2024-12-31
 
 ### Fixed
