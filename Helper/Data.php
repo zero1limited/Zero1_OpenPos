@@ -29,6 +29,7 @@ class Data extends AbstractHelper
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
     const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'openpos/customisation/price_editor_barcode';
     const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'openpos/customisation/custom_product_barcode';
+    const CONFIG_PATH_CUSTOMISATION_BARCODE_SCANNER_EXIT_CHARACTER = 'openpos/customisation/barcode_scanner_exit_character';
 
     /**
      * @var StoreManagerInterface
@@ -202,6 +203,14 @@ class Data extends AbstractHelper
     public function getCustomProductBarcode(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getBarcodeScannerExitCharacter(): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_BARCODE_SCANNER_EXIT_CHARACTER);
     }
 
     /**

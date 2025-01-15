@@ -209,4 +209,14 @@ class AutoAdd extends Component
     {
         $this->reset();
     }
+
+    /**
+     * Return configured character to indicate a barcode scanner has finished entering text.
+     * 
+     * @return string
+     */
+    public function getExitCharacter(): string
+    {
+        return $this->posHelper->getBarcodeScannerExitCharacter();
+    }
 }
