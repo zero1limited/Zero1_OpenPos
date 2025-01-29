@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.0.4] - 2025-01-29
+
+### Fixed
+- Resolved an issue where the minicart total occasionally does not update immediately. 
+- Improved handling of orders placed from the Magento admin on the POS store.
+
 ## [2.0.3] - 2025-01-14
 
 ### Changed
