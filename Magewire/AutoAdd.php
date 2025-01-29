@@ -8,6 +8,7 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Zero1\OpenPos\Helper\Data as PosHelper;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\DataObject\Factory as ObjectFactory;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote\Item;
@@ -38,6 +39,11 @@ class AutoAdd extends Component
      * @var PosHelper
      */
     protected $posHelper;
+
+    /**
+     * @var CartRepositoryInterface
+     */
+    protected $cartRepository;
 
     /**
      * @var ObjectFactory
@@ -84,6 +90,7 @@ class AutoAdd extends Component
      * @param ProductRepositoryInterface $productRepository
      * @param ProductCollectionFactory $productCollectionFactory
      * @param PosHelper $posHelper
+     * @param CartRepositoryInterface $cartRepository
      * @param ObjectFactory $objectFactory
      * @param UrlInterface $urlBuilder
      */
@@ -92,6 +99,7 @@ class AutoAdd extends Component
         ProductRepositoryInterface $productRepository,
         ProductCollectionFactory $productCollectionFactory,
         PosHelper $posHelper,
+        CartRepositoryInterface $cartRepository,
         ObjectFactory $objectFactory,
         UrlInterface $urlBuilder
     ) {
@@ -99,6 +107,7 @@ class AutoAdd extends Component
         $this->productRepository = $productRepository;
         $this->productCollectionFactory = $productCollectionFactory;
         $this->posHelper = $posHelper;
+        $this->cartRepository = $cartRepository;
         $this->objectFactory = $objectFactory;
         $this->urlBuilder = $urlBuilder;
     }
@@ -195,7 +204,12 @@ class AutoAdd extends Component
             $item->setOriginalCustomPrice($this->customPriceInput);
             $item->getProduct()->setIsSuperMode(true);
         }
-        $quote->collectTotals()->save();
+
+        $quote->setTotalsCollectedFlag(false);
+        $this->cartRepository->save($quote);
+
+        $quote->collectTotals();
+        $this->cartRepository->save($quote);
 
         return $item;
     }
