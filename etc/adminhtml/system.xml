@@ -74,6 +74,11 @@
                     <label>Custom Product Barcode / SKU</label>
                     <comment>To be used when a physical item has no product within Magento. Description and price are ediable from the POS system. There needs to be a 'dummy' product in the Magento catalog with the above SKU.</comment>
                 </field>
+                <field id="barcode_scanner_exit_character" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Barcode scanner exit character</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\BarcodeScannerExitCharacter</source_model>
+                    <comment>Different models of barcode scanners may use a different character / key to indicate they have finished scanning and the input should be processed.</comment>
+                </field>
             </group>
         </section>
     </system>

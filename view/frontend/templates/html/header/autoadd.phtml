@@ -26,7 +26,7 @@
                     <input id="z1-auto-add"
                         autocomplete="off"
                         name="z1-auto-add"
-                        wire:blur="parseSkuInput"
+                        wire:keydown.<?= $magewire->getExitCharacter() ?>="parseSkuInput"
                         placeholder="<?= $escaper->escapeHtmlAttr(__('Scan product or enter SKU...')) ?>"
                         class="mt-6 w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input bg-c-highlight"
                         wire:model.defer="skuInput" />
@@ -46,7 +46,7 @@
                     <input id="z1-auto-add"
                         autocomplete="off"
                         name="z1-auto-add"
-                        wire:blur="parseSkuInput"
+                        wire:keydown.<?= $magewire->getExitCharacter() ?>="parseSkuInput"
                         placeholder="<?= $escaper->escapeHtmlAttr(__('Start scanning or search for products...')) ?>"
                         class="w-full text-lg leading-normal transition appearance-none text-grey-800 outline-none border form-input bg-c-highlight"
                         wire:model.defer="skuInput" />

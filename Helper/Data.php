@@ -12,6 +12,7 @@ use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Framework\App\State;
 
 class Data extends AbstractHelper
 {
@@ -29,6 +30,7 @@ class Data extends AbstractHelper
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
     const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'openpos/customisation/price_editor_barcode';
     const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'openpos/customisation/custom_product_barcode';
+    const CONFIG_PATH_CUSTOMISATION_BARCODE_SCANNER_EXIT_CHARACTER = 'openpos/customisation/barcode_scanner_exit_character';
 
     /**
      * @var StoreManagerInterface
@@ -56,12 +58,18 @@ class Data extends AbstractHelper
     protected $encryptor;
 
     /**
+     * @var State
+     */
+    protected $appState;
+
+    /**
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param CustomerRepositoryInterface $customerRepository
      * @param CustomerInterfaceFactory $customerFactory
      * @param EncryptorInterface $encryptor
+     * @param State $appState
      */
     public function __construct(
         Context $context,
@@ -69,13 +77,15 @@ class Data extends AbstractHelper
         ScopeConfigInterface $scopeConfig,
         CustomerRepositoryInterface $customerRepository,
         CustomerInterfaceFactory $customerFactory,
-        EncryptorInterface $encryptor
+        EncryptorInterface $encryptor,
+        State $appState
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->customerRepository = $customerRepository;
         $this->customerFactory = $customerFactory;
         $this->encryptor = $encryptor;
+        $this->appState = $appState;
         parent::__construct($context);
     }
 
@@ -205,6 +215,14 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @return string|null
+     */
+    public function getBarcodeScannerExitCharacter(): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_BARCODE_SCANNER_EXIT_CHARACTER);
+    }
+
+    /**
      * @return StoreInterface|null
      */
     public function getPosStore(): ?StoreInterface
@@ -239,6 +257,19 @@ class Data extends AbstractHelper
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * Check if current session is in Magento Admin area.
+     * 
+     * @return bool
+     */
+    public function isAdminSession(): bool
+    {
+        if ($this->appState->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML) {
+            return true;
+        }
         return false;
     }
 }

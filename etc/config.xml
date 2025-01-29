@@ -5,6 +5,9 @@
             <general>
                 <session_lifetime>240</session_lifetime>
             </general>
+            <customisation>
+                <barcode_scanner_exit_character>tab</barcode_scanner_exit_character>
+            </customisation>
         </openpos>
      </default>
 </config>

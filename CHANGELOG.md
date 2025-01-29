@@ -1,5 +1,15 @@
 # OpenPOS changelog
 
+## [2.0.4] - 2025-01-29
+
+### Added
+- You can now configure different exit / return characters for the barcode scanner.
+
+### Fixed
+- Resolved an issue where the minicart total occasionally does not update immediately. 
+- Resolved a display issue with the built in cash payment method.
+- Improved handling of orders placed from the Magento admin on the POS store.
+
 ## [2.0.3] - 2025-01-14
 
 ### Changed
