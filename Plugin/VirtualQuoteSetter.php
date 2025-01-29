@@ -29,7 +29,7 @@ class VirtualQuoteSetter
      */
     public function afterIsVirtual(Quote $quote, bool $result): bool
     {
-        if($this->posHelper->currentlyOnPosStore()) {
+        if($this->posHelper->currentlyOnPosStore() || $quote->getStoreId() === $this->posHelper->getPosStoreId()) {
             return true;
         }
 

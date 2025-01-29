@@ -39,8 +39,8 @@ class SetQuoteAddressObserver implements ObserverInterface
      */
     public function execute(Observer $observer): void
     {
-        // Check if module is enabled, and we are on the POS store
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore()) {
+        // Check if module is enabled, and we are on the POS store frontend
+        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore() || $this->posHelper->isAdminSession()) {
             return;
         }
 
