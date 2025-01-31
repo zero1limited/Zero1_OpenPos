@@ -7,6 +7,7 @@ use Magewirephp\Magewire\Component;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Magento\Quote\Model\Quote\Item;
 
@@ -28,6 +29,11 @@ class Cart extends Component
      * @var CartRepositoryInterface
      */
     protected $cartRepository;
+
+    /**
+     * @var ImageUrlBuilder
+     */
+    protected $imageUrlBuilder;
 
     /**
      * @var OpenPosSessionHelper
@@ -58,17 +64,20 @@ class Cart extends Component
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param CartRepositoryInterface $cartRepository
+     * @param ImageUrlBuilder $imageUrlBuilder
      * @param OpenPosSessionHelper $openPosSessionHelper
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         CartRepositoryInterface $cartRepository,
+        ImageUrlBuilder $imageUrlBuilder,
         OpenPosSessionHelper $openPosSessionHelper
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->cartRepository = $cartRepository;
+        $this->imageUrlBuilder = $imageUrlBuilder;
         $this->openPosSessionHelper = $openPosSessionHelper;
     }
 
@@ -87,7 +96,8 @@ class Cart extends Component
                 'id' => $quoteItem->getId(),
                 'name' => $quoteItem->getName(),
                 'price' => $this->pricingHelper->currency($quoteItem->getPrice(), true, false),
-                'qty' => (int)$quoteItem->getQty()
+                'qty' => (int)$quoteItem->getQty(),
+                'image' => $this->imageUrlBuilder->getUrl($quoteItem->getProduct()->getThumbnail(), 'product_page_image_small')
             ];
         }
 

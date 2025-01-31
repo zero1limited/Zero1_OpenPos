@@ -36,7 +36,7 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                     <header class="relative p-4 border-b">
                         <p id="cart-drawer-title" class="text-lg font-medium leading-7 text-gray-900">
                             <strong><?= $escaper->escapeHtml(__('Cart')) ?></strong>
-                            <span class="cartcount">(<?= $this->escapeHtml(count($magewire->getItems()).' item(s)') ?>)</span>
+                            <span class="cartcount"> - <?= $this->escapeHtml(count($magewire->getItems()).' item(s)') ?></span>
                         </p>
                     </header>
                     <div class="h-full relative overflow-y-auto overscroll-y-contain">
