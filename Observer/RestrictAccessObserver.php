@@ -10,10 +10,11 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\ActionFlag;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Magento\Framework\View\DesignInterface;
 
 class RestrictAccessObserver implements ObserverInterface
 {
-    const CONTROLLER_ACTION_WHITELIST = ['openpos_tillsession_login', 'openpos_tillsession_loginpost', 'openpos_secondarydisplay_index'];
+    const CONTROLLER_ACTION_WHITELIST = ['openpos_tillsession_login', 'openpos_tillsession_loginpost'];
 
     /**
      * @var RedirectInterface
@@ -41,23 +42,31 @@ class RestrictAccessObserver implements ObserverInterface
     protected $openPosSessionHelper;
 
     /**
+     * @var DesignInterface
+     */
+    protected $design;
+
+    /**
      * @param RedirectInterface $redirect
      * @param ActionFlag $actionFlag
      * @param PosHelper $posHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param DesignInterface $design
      */
     public function __construct(
         RedirectInterface $redirect,
         ResponseInterface $response,
         ActionFlag $actionFlag,
         PosHelper $posHelper,
-        OpenPosSessionHelper $openPosSessionHelper
+        OpenPosSessionHelper $openPosSessionHelper,
+        DesignInterface $design
     ) {
         $this->redirect = $redirect;
         $this->response = $response;
         $this->actionFlag = $actionFlag;
         $this->posHelper = $posHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->design = $design;
     }
 
     /**
@@ -65,6 +74,8 @@ class RestrictAccessObserver implements ObserverInterface
      */
     public function execute(Observer $observer): void
     {
+        $this->detectThemeUsageOnNonPosStore();
+
         // Check if module is enabled
         if(!$this->posHelper->isEnabled()) {
             return;
@@ -88,5 +99,31 @@ class RestrictAccessObserver implements ObserverInterface
         // Redirect
         $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
         $this->redirect->redirect($this->response, 'openpos/tillsession/login');      
+    }
+
+    /**
+     * Ensure an OpenPOS based theme is not being ran on a non-POS store.
+     * If so, kill the process to protect against unauthorised access.
+     * This check will be performed even if the module is disabled within the OpenPOS configuration.
+     * 
+     * @return void
+     */
+    protected function detectThemeUsageOnNonPosStore(): void
+    {
+        // Currently on a POS store, authentication in place.
+        if($this->posHelper->currentlyOnPosStore()) {
+            return;
+        }
+
+        $theme = $this->design->getDesignTheme();
+        if(strpos($theme->getThemePath(), 'openpos') !== false) {
+            die(__('OpenPOS theme in use on a non-POS store. Please check OpenPOS configuration.')); // TODO: improve
+        }
+
+        foreach($this->design->getDesignTheme()->getInheritedThemes() as $inheritedTheme) {
+            if(strpos($inheritedTheme->getThemePath(), 'openpos') !== false) {
+                die(__('OpenPOS theme in use on a non-POS store. Please check OpenPOS configuration.')); // TODO: improve
+            }
+        }
     }
 }

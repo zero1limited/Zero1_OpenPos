@@ -5,7 +5,10 @@ namespace Zero1\OpenPos\Controller\SecondaryDisplay;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Controller\Result\ForwardFactory;
+use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Magento\Framework\View\Result\Page;
+use Magento\Framework\Controller\Result\Forward;
 
 class Index implements HttpGetActionInterface
 {
@@ -15,19 +18,40 @@ class Index implements HttpGetActionInterface
     protected $pageFactory;
 
     /**
+     * @var ForwardFactory
+     */
+    protected $forwardFactory;
+
+    /**
+     * @var OpenPosHelper
+     */
+    protected $openPosHelper;
+
+    /**
      * @param PageFactory $pageFactory
+     * @param ForwardFactory $forwardFactory
+     * @param OpenPosHelper $openPosHelper
      */
     public function __construct(
-        PageFactory $pageFactory
+        PageFactory $pageFactory,
+        ForwardFactory $forwardFactory,
+        OpenPosHelper $openPosHelper
     ) {
         $this->pageFactory = $pageFactory;
+        $this->forwardFactory = $forwardFactory;
+        $this->openPosHelper = $openPosHelper;
     }
 
     /**
-     * @return Page
+     * @return Page|Forward
      */
-    public function execute(): Page
+    public function execute()
     {
+        if(!$this->openPosHelper->currentlyOnPosStore()) {
+            $forward = $this->forwardFactory->create();
+            return $forward->forward('noroute');
+        }
+
         $page = $this->pageFactory->create();
         $page->getConfig()->getTitle()->set('OpenPOS Secondary Display');
 

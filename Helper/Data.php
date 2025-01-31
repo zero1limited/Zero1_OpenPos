@@ -242,6 +242,9 @@ class Data extends AbstractHelper
      */
     public function currentlyOnPosStore(): bool
     {
+        if(!$this->isEnabled()) {
+            return false;
+        }
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
     }
 

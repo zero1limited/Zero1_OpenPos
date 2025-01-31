@@ -140,6 +140,12 @@ class Session extends AbstractHelper
      */
     public function getTillSession(): ?TillSessionInterface
     {
+        // Check user is on POS store
+        if(!$this->posHelper->currentlyOnPosStore()) {
+            $this->destroySession();
+            return null;
+        }
+
         $tillSessionId = $this->getTillSessionId();
         try {
             $tillSession = $this->tillSessionRepository->getById($tillSessionId);
@@ -190,6 +196,12 @@ class Session extends AbstractHelper
      */
     public function startTillSession(User $adminUser): TillSessionInterface
     {
+        // Check user is on POS store
+        if(!$this->posHelper->currentlyOnPosStore()) {
+            $this->destroySession();
+            throw new LocalizedException(__('Cannot create till session on non-POS store.'));
+        }
+                
         if($this->getTillSessionId()) {
             try {
                 $this->tillSessionRepository->deleteById($this->getTillSessionId());

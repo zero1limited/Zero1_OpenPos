@@ -76,6 +76,12 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     public function execute() : Redirect
     {
         $resultRedirect = $this->resultRedirectFactory->create();
+
+        if(!$this->openPosHelper->currentlyOnPosStore()) {
+            $resultRedirect->setPath('/');
+            return $resultRedirect;
+        }
+
         if($this->getRequest()->isPost()) {
             $login = $this->getRequest()->getPost('login');
             if (!empty($login['username']) && !empty($login['password'])) {
