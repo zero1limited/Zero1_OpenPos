@@ -47,38 +47,36 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                 </button>
             </div>
 
-            <div class="w-full openpos-popup-content">
+            <div class="w-full openpos-popup-content h-screen pb-10 overflow-scroll">
                 
 
                 <?php if($magewire->isCurrentCustomerGuest()): ?>
 
                     <div class="w-full p-8 text-center text-xl">
-                        <p>Currently serving a <span class="font-bold">Guest Customer</span></p>
+                        <p><?php echo __('Currently serving a '); ?><span class="font-bold"><?php echo __('Guest Customer'); ?></span></p>
                     </div>
-                    <div class="px-6 text-center mt-4">
-                        <p class="text-lg mb-4">Login as a customer to give them an enhanced experience...</p>
-                        <div id="loginform" class="px-8">
-                            <input type="email" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Enter customer's email address" wire:model.debounce.2000ms="emailInput" />
-                            <?php if($magewire->foundCustomer !== null): ?>
-                                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch to <?= $magewire->foundCustomer ?></button>
-                            <?php else: ?>
-                                <button class="secondary-login btn btn-primary action login primary w-full text-center uppercase justify-center" wire:click="changeToCustomer">Switch</button>
+                    <div class="px-6 text-center mt-4 pb-8">
+                        <p class="text-lg mb-4"><?php echo __('Login as a customer to give them an enhanced experience...'); ?></p>
+                        <div id="loginform" class="">
+                            <input type="text" class="mb-4 w-full p-2 text-sm leading-normal transition appearance-none text-grey-800 font-normal outline-none lg:text-lg border px-4 form-input" placeholder="Search for a customer by name / telephone" wire:model.debounce.1000ms="inputSearch" />
+                            <?php if($magewire->inputSearch !== '' && empty($magewire->customerSearchResults)): ?>
+                                <?= __('No customers found matching query') ?>
+                            <?php elseif($magewire->inputSearch !== '' && !empty($magewire->customerSearchResults)): ?>
+                                <?php foreach($magewire->customerSearchResults as $customer): ?>
+
+                                    <div class="w-full mb-4">
+                                        <button class="btn btn-secondary bg-c-highlight p-4 justify-center text-sm w-full" wire:click="$emit('changeToCustomerById', [<?= $customer['id'] ?>])">
+                                            <span>
+                                                <span class="font-bold text-lg"><?= __($customer['name']) ?></span>
+                                                <span class="font-normal" style="text-transform: lowercase;"> - <?= __($customer['email']) ?></span>
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                     </div>
-
-                <?php else: ?>
-
-                    <?php /*
-                    <div class="w-full p-8 text-center text-xl">
-                        <p>Customer: <span class="font-bold"><?php echo __($magewire->getCurrentCustomerName() ?? 'Unknown customer'); ?></span></p>
-                    </div>
-                    <div class="px-6 text-center mt-4">
-                        <div class="px-8">
-                            <p>Here are some customer account details</p>
-                        </div>
-                    </div>
-                    */ ?>
 
                 <?php endif; ?>
 

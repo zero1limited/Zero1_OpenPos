@@ -1,0 +1,134 @@
+<?php
+
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+
+/** @var HeroiconsOutline $heroicons */
+$heroicons = $viewModels->require(HeroiconsOutline::class);
+?>
+
+<div id="openpos-cart cart-drawer" class="">
+
+    <div class="fixed inset-y-0 right-0 z-30 flex max-w-full" id="cart-drawer-wrapper">
+
+        <div class="relative w-full border-l">
+
+            <div class="flex flex-col h-full max-h-screen bg-white">
+
+                <?php if (count($magewire->getItems()) == 0) : ?>
+
+                    <header class="relative p-4 border-b">
+                        <p id="cart-drawer-title" class="text-lg font-medium leading-7 text-gray-900">
+                            <strong><?= $escaper->escapeHtml(__('Cart')) ?></strong>
+                        </p>
+                    </header>
+                    <div class="relative p-4 bg-white border-bs sm:px-6 border-container">
+                        <div class="flex items-center">
+                            <span style="font-size: 30px;">&#128530</span>
+                            <span class="ml-2"><?= $escaper->escapeHtml(__('The cart is empty')) ?></span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class=""><?php echo __('Start scanning to add products and have a lovely day!'); ?></span>
+                        </div>
+                    </div>
+
+                <?php else: ?>
+
+                    <header class="relative p-4 border-b">
+                        <p id="cart-drawer-title" class="text-lg font-medium leading-7 text-gray-900">
+                            <strong><?= $escaper->escapeHtml(__('Cart')) ?></strong>
+                            <span class="cartcount">(<?= $this->escapeHtml(count($magewire->getItems()).' item(s)') ?>)</span>
+                        </p>
+                    </header>
+                    <div class="h-full relative overflow-y-auto overscroll-y-contain">
+
+                        <?php foreach($magewire->getItems() as $item): ?>
+
+                            <div class="flex items-start border-b">
+                                <div class="flex flex-wrap w-full">
+                                    <div class="w-full flex gap-2 px-2 pt-2">
+                                        <div class="image w-1/4 p-2">
+                                            <img
+                                                src="<?= $item['name'] ?>"
+                                                loading="lazy"
+                                                alt=""
+                                                class="w-full"
+                                            />
+                                        </div>
+                                        <div class="details w-3/4 p-2">
+                                            <span><?= $item['qty'] ?></span> x <span><?= $item['name'] ?></span>
+                                            <p><span><?= $item['price'] ?></span></p>
+                                        </div>
+                                    </div>
+                                    <div class="actions flex w-full gap-4 p-4">
+                                        <button type="button"
+                                                class="inline-flex p-2 btn btn-primary btn-secondary"
+                                                wire:click="$emit('editItem', [<?= $item['id'] ?>])"
+                                        >
+                                            <?= $heroicons->pencilHtml('', 20, 20, ['aria-hidden' => 'true']); ?>
+                                        </button>
+                                        <button type="button"
+                                                class="inline-flex p-2 btn btn-primary btn-remove"
+                                                wire:click="$emit('removeItem', [<?= $item['id'] ?>])"
+                                        >
+                                            <?= $heroicons->trashHtml('', 20, 20, ['aria-hidden' => 'true']); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php endforeach; ?>
+
+                        <?php if($magewire->editingItemId): ?>
+                            <div class="absolute top-0 bg-white h-screen p-4 w-full">
+                                <div class="">
+                                    <span><?= $escaper->escapeHtml(__('Editing: ')) ?></span><span class="font-bold"><?= $magewire->editingItemName ?></span>
+                                </div>
+                                <div class="flex mt-4 items-center">
+                                    <span class="w-1/4 font-bold"><?= $escaper->escapeHtml(__('Price')) ?></span>
+                                    <input class="form-input w-full" type="text" wire:model.defer="inputPrice"/>
+                                </div>
+                                <?php /* Update qty
+                                <div class="flex mt-4 items-center">
+                                    <span class="w-1/4 font-bold"><?= $escaper->escapeHtml(__('Qty')) ?></span>
+                                    <div class="qty-wrapper flex w-full">
+                                        <span>-</span>
+                                        <input class="form-input w-full" type="text" wire:model.defer="inputQty"/>
+                                        <span>+</span>
+                                    </div>
+                                </div>
+                                */ ?>
+                                <div class="flex mt-4 items-center flex-wrap">
+                                    <button class="inline-flex p-2 btn btn-primary mb-4" wire:click="saveItem"><?= $escaper->escapeHtml(__('Save')) ?></button>
+                                    <button class="inline-flex p-2 btn btn-primary btn-remove" wire:click="cancelEditItem"><?= $escaper->escapeHtml(__('Cancel')) ?></button>
+                                </div>
+
+                            </div>
+                        <?php endif; ?>
+
+                    </div>
+                    <span id="cart-totals-wrapper-spacer"></span>
+                    <div class="cart-totals-wrapper">
+                        
+                        <div class="relative p-4">
+                            <div class="w-full p-1 flex items-center">
+                                <span><?= $escaper->escapeHtml(__('Subtotal')) ?></span>
+                                <span class="ml-auto font-bold text-xl"><?= $magewire->getSubtotal(); ?></span>
+                            </div>
+                            <div class="w-full p-1">
+                                <a 
+                                    href="<?= $escaper->escapeUrl($block->getUrl('checkout/cart')) ?>"
+                                    class="inline-flex btn btn-primary text-lg main-checkout-button"
+                                >
+                                    <?= $escaper->escapeHtml(__('Pay')) ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                <?php endif; ?>
+            </div>
+
+        </div>
+    </div>
+
+</div>
