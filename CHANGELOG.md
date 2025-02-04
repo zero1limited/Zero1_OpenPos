@@ -1,5 +1,18 @@
 # OpenPOS changelog
 
+## [2.1.0] - in progress
+
+### Added
+- You can now edit an already scanned item's price from the cart.
+- You can now search for customers via name, email, telephone rather than having to enter the full email address.
+
+### Changed
+- Ensured the OpenPOS theme cannot be used on any non-POS stores, in the event of a misconfiguration.
+- Attempts to access the OpenPOS login on non-POS stores return a 404.
+
+### Fixed
+- Resolved an issue where the notice to flush Magento cache after modifying till users does not display. 
+
 ## [2.0.4] - 2025-01-29
 
 ### Added
