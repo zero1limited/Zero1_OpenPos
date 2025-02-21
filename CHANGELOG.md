@@ -12,7 +12,8 @@
 - Default address logic has changed. Shipping and billing addresses for POS quotes are set to the store's address by default. Billing address will be set to customer's default billing address if valid.
 
 ### Fixed
-- Resolved an issue where the notice to flush Magento cache after modifying till users does not display. 
+- Resolved an issue where the notice to flush Magento cache after modifying till users does not display.
+- Resolved an issue where product isSaleable bypass may affect other stores.
 
 ## [2.0.4] - 2025-01-29
 
