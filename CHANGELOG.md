@@ -9,6 +9,7 @@
 ### Changed
 - Ensured the OpenPOS theme cannot be used on any non-POS stores, in the event of a misconfiguration.
 - Attempts to access the OpenPOS login on non-POS stores return a 404.
+- Default address logic has changed. Shipping and billing addresses for POS quotes are set to the store's address by default. Billing address will be set to customer's default billing address if valid.
 
 ### Fixed
 - Resolved an issue where the notice to flush Magento cache after modifying till users does not display. 
