@@ -266,7 +266,7 @@ class Data extends AbstractHelper
      */
     public function isPosOrder(OrderInterface $order): bool
     {
-        if($order->getStoreId() == $this->getPosStoreId() && strpos($order->getPayment()->getMethodInstance()->getCode(), 'pos') !== false) {
+        if($order->getStoreId() == $this->getPosStoreId()) {
             return true;
         }
 
