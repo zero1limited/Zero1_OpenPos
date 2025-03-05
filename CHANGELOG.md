@@ -5,11 +5,14 @@
 ### Added
 - You can now edit an already scanned item's price from the cart.
 - You can now search for customers via name, email, telephone rather than having to enter the full email address.
+- A POS order billing address will now be the customers default billing address or the physical store's address (pulled from core config).
+- Added the optional ability to emulate the physical store's address as the POS order's shipping address, despite the order being virtual and not having one.
 
 ### Changed
 - Ensured the OpenPOS theme cannot be used on any non-POS stores, in the event of a misconfiguration.
 - Attempts to access the OpenPOS login on non-POS stores return a 404.
 - Default address logic has changed. Shipping and billing addresses for POS quotes are set to the store's address by default. Billing address will be set to customer's default billing address if valid.
+- Created new configuration group 'Advanced' and moved module intergration there.
 
 ### Fixed
 - Resolved an issue where the notice to flush Magento cache after modifying till users does not display.
