@@ -32,6 +32,7 @@ class Data extends AbstractHelper
 
     const CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODE = 'openpos/advanced/module_integration_mode';
     const CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODULES = 'openpos/advanced/module_integration_modules';
+    const CONFIG_PATH_ADVANCED_FORCE_STORE_BILLING_ADDRESS = 'openpos/advanced/force_store_billing_address';
     const CONFIG_PATH_ADVANCED_EMULATE_SHIPPING_ADDRESS = 'openpos/advanced/emulate_shipping_address';
 
     /**
@@ -222,6 +223,14 @@ class Data extends AbstractHelper
     public function getModuleIntegrationModules(): array
     {
         return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODULES));
+    }
+
+    /**
+     * @return bool
+     */
+    public function getForceStoreBillingAddress(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_FORCE_STORE_BILLING_ADDRESS);
     }
 
     /**

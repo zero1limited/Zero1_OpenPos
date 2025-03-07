@@ -84,13 +84,13 @@ class SetQuoteAddressObserver implements ObserverInterface
 
         try {
             // Attempt to set customer default billing address
-            if($this->customerSession->isLoggedIn()) {
+            if($this->customerSession->isLoggedIn() && !$this->posHelper->getForceStoreBillingAddress()) {
                 $defaultBillingAddress = $this->customerSession->getCustomer()->getDefaultBillingAddress();
-                if($defaultBillingAddress->getId()) {
+                if($defaultBillingAddress && $defaultBillingAddress->getId()) {
                     $quote->getBillingAddress()->addData($defaultBillingAddress->getData());
                 }
             } else {
-                // Customer is no longer logged in, replace address with default.
+                // Customer is not logged in or OpenPOS configuration doesn't allow customer billing address to be set, replace address with default.
                 $this->setDefaultAddress($quote->getBillingAddress(), $adminUser);
             }
         } catch(\Exception $e) {

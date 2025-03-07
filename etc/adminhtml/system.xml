@@ -83,7 +83,12 @@
                         <field id="module_integration_mode">specific</field>
                     </depends>
                 </field>
-                <field id="emulate_shipping_address" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="force_store_billing_address" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Force physical store billing address</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Logged in customers by default will have their default billing address used on all POS orders. Enabling this setting will always ensure the physical store address is always used for billing address.</comment>
+                </field>
+                <field id="emulate_shipping_address" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Emulate shipping address as store address</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
                     <comment>Orders created from the till system are virtual. Enable this setting to 'emulate' the physical store address in place of the order's empty shipping address.</comment>
