@@ -15,17 +15,17 @@ interface TillSessionRepositoryInterface
     /**
      * Create or update a till session.
      *
-     * @param TillSessionInterface $page
+     * @param TillSessionInterface $tillSession
      * @return TillSessionInterface
      */
-    public function save(TillSessionInterface $page);
+    public function save(TillSessionInterface $tillSession);
 
     /**
-     * Get a till session by Id
+     * Get a till session by ID
      *
      * @param int $id
      * @return TillSessionInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException If Problem with the specified ID does not exist.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException If till session with the specified ID does not exist.
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getById($id);
@@ -40,19 +40,19 @@ interface TillSessionRepositoryInterface
     /**
      * Delete a till session
      *
-     * @param TillSessionInterface $page
+     * @param TillSessionInterface $tillSession
      * @return TillSessionInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException If Problem with the specified ID does not exist.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException If till session with the specified ID does not exist.
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function delete(TillSessionInterface $page);
+    public function delete(TillSessionInterface $tillSession);
 
     /**
-     * Delete a till session by Id
+     * Delete a till session by ID
      *
      * @param int $id
      * @return TillSessionInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException If customer with the specified ID does not exist.
+     * @throws \Magento\Framework\Exception\NoSuchEntityException If till session with the specified ID does not exist.
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteById($id);
