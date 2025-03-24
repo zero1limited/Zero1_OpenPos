@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Plugin;
 
 use Zero1\OpenPos\Helper\Data as PosHelper;
-use Magento\Sales\Api\Data\OrderAddressInterfaceFactory;
+use Magento\Quote\Api\Data\AddressInterfaceFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Directory\Model\RegionFactory;
-use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Address;
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Address;
 
-class EmulateShippingAddress
+class EmulateQuoteShippingAddress
 {
     /**
      * @var PosHelper
@@ -18,7 +18,7 @@ class EmulateShippingAddress
     protected $posHelper;
 
     /**
-     * @var AddressFactory
+     * @var AddressInterfaceFactory
      */
     protected $addressFactory;
 
@@ -34,13 +34,13 @@ class EmulateShippingAddress
 
     /**
      * @param PosHelper $posHelper
-     * @param AddressFactory $addressFactory
+     * @param AddressInterfaceFactory $addressFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param RegionFactory $regionFactory
      */
     public function __construct(
         PosHelper $posHelper,
-        OrderAddressInterfaceFactory $addressFactory,
+        AddressInterfaceFactory $addressFactory,
         ScopeConfigInterface $scopeConfig,
         RegionFactory $regionFactory
     ) {
@@ -53,16 +53,16 @@ class EmulateShippingAddress
     /**
      * @param Order $order
      * @param bool $result
-     * @return \Magento\Sales\Model\Order\Address|null
+     * @return \Magento\Quote\Model\Quote\Address|null
      */
-    public function afterGetShippingAddress(Order $order, $result)
+    public function afterGetShippingAddress(Quote $quote, $result)
     {
         // Ensure OpenPOS is enabled and configured to emulate shipping addresses.
         if(!$this->posHelper->isEnabled() || !$this->posHelper->getEmulateShippingAddress()) {
             return $result;
         }
 
-        if($result === null && $this->posHelper->isPosOrder($order)) {
+        if($result === null && $this->posHelper->currentlyOnPosStore() && !$this->posHelper->isAdminSession()) {
             $address = $this->addressFactory->create();
 
             // Logic to handle either dropdown / selectable regions or just text based region entry.
@@ -78,9 +78,9 @@ class EmulateShippingAddress
                 $regionName = $this->scopeConfig->getValue('general/store_information/region_id');
             }
 
-            $address->setFirstname($order->getCustomerFirstname())
-                ->setLastname($order->getCustomerLastname())
-                ->setEmail($order->getCustomerEmail())
+            $address->setFirstname('foo')
+                ->setLastname('bar')
+                ->setEmail('callum.breeze@zero1.co.uk')
                 ->setStreet([$this->scopeConfig->getValue('general/store_information/street_line1') ?? 'OpenPOS placeholder street', $this->scopeConfig->getValue('general/store_information/street_line2')])
                 ->setCity($this->scopeConfig->getValue('general/store_information/city') ?? 'OpenPOS placeholder city')
                 ->setRegionId($regionId)

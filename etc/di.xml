@@ -5,6 +5,7 @@
 
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_openpos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
+        <plugin name="zero1_openpos_emulate_quote_shipping_address" type="Zero1\OpenPos\Plugin\EmulateQuoteShippingAddress" sortOrder="20" />
     </type>
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_openpos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
@@ -19,11 +20,11 @@
     </type>
 
     <type name="Magento\Quote\Observer\SendInvoiceEmailObserver">
-        <plugin name="zero1_openpos_disable_order_emails" type="Zero1\OpenPos\Plugin\DisableInvoiceEmails" sortOrder="10" />
+        <plugin name="zero1_openpos_disable_invoice_emails" type="Zero1\OpenPos\Plugin\DisableInvoiceEmails" sortOrder="10" />
     </type>
 
     <type name="Magento\Sales\Model\Order">
-        <plugin name="zero1_openpos_emulate_shipping_address" type="Zero1\OpenPos\Plugin\EmulateShippingAddress" sortOrder="10" />
+        <plugin name="zero1_openpos_emulate_order_shipping_address" type="Zero1\OpenPos\Plugin\EmulateOrderShippingAddress" sortOrder="10" />
     </type>
 
     <type name="Zero1\OpenPos\Helper\ModuleIntegration">
