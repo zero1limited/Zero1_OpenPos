@@ -97,7 +97,7 @@ class Cart extends Component
                 'name' => $quoteItem->getName(),
                 'price' => $this->pricingHelper->currency($quoteItem->getPrice(), true, false),
                 'qty' => (int)$quoteItem->getQty(),
-                'image' => $this->imageUrlBuilder->getUrl($quoteItem->getProduct()->getThumbnail(), 'product_page_image_small')
+                'image' => $this->imageUrlBuilder->getUrl((string)$quoteItem->getProduct()->getThumbnail(), 'product_page_image_small')
             ];
         }
 
