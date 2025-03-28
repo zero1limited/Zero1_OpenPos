@@ -6,7 +6,7 @@ Everything you need to know about OpenPOS [is here](https://www.zero1.co.uk/blog
 
 Your Help is GREATLY appreciated.
 
-If you are a merchant or agency wanting to implement OpenPOS please [join the OpenPOS Slack Channel Here] (https://join.slack.com/t/openpos-workspace/shared_invite/zt-32ozggysy-s1XeL_IcChy6PLLNmtUMeg)
+If you are a merchant or agency wanting to implement OpenPOS please [join the OpenPOS Slack Channel Here](https://join.slack.com/t/openpos-workspace/shared_invite/zt-32ozggysy-s1XeL_IcChy6PLLNmtUMeg)
 
 # Info
 
