@@ -248,7 +248,6 @@ class Data extends AbstractHelper
      */
     public function getIsConfigured(): bool
     {
-        return true;
         return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_INTERNAL_IS_CONFIGURED);
     }
 

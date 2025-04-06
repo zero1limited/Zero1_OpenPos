@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Magento\Framework\App\State;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Magento\Store\Api\Data\WebsiteInterfaceFactory;
 use Magento\Store\Api\WebsiteRepositoryInterface;
@@ -11,6 +12,7 @@ use Magento\Store\Api\Data\GroupInterfaceFactory;
 use Magento\Store\Api\GroupRepositoryInterface;
 use Magento\Store\Api\Data\StoreInterfaceFactory;
 use Magento\Store\Api\StoreRepositoryInterface;
+use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory as ThemeCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
@@ -25,6 +27,11 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 class SetupWizard extends Command
 {
+    /**
+     * @var State
+     */
+    protected $state;
+
     /**
      * @var OpenPosHelper
      */
@@ -61,6 +68,11 @@ class SetupWizard extends Command
     protected $storeRepository;
 
     /**
+     * @var CategoryRepositoryInterface
+     */
+    protected $categoryRepository;
+
+    /**
      * @var WriterInterface
      */
     protected $configWriter;
@@ -86,6 +98,7 @@ class SetupWizard extends Command
     protected $userFactory;
 
     /**
+     * @param State $state
      * @param OpenPosHelper $openPosHelper
      * @param WebsiteInterfaceFactory $websiteFactory
      * @param WebsiteRepositoryInterface $websiteRepository
@@ -93,6 +106,7 @@ class SetupWizard extends Command
      * @param GroupRepositoryInterface $groupRepository
      * @param StoreInterfaceFactory $storeFactory
      * @param StoreRepositoryInterface $storeRepository
+     * @param CategoryRepositoryInterface $categoryRepository
      * @param WriterInterface $configWriter
      * @param ThemeCollectionFactory $themeCollectionFactory
      * @param StoreManagerInterface $storeManager
@@ -100,6 +114,7 @@ class SetupWizard extends Command
      * @param UserFactory $userFactory
      */    
     public function __construct(
+        State $state,
         OpenPosHelper $openPosHelper,
         WebsiteInterfaceFactory $websiteFactory,
         WebsiteRepositoryInterface $websiteRepository,
@@ -107,12 +122,14 @@ class SetupWizard extends Command
         GroupRepositoryInterface $groupRepository,
         StoreInterfaceFactory $storeFactory,
         StoreRepositoryInterface $storeRepository,
+        CategoryRepositoryInterface $categoryRepository,
         WriterInterface $configWriter,
         ThemeCollectionFactory $themeCollectionFactory,
         StoreManagerInterface $storeManager,
         AdminUserCollectionFactory $adminUserCollectionFactory,
         UserFactory $userFactory
     ) {
+        $this->state = $state;
         $this->openPosHelper = $openPosHelper;
         $this->websiteFactory = $websiteFactory;
         $this->websiteRepository = $websiteRepository;
@@ -120,6 +137,7 @@ class SetupWizard extends Command
         $this->groupRepository = $groupRepository;
         $this->storeFactory = $storeFactory;
         $this->storeRepository = $storeRepository;
+        $this->categoryRepository = $categoryRepository;
         $this->configWriter = $configWriter;
         $this->themeCollectionFactory = $themeCollectionFactory;
         $this->storeManager = $storeManager;
@@ -147,6 +165,7 @@ class SetupWizard extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->state->setAreaCode('adminhtml');
         $helper = $this->getHelper('question');
 
         $output->write(sprintf("\033\143"));
@@ -189,6 +208,41 @@ class SetupWizard extends Command
             $store = $this->storeRepository->get($storeCode);
             $website = $store->getWebsite();
         } else {
+            // Obtain root category ID
+            $question = new ConfirmationQuestion('Would you like to copy the root category ID from an existing store? [y/n] ', false);
+            $copyRootCategory = $helper->ask($input, $output, $question);
+
+            if($copyRootCategory) {
+                // List all stores, ask which one to use
+                $stores = $this->storeManager->getStores();
+                foreach($stores as $store) {
+                    $storeCodes[] = $store->getCode();
+                }
+
+                $helper = $this->getHelper('question');
+                $question = new ChoiceQuestion(
+                    'Please select the store you would like to copy the root category ID from...',
+                    $storeCodes
+                );
+
+                $storeCode = $helper->ask($input, $output, $question);
+
+                $store = $this->storeRepository->get($storeCode);
+                $storeGroup = $store->getGroup();
+                $rootCategoryId = $storeGroup->getRootCategoryId();
+            } else {
+                $question = new Question('Please enter the root category ID for the OpenPOS store: ');
+                $rootCategoryId = (int)$helper->ask($input, $output, $question);
+
+                try {
+                    $category = $this->categoryRepository->get($rootCategoryId);
+                    $rootCategoryId = $category->getId();
+                } catch(NoSuchEntityException $e) {
+                    $output->writeln(sprintf('<error>Cannot find category with ID: %s</error>', $rootCategoryId));
+                    return 1;
+                }
+            }
+
             // Check for existing website / group / store made previously by the setup wizard.
             try {
                 $this->websiteRepository->get('openpos');
@@ -220,6 +274,7 @@ class SetupWizard extends Command
             $group->setWebsiteId($website->getId());
             $group->setCode('openpos');
             $group->setName('OpenPOS');
+            $group->setRootCategoryId($rootCategoryId);
             $group->save();
 
             $store = $this->storeFactory->create();
@@ -273,12 +328,14 @@ class SetupWizard extends Command
         $this->configWriter->save(OpenPosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $adminUser->getId());
 
         // Set misc config
+        $this->configWriter->save('hyva_themes_checkout/general/checkout', 'default', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/options/guest_checkout', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/sidebar/display', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/cart/redirect_to_cart', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
         // Enable OpenPOS
         $this->configWriter->save(OpenPosHelper::CONFIG_PATH_GENERAL_ENABLE, 1);
+        $this->configWriter->save(OpenPosHelper::CONFIG_PATH_INTERNAL_IS_CONFIGURED, 1);
 
         $output->writeln('<info>OpenPOS setup is complete.</info>');
         $output->writeln('<info>Use the Magento admin for further configuration.</info>');
