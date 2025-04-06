@@ -7,6 +7,7 @@
 - You can now search for customers via name, email, telephone rather than having to enter the full email address.
 - A POS order billing address can now be the customers default billing address or the physical store's address (pulled from core config).
 - Added the optional ability to emulate the physical store's address as the POS order's shipping address, despite the order being virtual and not having one.
+- Added a CLI command for easy setup.
 
 ### Changed
 - Ensured the OpenPOS theme cannot be used on any non-POS stores, in the event of a misconfiguration.

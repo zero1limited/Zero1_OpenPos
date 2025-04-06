@@ -35,6 +35,8 @@ class Data extends AbstractHelper
     const CONFIG_PATH_ADVANCED_FORCE_STORE_BILLING_ADDRESS = 'openpos/advanced/force_store_billing_address';
     const CONFIG_PATH_ADVANCED_EMULATE_SHIPPING_ADDRESS = 'openpos/advanced/emulate_shipping_address';
 
+    const CONFIG_PATH_INTERNAL_IS_CONFIGURED = 'openpos/internal/is_configured';
+
     /**
      * @var StoreManagerInterface
      */
@@ -239,6 +241,15 @@ class Data extends AbstractHelper
     public function getEmulateShippingAddress(): bool
     {
         return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_EMULATE_SHIPPING_ADDRESS);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsConfigured(): bool
+    {
+        return true;
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_INTERNAL_IS_CONFIGURED);
     }
 
     /**

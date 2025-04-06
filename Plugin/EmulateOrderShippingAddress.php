@@ -81,7 +81,10 @@ class EmulateOrderShippingAddress
             $address->setFirstname($order->getCustomerFirstname())
                 ->setLastname($order->getCustomerLastname())
                 ->setEmail($order->getCustomerEmail())
-                ->setStreet([$this->scopeConfig->getValue('general/store_information/street_line1') ?? 'OpenPOS placeholder street', $this->scopeConfig->getValue('general/store_information/street_line2')])
+                ->setStreet([
+                    $this->scopeConfig->getValue('general/store_information/street_line1') ?? 'OpenPOS placeholder street',
+                    $this->scopeConfig->getValue('general/store_information/street_line2') ?? ''
+                ])
                 ->setCity($this->scopeConfig->getValue('general/store_information/city') ?? 'OpenPOS placeholder city')
                 ->setRegionId($regionId)
                 ->setRegion($regionName ?? 'OpenPOS placeholder region')

@@ -129,7 +129,10 @@ class SetQuoteAddressObserver implements ObserverInterface
             $regionName = $this->scopeConfig->getValue('general/store_information/region_id');
         }
 
-        $address->setStreet([$this->scopeConfig->getValue('general/store_information/street_line1') ?? 'OpenPOS placeholder street', $this->scopeConfig->getValue('general/store_information/street_line2')]);
+        $address->setStreet([
+            $this->scopeConfig->getValue('general/store_information/street_line1') ?? 'OpenPOS placeholder street',
+            $this->scopeConfig->getValue('general/store_information/street_line2') ?? ''
+        ]);
         $address->setCity($this->scopeConfig->getValue('general/store_information/city') ?? 'OpenPOS placeholder city');
         $address->setRegionId($regionId);
         $address->setRegion($regionName ?? 'OpenPOS placeholder region');

@@ -5,7 +5,6 @@
 
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_openpos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
-        <plugin name="zero1_openpos_emulate_quote_shipping_address" type="Zero1\OpenPos\Plugin\EmulateQuoteShippingAddress" sortOrder="20" />
     </type>
     <type name="Magento\CatalogInventory\Model\Quote\Item\QuantityValidator">
         <plugin name="zero1_openpos_quote_item_quantity_bypass" type="Zero1\OpenPos\Plugin\QuoteItemQuantityBypass" sortOrder="10"/>
@@ -42,6 +41,14 @@
         <arguments>
             <argument name="blocks" xsi:type="array">
                 <item name="Go back" xsi:type="string">openpos.autoadd</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="openpos_setupwizard" xsi:type="object">Zero1\OpenPos\Console\Command\SetupWizard</item>
             </argument>
         </arguments>
     </type>
