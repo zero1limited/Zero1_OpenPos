@@ -6,13 +6,14 @@ namespace Zero1\OpenPos\Magewire;
 use Magewirephp\Magewire\Component;
 use Magento\Customer\Model\Session as CustomerSession;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
-use Magento\Framework\Validator\EmailAddress;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
+use Magento\Customer\Model\ResourceModel\Address\CollectionFactory as CustomerAddressCollectionFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class CustomerManagement extends Component
 {
-    public $listeners = ['$set'];
+    public $listeners = ['changeToCustomerById'];
 
     /**
      * @var CustomerSession
@@ -25,41 +26,49 @@ class CustomerManagement extends Component
     protected $openPosSessionHelper;
 
     /**
-     * @var EmailAddress
-     */
-    protected $emailValidator;
-
-    /**
      * @var CustomerRepositoryInterface
      */
     protected $customerRepository;
 
     /**
-     * @var string
+     * @var CustomerCollectionFactory
      */
-    public $emailInput = '';
+    protected $customerCollectionFactory;
 
     /**
-     * @var bool
+     * @var CustomerAddressCollectionFactory
      */
-    public $foundCustomer = null;
+    protected $customerAddressCollectionFactory;
+
+    /**
+     * @var string
+     */
+    public $inputSearch = '';
+
+    /**
+     * @var array
+     */
+    public $customerSearchResults = [];
 
     /**
      * @param CustomerSession $customerSession
      * @param OpenPosSessionHelper $openPosSessionHelper
-     * @param EmailAddress $emailValidator
      * @param CustomerRepository $customerRepository
+     * @param CustomerCollectionFactory $customerCollectionFactory
+     * @param CustomerAddressCollectionFactory $customerAddressCollectionFactory
      */
     public function __construct(
         CustomerSession $customerSession,
         OpenPosSessionHelper $openPosSessionHelper,
-        EmailAddress $emailValidator,
-        CustomerRepositoryInterface $customerRepository
+        CustomerRepositoryInterface $customerRepository,
+        CustomerCollectionFactory $customerCollectionFactory,
+        CustomerAddressCollectionFactory $customerAddressCollectionFactory
     ) {
         $this->customerSession = $customerSession;
         $this->openPosSessionHelper = $openPosSessionHelper;
-        $this->emailValidator = $emailValidator;
         $this->customerRepository = $customerRepository;
+        $this->customerCollectionFactory = $customerCollectionFactory;
+        $this->customerAddressCollectionFactory = $customerAddressCollectionFactory;
     }
 
     /**
@@ -100,19 +109,19 @@ class CustomerManagement extends Component
     }
 
     /**
-     * Attempt switch to customer using provided email.
+     * Switch to customer using provided ID.
      * 
      * @return void
      */
-    public function changeToCustomer(): void
+    public function changeToCustomerById(int $id): void
     {
-        if(!$this->emailValidator->isValid($this->emailInput)) {
-            $this->dispatchErrorMessage(__('Email is not valid, cannot switch customer.'));
+        if(!$this->openPosSessionHelper->getTillSession()) {
+            $this->redirect('/');
             return;
         }
-
+        
         try {
-            $customer = $this->customerRepository->get($this->emailInput);
+            $customer = $this->customerRepository->getById($id);
         } catch(NoSuchEntityException $e) {
             $this->dispatchErrorMessage(__('Customer cannot be found, cannot switch customer.'));
             return;
@@ -123,23 +132,57 @@ class CustomerManagement extends Component
     }
 
     /**
-     * Obtain customer details before switch
+     * Perform search for customers
      * 
-     * @return string
+     * @return void
      */
-    public function updatedEmailInput(string $value): string
+    public function updatedInputSearch(): void
     {
-        if($this->emailValidator->isValid($this->emailInput)) {
-            try {
-                $customer = $this->customerRepository->get($this->emailInput);
-                if($customer) {
-                    $this->foundCustomer = $customer->getFirstname().' '.$customer->getLastname();
-                }
-            } catch(NoSuchEntityException $e) {
-                // customer doesn't exist
-            }
+        if(!$this->openPosSessionHelper->getTillSession()) {
+            $this->redirect('/');
+            return;
         }
 
-        return $value;
+        $this->customerSearchResults = [];
+        $searchValue = $this->inputSearch;
+
+        // Search email, firstname, lastname
+        $customers = $this->customerCollectionFactory->create();
+        $customers->addAttributeToSelect('*');
+        $customers->addAttributeToFilter(
+            [
+                ['attribute' => 'email', 'like' => "%$searchValue%"],
+                ['attribute' => 'firstname', 'like' => "%$searchValue%"],
+                ['attribute' => 'lastname', 'like' => "%$searchValue%"],
+            ]
+        );
+
+        foreach($customers as $customer) {
+            $this->customerSearchResults[$customer->getId()] = [
+                'id' => $customer->getId(),
+                'name' => $customer->getFirstname().' '.$customer->getLastname(),
+                'email' => $customer->getEmail(),
+            ];
+        }
+
+        // Search phone number
+        $addressCollection = $this->customerAddressCollectionFactory->create();
+        $addressCollection->addAttributeToFilter(
+            [
+                ['attribute' => 'telephone', 'like' => "%$this->inputSearch%"]
+            ]
+        );
+
+        foreach($addressCollection as $address) {
+            $customerId = $address->getCustomerId();
+            if(!isset($this->customerSearchResults[$customerId])) {
+                $customer = $this->customerRepository->getById($customerId);
+                $this->customerSearchResults[] = [
+                    'id' => $customer->getId(),
+                    'name' => $customer->getFirstname().' '.$customer->getLastname(),
+                    'email' => $customer->getEmail(),
+                ];
+            }
+        }
     }
 }

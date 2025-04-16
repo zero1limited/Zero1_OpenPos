@@ -33,6 +33,11 @@ class ProductIsSalableAfterObserver implements ObserverInterface
             return;
         }
 
+        // Check we are currently on POS store
+        if(!$this->posHelper->currentlyOnPosStore()) {
+            return;
+        }
+
         // Check if we should be bypassing stock
         if(!$this->posHelper->bypassStock()) {
             return;

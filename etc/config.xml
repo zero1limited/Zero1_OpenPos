@@ -8,6 +8,10 @@
             <customisation>
                 <barcode_scanner_exit_character>tab</barcode_scanner_exit_character>
             </customisation>
+            <advanced>
+                <force_store_billing_address>0</force_store_billing_address>
+                <emulate_shipping_address>0</emulate_shipping_address>
+            </advanced>
         </openpos>
      </default>
 </config>

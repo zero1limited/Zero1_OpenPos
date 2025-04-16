@@ -23,14 +23,19 @@ class Data extends AbstractHelper
     const CONFIG_PATH_GENERAL_BYPASS_STOCK = 'openpos/general/bypass_stock';
     const CONFIG_PATH_GENERAL_BARCODE_ATTRIBUTE = 'openpos/general/barcode_attribute';
     const CONFIG_PATH_GENERAL_TILL_USERS = 'openpos/general/till_users';
-    const CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODE = 'openpos/general/module_integration_mode';
-    const CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODULES = 'openpos/general/module_integration_modules';
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'openpos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
     const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'openpos/customisation/price_editor_barcode';
     const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'openpos/customisation/custom_product_barcode';
     const CONFIG_PATH_CUSTOMISATION_BARCODE_SCANNER_EXIT_CHARACTER = 'openpos/customisation/barcode_scanner_exit_character';
+
+    const CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODE = 'openpos/advanced/module_integration_mode';
+    const CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODULES = 'openpos/advanced/module_integration_modules';
+    const CONFIG_PATH_ADVANCED_FORCE_STORE_BILLING_ADDRESS = 'openpos/advanced/force_store_billing_address';
+    const CONFIG_PATH_ADVANCED_EMULATE_SHIPPING_ADDRESS = 'openpos/advanced/emulate_shipping_address';
+
+    const CONFIG_PATH_INTERNAL_IS_CONFIGURED = 'openpos/internal/is_configured';
 
     /**
      * @var StoreManagerInterface
@@ -169,22 +174,6 @@ class Data extends AbstractHelper
     /**
      * @return string|null
      */
-    public function getModuleIntegrationMode(): ?string
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODE);
-    }
-
-    /**
-     * @return array
-     */
-    public function getModuleIntegrationModules(): array
-    {
-        return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_MODULE_INTEGRATION_MODULES));
-    }
-
-    /**
-     * @return string|null
-     */
     public function getReceiptHeader(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER);
@@ -223,6 +212,46 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @return string|null
+     */
+    public function getModuleIntegrationMode(): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODE);
+    }
+
+    /**
+     * @return array
+     */
+    public function getModuleIntegrationModules(): array
+    {
+        return explode(",", (string)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_MODULE_INTEGRATION_MODULES));
+    }
+
+    /**
+     * @return bool
+     */
+    public function getForceStoreBillingAddress(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_FORCE_STORE_BILLING_ADDRESS);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getEmulateShippingAddress(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_ADVANCED_EMULATE_SHIPPING_ADDRESS);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsConfigured(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_INTERNAL_IS_CONFIGURED);
+    }
+
+    /**
      * @return StoreInterface|null
      */
     public function getPosStore(): ?StoreInterface
@@ -242,6 +271,9 @@ class Data extends AbstractHelper
      */
     public function currentlyOnPosStore(): bool
     {
+        if(!$this->isEnabled()) {
+            return false;
+        }
         return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
     }
 
@@ -253,7 +285,7 @@ class Data extends AbstractHelper
      */
     public function isPosOrder(OrderInterface $order): bool
     {
-        if($order->getStoreId() == $this->getPosStoreId() && strpos($order->getPayment()->getMethodInstance()->getCode(), 'pos') !== false) {
+        if($order->getStoreId() == $this->getPosStoreId()) {
             return true;
         }
 

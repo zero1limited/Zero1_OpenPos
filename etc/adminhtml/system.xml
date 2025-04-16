@@ -42,18 +42,6 @@
                     <label>Till users</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\AdminUser</source_model>
                 </field>
-                <field id="module_integration_mode" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Module integration mode</label>
-                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationMode</source_model>
-                    <comment>Allow Magento modules to make changes to the frontend of OpenPOS. If you are facing issues select 'None'.</comment>
-                </field>
-                <field id="module_integration_modules" translate="label" type="multiselect" sortOrder="100" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Specific modules</label>
-                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationModules</source_model>
-                    <depends>
-                        <field id="module_integration_mode">specific</field>
-                    </depends>
-                </field>
             </group>
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -78,6 +66,32 @@
                     <label>Barcode scanner exit character</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\BarcodeScannerExitCharacter</source_model>
                     <comment>Different models of barcode scanners may use a different character / key to indicate they have finished scanning and the input should be processed.</comment>
+                </field>
+            </group>
+
+            <group id="advanced" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Advanced</label>
+                <field id="module_integration_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Module integration mode</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationMode</source_model>
+                    <comment>Allow Magento modules to make changes to the frontend of OpenPOS. If you are facing issues select 'None'.</comment>
+                </field>
+                <field id="module_integration_modules" translate="label" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Specific modules</label>
+                    <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationModules</source_model>
+                    <depends>
+                        <field id="module_integration_mode">specific</field>
+                    </depends>
+                </field>
+                <field id="force_store_billing_address" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Force physical store billing address</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Logged in customers by default will have their default billing address used on all POS orders. Enabling this setting will always ensure the physical store address is always used for billing address.</comment>
+                </field>
+                <field id="emulate_shipping_address" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Emulate shipping address as store address</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment>Orders created from the till system are virtual. Enable this setting to 'emulate' the physical store address in place of the order's empty shipping address.</comment>
                 </field>
             </group>
         </section>
