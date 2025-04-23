@@ -1,6 +1,6 @@
 # OpenPOS changelog
 
-## [2.1.0] - 16-04-2025
+## [2.1.0] - 2025-04-16
 
 ### Added
 - You can now edit an already scanned item's price from the cart.
