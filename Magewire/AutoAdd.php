@@ -153,13 +153,15 @@ class AutoAdd extends Component
             }
 
             if(!$product) {
-                $this->redirect('/catalogsearch/result/?q=' . $this->skuInput);
+                $url = $this->urlBuilder->getUrl('catalogsearch/result', ['_query' => ['q' => $this->skuInput]]);
+                $this->redirect($url);
                 return;
             }
         }
 
         if($product->getTypeId() != \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
-            $this->redirect('/catalogsearch/result/?q='.$this->skuInput);
+            $url = $this->urlBuilder->getUrl('catalogsearch/result', ['_query' => ['q' => $this->skuInput]]);
+            $this->redirect($url);
             return;
         }
 
