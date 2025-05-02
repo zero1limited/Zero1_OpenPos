@@ -92,7 +92,8 @@ class RestrictAccessObserver implements ObserverInterface
         }
 
         // Check till session exists
-        if($this->openPosSessionHelper->getTillSession() !== null) {
+        if($this->openPosSessionHelper->isTillSessionActive() !== true) {
+            $this->openPosSessionHelper->destroySession();
             return;
         }
 
