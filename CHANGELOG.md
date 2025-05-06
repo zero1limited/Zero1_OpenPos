@@ -1,6 +1,6 @@
 # OpenPOS changelog
 
-## [2.1.1] - in progress
+## [2.1.1] - 2025-05-06
 
 ### Fixed
 - Resolved an issue where a product search would be performed containing a trailing slash.
