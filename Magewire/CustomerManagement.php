@@ -115,7 +115,7 @@ class CustomerManagement extends Component
      */
     public function changeToCustomerById(int $id): void
     {
-        if(!$this->openPosSessionHelper->getTillSession()) {
+        if(!$this->openPosSessionHelper->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }
@@ -138,7 +138,7 @@ class CustomerManagement extends Component
      */
     public function updatedInputSearch(): void
     {
-        if(!$this->openPosSessionHelper->getTillSession()) {
+        if(!$this->openPosSessionHelper->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }

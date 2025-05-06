@@ -92,11 +92,12 @@ class RestrictAccessObserver implements ObserverInterface
         }
 
         // Check till session exists
-        if($this->openPosSessionHelper->getTillSession() !== null) {
+        if($this->openPosSessionHelper->isTillSessionActive() === true) {
             return;
         }
 
         // Redirect
+        $this->openPosSessionHelper->destroySession();
         $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
         $this->redirect->redirect($this->response, 'openpos/tillsession/login');      
     }

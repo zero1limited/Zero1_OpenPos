@@ -134,7 +134,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Return current till session object (if valid)
+     * Return current till session object
      * 
      * @return TillSessionInterface|null
      */
@@ -149,24 +149,41 @@ class Session extends AbstractHelper
         $tillSessionId = $this->getTillSessionId();
         try {
             $tillSession = $this->tillSessionRepository->getById($tillSessionId);
-
-            $tillSessionLifetime = $this->posHelper->getSessionLifetime();
-            if($tillSessionLifetime !== 0) {
-                $currentDateTime = new \DateTime();
-                $tillSessionExpiry = new \DateTime($tillSession->getCreatedAt());
-                $tillSessionExpiry->modify("$tillSessionLifetime minutes");
-
-                if($currentDateTime > $tillSessionExpiry) {
-                    $this->destroySession();
-                    return null;
-                }
-            }
-
         } catch(NoSuchEntityException $e) {
             return null;
         }
         
         return $tillSession;
+    }
+
+    /**
+     * Check if a till session is active
+     * 
+     * @param TillSessionInterface|null $tillSession
+     * @return bool
+     */
+    public function isTillSessionActive(TillSessionInterface $tillSession = null): bool
+    {
+        if(!$tillSession) {
+            $tillSession = $this->getTillSession();
+        }
+
+        if(!$tillSession) {
+            return false;
+        }
+
+        $tillSessionLifetime = $this->posHelper->getSessionLifetime();
+        if($tillSessionLifetime !== 0) {
+            $currentDateTime = new \DateTime();
+            $tillSessionExpiry = new \DateTime($tillSession->getCreatedAt());
+            $tillSessionExpiry->modify("$tillSessionLifetime minutes");
+
+            if($currentDateTime > $tillSessionExpiry) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -230,6 +247,10 @@ class Session extends AbstractHelper
 
         $tillSessionCollection = $this->tillSessionCollectionFactory->create();
         foreach($tillSessionCollection as $existingTillSession) {
+            // Ignore inactive / expired till sessions
+            if(!$this->isTillSessionActive($existingTillSession)) {
+                continue;
+            }
             $tillSessionCount++;
             if($tillSessionCount > $maxTillSessionCount) {
                 $this->tillSessionRepository->delete($existingTillSession);

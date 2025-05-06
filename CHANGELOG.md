@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.1.1] - 2025-05-06
+
+### Fixed
+- Resolved an issue where a product search would be performed containing a trailing slash.
+- Resolved an issue where a new login would be presented with 'You have logged out [user]' notice, even if the other user had an expired till session.
+
 ## [2.1.0] - 2025-04-16
 
 ### Added
