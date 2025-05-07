@@ -10,6 +10,7 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Magento\Quote\Model\Quote\Item;
+use Magento\Catalog\Helper\Product\Configuration as ProductConfigurationHelper;
 
 class Cart extends Component
 {
@@ -41,6 +42,11 @@ class Cart extends Component
     protected $openPosSessionHelper;
 
     /**
+     * @var ProductConfigurationHelper
+     */
+    protected $productConfigurationHelper;
+
+    /**
      * @var string
      */
     public $editingItemId = null;
@@ -66,19 +72,22 @@ class Cart extends Component
      * @param CartRepositoryInterface $cartRepository
      * @param ImageUrlBuilder $imageUrlBuilder
      * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param ProductConfigurationHelper $productConfigurationHelper
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         CartRepositoryInterface $cartRepository,
         ImageUrlBuilder $imageUrlBuilder,
-        OpenPosSessionHelper $openPosSessionHelper
+        OpenPosSessionHelper $openPosSessionHelper,
+        ProductConfigurationHelper $productConfigurationHelper
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->cartRepository = $cartRepository;
         $this->imageUrlBuilder = $imageUrlBuilder;
         $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->productConfigurationHelper = $productConfigurationHelper;
     }
 
     /**
@@ -92,12 +101,21 @@ class Cart extends Component
         $quoteItems = $this->checkoutSession->getQuote()->getAllVisibleItems();
 
         foreach($quoteItems as $quoteItem) {
+            $itemOptions = [];
+            $options = $this->productConfigurationHelper->getCustomOptions($quoteItem);
+            foreach($options as $option) {
+                $itemOptions[] = [
+                    'label' => $option['label'],
+                    'value' => $option['value']
+                ];
+            }
             $items[] = [
                 'id' => $quoteItem->getId(),
                 'name' => $quoteItem->getName(),
                 'price' => $this->pricingHelper->currency($quoteItem->getPrice(), true, false),
                 'qty' => (int)$quoteItem->getQty(),
-                'image' => $this->imageUrlBuilder->getUrl((string)$quoteItem->getProduct()->getThumbnail(), 'product_page_image_small')
+                'image' => $this->imageUrlBuilder->getUrl((string)$quoteItem->getProduct()->getThumbnail(), 'product_page_image_small'),
+                'options' =>  $itemOptions
             ];
         }
 

@@ -59,6 +59,16 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                                             <p><span><?= $item['price'] ?></span></p>
                                         </div>
                                     </div>
+                                    <!-- IN PROGRESS -->
+                                    <?php if(!empty($item['options'])): ?>
+                                        <div>
+                                            <span class="font-bold text-sm"><?= $escaper->escapeHtml(__('Options')) ?></span>
+                                        </div>
+                                        <?php foreach($item['options'] as $option): ?>
+                                            <span><?= $escaper->escapeHtml($option['label']) ?>:</span>
+                                            <span><?= $escaper->escapeHtml($option['value']) ?></span>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
                                     <div class="actions flex w-full gap-4 p-4">
                                         <button type="button"
                                                 class="inline-flex p-2 btn btn-primary btn-secondary"
