@@ -144,18 +144,21 @@ class CustomerManagement extends Component
         }
 
         $this->customerSearchResults = [];
-        $searchValue = $this->inputSearch;
+        $searchWords = explode(" ", $this->inputSearch);
 
         // Search email, firstname, lastname
         $customers = $this->customerCollectionFactory->create();
         $customers->addAttributeToSelect('*');
-        $customers->addAttributeToFilter(
-            [
-                ['attribute' => 'email', 'like' => "%$searchValue%"],
-                ['attribute' => 'firstname', 'like' => "%$searchValue%"],
-                ['attribute' => 'lastname', 'like' => "%$searchValue%"],
-            ]
-        );
+
+        foreach($searchWords as $searchWord) {
+            $customers->addAttributeToFilter(
+                [
+                    ['attribute' => 'email', 'like' => "%$searchWord%"],
+                    ['attribute' => 'firstname', 'like' => "%$searchWord%"],
+                    ['attribute' => 'lastname', 'like' => "%$searchWord%"],
+                ]
+            );
+        }
 
         foreach($customers as $customer) {
             $this->customerSearchResults[$customer->getId()] = [
