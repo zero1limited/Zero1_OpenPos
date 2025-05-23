@@ -1,0 +1,19 @@
+name: Update Release Notes In Shop
+
+on:
+  workflow_dispatch:
+  release:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: module-checks-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  update-release-notes:
+    uses: zero1limited/magento2-module-checks/.github/workflows/update_shop_release_notes.yml@master
+    permissions:
+      contents: read
+    secrets: inherit
