@@ -1,0 +1,20 @@
+name: Check Module
+ 
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+ 
+permissions:
+  contents: read
+ 
+concurrency:
+  group: module-checks-${{ github.ref_name }}
+  cancel-in-progress: true
+ 
+jobs:
+  check-module:
+    uses: zero1limited/magento2-module-checks/.github/workflows/check_module.yml@master
+    permissions:
+      contents: read
+    secrets: inherit
