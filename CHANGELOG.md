@@ -7,6 +7,7 @@
 
 ### Changed
 - Improvements to customer search logic.
+- Increased compatible Hyva versions.
 
 ## [2.1.1] - 2025-05-06
 
