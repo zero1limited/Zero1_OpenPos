@@ -1,6 +1,6 @@
 # OpenPOS changelog
 
-## [2.1.2] - in progress
+## [2.1.2] - 2025-06-21
 
 ### Added
 - Item options are now visible in the cart.
