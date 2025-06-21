@@ -55,20 +55,22 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                                             />
                                         </div>
                                         <div class="details w-3/4 p-2">
-                                            <span><?= $item['qty'] ?></span> x <span><?= $item['name'] ?></span>
+                                            <span class="font-bold"><?= $item['qty'] ?></span> x <span class="font-bold"><?= $item['name'] ?></span>
+
+                                            <?php if(!empty($item['options'])): ?>
+                                                <div class="w-full flex flex-wrap">
+                                                    <?php foreach($item['options'] as $option): ?>
+                                                        <div class="w-full">
+                                                            <span><?= $escaper->escapeHtml($option['label']) ?>:</span>
+                                                            <span><?= $escaper->escapeHtml($option['value']) ?></span>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
                                             <p><span><?= $item['price'] ?></span></p>
                                         </div>
                                     </div>
-                                    <!-- IN PROGRESS -->
-                                    <?php if(!empty($item['options'])): ?>
-                                        <div>
-                                            <span class="font-bold text-sm"><?= $escaper->escapeHtml(__('Options')) ?></span>
-                                        </div>
-                                        <?php foreach($item['options'] as $option): ?>
-                                            <span><?= $escaper->escapeHtml($option['label']) ?>:</span>
-                                            <span><?= $escaper->escapeHtml($option['value']) ?></span>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                   
                                     <div class="actions flex w-full gap-4 p-4">
                                         <button type="button"
                                                 class="inline-flex p-2 btn btn-primary btn-secondary"
