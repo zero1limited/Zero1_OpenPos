@@ -1,5 +1,17 @@
 # OpenPOS changelog
 
+## [2.1.2] - 2025-06-21
+
+### Added
+- Item options are now visible in the cart.
+
+### Changed
+- Improvements to customer search logic.
+- Increased compatible Hyva versions.
+
+### Fixed
+- Resolved an issue where product images would fail to load in the cart.
+
 ## [2.1.1] - 2025-05-06
 
 ### Fixed
