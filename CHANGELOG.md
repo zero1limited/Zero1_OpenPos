@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.1.3] - in progress
+
+### Fixed
+- RMA items in POS orders no longer deduct product stock.
+- Resolved an issue where out of stock items could not be added regardless of bypass stock configuration.
+
 ## [2.1.2] - 2025-06-21
 
 ### Added
