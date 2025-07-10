@@ -5,6 +5,10 @@
 ### Fixed
 - RMA items in POS orders no longer deduct product stock.
 - Resolved an issue where out of stock items could not be added regardless of bypass stock configuration.
+- Resolved an issue where occasionally the first RMA item added to the cart would temporarily display as 0 total.
+
+### Changed
+- Non-RMA payment methods now no longer show on negative quanity carts.
 
 ## [2.1.2] - 2025-06-21
 
