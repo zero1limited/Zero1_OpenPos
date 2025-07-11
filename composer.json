@@ -9,7 +9,7 @@
         "zero1/pos-pay-card": "^2.0.1",
         "zero1/pos-pay-cash": "^2.0.2",
         "zero1/open-pos-split-payments": "^2.0.1",
-        "zero1/open-pos-rma": "dev-2.1-dev"
+        "zero1/open-pos-rma": "^2.0.2"
     },
     "autoload": {
         "files": [
