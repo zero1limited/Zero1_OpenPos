@@ -73,7 +73,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
      * 
      * @return Redirect
      */
-    public function execute() : Redirect
+    public function execute(): Redirect
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 

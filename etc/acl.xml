@@ -4,7 +4,7 @@
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Zero1_OpenPos::pos" title="OpenPOS" sortOrder="81">
-                    <resource id="Zero1_OpenPos::configuration" title="Configure POS system" sortOrder="20"/>
+                    <resource id="Zero1_OpenPos::configuration" title="Configure OpenPOS" sortOrder="10"/>
                 </resource>
             </resource>
         </resources>

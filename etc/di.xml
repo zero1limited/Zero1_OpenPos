@@ -3,6 +3,9 @@
     <preference for="Zero1\OpenPos\Api\TillSessionRepositoryInterface" type="Zero1\OpenPos\Model\TillSessionRepository" />
     <preference for="Zero1\OpenPos\Api\Data\TillSessionInterface" type="Zero1\OpenPos\Model\TillSession" />
 
+    <preference for="Zero1\OpenPos\Api\PaymentRepositoryInterface" type="Zero1\OpenPos\Model\PaymentRepository" />
+    <preference for="Zero1\OpenPos\Api\Data\PaymentInterface" type="Zero1\OpenPos\Model\Payment" />
+
     <type name="Magento\Quote\Model\Quote">
         <plugin name="zero1_openpos_virtual_quote_setter" type="Zero1\OpenPos\Plugin\VirtualQuoteSetter" sortOrder="10" />
     </type>

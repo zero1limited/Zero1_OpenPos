@@ -11,4 +11,21 @@
             <column name="session_id"/>
         </constraint>
     </table>
+    <table name="openpos_payment" resource="default" engine="innodb" comment="Zero1_OpenPos order payment table">
+        <column xsi:type="int" name="payment_id" unsigned="true" nullable="false" identity="true" comment="Payment ID"/>
+        <column xsi:type="int" name="order_id" unsigned="true" nullable="false" identity="false" comment="Magento sales_order ID"/>
+        <column xsi:type="text" name="admin_user" nullable="false" comment="Admin user name"/>
+        <column xsi:type="decimal" name="base_payment_amount" scale="4" precision="20" unsigned="false" nullable="true" comment="Base payment amount"/>
+        <column xsi:type="decimal" name="base_tax_amount" scale="4" precision="20" unsigned="false" nullable="true" comment="Base tax amount"/>
+        <column xsi:type="text" name="base_payment_method" nullable="false" comment="Base payment method"/>
+        <column xsi:type="text" name="payment_method" nullable="false" comment="Payment method"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="payment_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="OPENPOS_PAYMENT_ORDER_ID_SALES_ORDER_ENTITY_ID"
+            table="openpos_payment" column="order_id"
+            referenceTable="sales_order" referenceColumn="entity_id"
+            onDelete="CASCADE"/>
+    </table>
 </schema>

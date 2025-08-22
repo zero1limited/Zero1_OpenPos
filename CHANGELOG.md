@@ -1,5 +1,13 @@
 # OpenPOS changelog
 
+## [2.2.0] - in development
+
+### Added
+- Order view pages within OpenPOS / till frontend.
+- Link within the Magento admin to navigate to OpenPOS / till frontend.
+- WIP layaways / payments system
+
+
 ## [2.1.3] - 2025-07-11
 
 ### Fixed

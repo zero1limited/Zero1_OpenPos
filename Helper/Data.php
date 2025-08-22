@@ -13,6 +13,7 @@ use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 
 class Data extends AbstractHelper
 {
@@ -303,5 +304,40 @@ class Data extends AbstractHelper
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return URL for till / OpenPOS frontend.
+     * 
+     * @return string
+     */
+    public function getTillUrl(): string
+    {
+        // TODO this include admin path so will 404
+        if(!$this->isEnabled()) {
+            throw new LocalizedException(__('OpenPOS is currently disabled. Check configuration.'));
+        }
+
+        $posStore = $this->getPosStore();
+        if(!$posStore) {
+            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
+        }
+
+        return $posStore->getUrl('openpos/tillsession/login');
+    }
+
+    /**
+     * Return URL for viewing order on till / OpenPOS frontend.
+     */
+    public function getOrderViewUrl(OrderInterface $order): string
+    {
+        // TODO this include admin path so will 404
+        $orderId = $order->getId();
+        $posStore = $this->getPosStore();
+        if(!$posStore) {
+            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
+        }
+
+        return $posStore->getUrl('openpos/order/view/id/'.$orderId);
     }
 }
