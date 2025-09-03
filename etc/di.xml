@@ -26,6 +26,10 @@
         <plugin name="zero1_openpos_emulate_order_shipping_address" type="Zero1\OpenPos\Plugin\EmulateOrderShippingAddress" sortOrder="10" />
     </type>
 
+    <type name="Magento\CatalogInventory\Observer\QuantityValidatorObserver">
+        <plugin name="zero1_openpos_quantity_validator_bypass" type="Zero1\OpenPos\Plugin\QuantityValidatorBypass"/>
+    </type>
+
     <type name="Zero1\OpenPos\Helper\ModuleIntegration">
         <arguments>
             <argument name="openPosModules" xsi:type="array">
