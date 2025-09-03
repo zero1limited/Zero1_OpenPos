@@ -5,6 +5,8 @@
     ],
     "require": {
         "magento/framework": "^100.1|^101.0|^102.0|^103.0",
+
+        "magewirephp/magewire": "*",
         "zero1/pos-theme": "^2.1.2",
         "zero1/pos-pay-card": "^2.0.1",
         "zero1/pos-pay-cash": "^2.0.2",
