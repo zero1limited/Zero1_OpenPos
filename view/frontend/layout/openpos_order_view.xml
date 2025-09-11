@@ -21,7 +21,8 @@
                     </block>
                 </block>
             </block>
-            <block class="Magento\Sales\Block\Order\Info" as="info" name="sales.order.info" after="sales.order.view"/>
+            <!-- Don't need order info at this point -->
+            <!-- <block class="Magento\Sales\Block\Order\Info" as="info" name="sales.order.info" after="sales.order.view"/> -->
         </referenceContainer>
     </body>
 </page>
