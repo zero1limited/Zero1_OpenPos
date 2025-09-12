@@ -17,6 +17,9 @@
         </div>
         <div class="flex w-full my-6 py-6">
             <button type="button" class="w-full underline font-bold" wire:click="newOrder"><?php echo __('Start new order'); ?></button>
+            <a href="<?= $block->getOrderViewUrl() ?>" class="w-full underline font-bold text-center">
+                <?php echo __('Open order details'); ?>
+            </a>
         </div>
     </div>
 

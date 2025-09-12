@@ -19,7 +19,7 @@ use Magento\Framework\Controller\Result\Forward;
  * Work in progress
  */
 
-class View implements HttpGetActionInterface
+class Success implements HttpGetActionInterface
 {
     /**
      * @var RequestInterface
@@ -102,33 +102,16 @@ class View implements HttpGetActionInterface
             return $forward->forward('noroute');
         }
 
-
         $orderId = (int)$this->request->getParam('id');
         if (!$orderId) {
-            /** @var \Magento\Framework\Controller\Result\Forward $resultForward */
             $resultForward = $this->forwardFactory->create();
             return $resultForward->forward('noroute');
         }
-        $order = $this->loadOrder($orderId);
-
-        
-        $page = $this->pageFactory->create();
-        $page->getConfig()->getTitle()->set('OpenPOS Order: '.$order->getIncrementId());
-        return $page;
-    }
-
-    /**
-     * Retrieve current order model instance
-     *
-     * @return \Magento\Sales\Model\Order
-     */
-    public function loadOrder(int $orderId)
-    {
         $order = $this->orderRepository->get($orderId);
         $this->registry->register('current_order', $order);
-
         $this->checkoutSession->setLastOrderId($order->getEntityId())->setLastRealOrderId($order->getIncrementId());
-
-        return $order;
+        
+        $page = $this->pageFactory->create();
+        return $page;
     }
 }
