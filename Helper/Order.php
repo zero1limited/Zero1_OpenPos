@@ -10,6 +10,7 @@ use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollectionFactory;
 use Zero1\OpenPos\Model\PaymentFactory;
 use Zero1\OpenPos\Api\PaymentRepositoryInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 use Magento\Sales\Api\Data\OrderInterface;
 use Zero1\OpenPos\Api\Data\PaymentInterface;
@@ -46,12 +47,18 @@ class Order extends AbstractHelper
     protected $paymentRepository;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * @param Context $context
      * @param PosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
      * @param PaymentCollectionFactory $paymentCollectionFactory
      * @param PaymentFactory $paymentFactory
      * @param PaymentRepositoryInterface $paymentRepository
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         Context $context,
@@ -59,13 +66,16 @@ class Order extends AbstractHelper
         OpenPosSessionHelper $openPosSessionHelper,
         PaymentCollectionFactory $paymentCollectionFactory,
         PaymentFactory $paymentFactory,
-        PaymentRepositoryInterface $paymentRepository
+        PaymentRepositoryInterface $paymentRepository,
+        OrderRepositoryInterface $orderRepository
+
     ) {
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
         $this->paymentCollectionFactory = $paymentCollectionFactory;
         $this->paymentFactory = $paymentFactory;
         $this->paymentRepository = $paymentRepository;
+        $this->orderRepository = $orderRepository;
         
         parent::__construct($context);
     }
@@ -82,28 +92,34 @@ class Order extends AbstractHelper
      */
     public function makePayment(OrderInterface $order, $amount, $basePaymentMethodCode, $paymentMethodCode): ?PaymentInterface
     {
-        try {
-            $orderId = $order->getId();
-            $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession()->getUserName();
+        $orderId = $order->getId();
+        $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession()->getUserName();
 
-            // Calculate tax from payment amount — adjust as needed
-            $taxRate = $this->getTaxRateForOrder($order);
-            $taxAmount = round($amount * ($taxRate / 100), 2);
+        // Calculate tax from payment amount — adjust as needed
+        $taxRate = $this->getTaxRateForOrder($order);
+        $taxAmount = round($amount * ($taxRate / 100), 2);
 
-            /** @var \Zero1\OpenPos\Model\Payment $payment */
-            $payment = $this->paymentFactory->create();
-            $payment->setOrderId($orderId);
-            $payment->setAdminUser($adminUser);
-            $payment->setBasePaymentAmount($amount);
-            $payment->setBaseTaxAmount($taxAmount);
-            $payment->setBasePaymentMethod($basePaymentMethodCode);
-            $payment->setPaymentMethod($paymentMethodCode);
+        /** @var \Zero1\OpenPos\Model\Payment $payment */
+        $payment = $this->paymentFactory->create();
+        $payment->setOrderId($orderId);
+        $payment->setAdminUser($adminUser);
+        $payment->setBasePaymentAmount($amount);
+        $payment->setBaseTaxAmount($taxAmount);
+        $payment->setBasePaymentMethod($basePaymentMethodCode);
+        $payment->setPaymentMethod($paymentMethodCode);
 
-            $this->paymentRepository->save($payment);
+        $this->paymentRepository->save($payment);
 
-        } catch (\Exception $e) {
-            $this->dispatchErrorMessage(__('An error occurred while saving the payment: %1', $e->getMessage()));
+        // Check if order can now be completed
+        if($this->isOrderPaid($order)) {
+            $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
+            $order->setStatus('complete');
+            $this->orderRepository->save($order);
         }
+        
+        return $payment;
+
+        return null;
     }
 
 
@@ -114,7 +130,7 @@ class Order extends AbstractHelper
 
         $payments = $this->getPaymentsForOrder($order);
         foreach ($payments as $payment) {
-            $totalPaid += (float)$payment->getBaseAmountPaid();
+            $totalPaid += (float)$payment->getBasePaymentAmount();
         }
 
         if($totalPaid >= $grandTotal) {
