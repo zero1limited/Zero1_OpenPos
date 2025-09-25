@@ -1,0 +1,108 @@
+<div id="openpos-order-grid" class="pb-8 mb-4">
+
+    <?php if(!$magewire->isCurrentCustomerGuest()): ?>
+        <div class="flex message p-2">
+            <p><?= __('You’re logged in as a customer and can only see their orders. Switch to guest mode to view all OpenPOS orders') ?></p>
+        </div>
+    <?php endif; ?>
+
+    <div class="mb-6 pb-4 flex flex-col gap-6 lg:flex-row">
+        <div class="flex-1">
+            <span class="w-full"><?php echo __('Filter by Order ID'); ?></span>
+            <input class="form-input w-full" type="number" wire:model.debounce.500ms="filterOrderId">
+        </div>
+
+        <!-- Only show email filter if no customer session active. -->
+        <?php if($magewire->isCurrentCustomerGuest()): ?>
+            <div class="flex-1">
+                <span class="w-full"><?php echo __('Filter by Email'); ?></span>
+                <input class="form-input w-full" type="email" wire:model.debounce.500ms="filterCustomerEmail"></input>
+            </div>
+        <?php endif; ?>
+
+        <div class="flex-1">
+            <span class="w-full"><?php echo __('Filter by Status'); ?></span>
+            <select class="form-input w-full" wire:model="filterStatus">
+                <option value="">All</option>
+                <?php foreach($magewire->getOrderStatuses() as $orderStatus): ?>
+                    <option value="<?= $orderStatus['value'] ?>"><?= $orderStatus['label'] ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="order-grid-wrapper border border-b-0">
+        <div class="flex flex-wrap border-b font-bold">
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Order ID'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Date'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Status'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Payments'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Name'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Grand Total'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                <p><?php echo __('Total Paid'); ?></p>
+            </div>
+            <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+            </div>
+        </div>
+
+        <?php foreach($magewire->getOrderCollection() as $key => $item): ?>
+            <div class="flex flex-wrap border-b even:bg-gray-50" wire:key="<?= $key ?>">
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['increment_id'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['created_at'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['magento_status'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['openpos_status'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['customer_name'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['grand_total'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center">
+                    <p><?= $item['openpos_total_paid'] ?></p>
+                </div>
+                <div class="flex w-1/2 lg:flex-1 p-2 items-center justify-center">
+                    <a href="<?= $item['view_url'] ?>" class="text-blue-600 underline"><?= __('View') ?></a>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="flex my-6 gap-8">
+        <?php if(!$magewire->onFirstPage()): ?>
+            <div class="flex w-full justify-center">
+                <button wire:click="toPreviousPage" class="p-4 btn btn-secondary w-full justify-center">
+                    <span class="inline-block text-sm"><?= __('Previous') ?></span>
+                </button>
+            </div>
+        <?php endif; ?>
+        <?php if(!$magewire->onLastPage()): ?>
+            <div class="flex w-full justify-center">
+                <button wire:click="toNextPage" class="p-4 btn btn-secondary w-full justify-center">
+                    <span class="inline-block text-sm"><?= __('Next') ?></span>
+                </button>
+            </div>
+        <?php endif; ?>
+    </div>
+
+</div>
