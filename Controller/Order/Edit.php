@@ -21,17 +21,8 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Phrase;
 
-/**
- * Work in progress
- */
-
 class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
-
     /**
      * @var OpenPosHelper
      */
@@ -79,7 +70,6 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
 
     /**
      * @param Context $context
-     * @param RequestInterface $request
      * @param OpenPosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
      * @param OpenPosOrderHelper $openPosOrderHelper
@@ -92,7 +82,6 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
      */
     public function __construct(
         Context $context,
-        RequestInterface $request,
         OpenPosHelper $openPosHelper,
         OpenPosSessionHelper $openPosSessionHelper,
         OpenPosOrderHelper $openPosOrderHelper,
@@ -101,9 +90,8 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         ProductRepositoryInterface $productRepository,
         OrderInfoBuyRequestGetter $orderInfoBuyRequestGetter,
         CheckoutSession $checkoutSession,
-        QuoteManagement $quoteManagement,
+        QuoteManagement $quoteManagement
     ) {
-        $this->request = $request;
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
         $this->openPosOrderHelper = $openPosOrderHelper;
@@ -126,7 +114,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
-            // TODO harden maybe 404?
+            // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;
         }
@@ -136,7 +124,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
             return $resultRedirect;
         }
 
-        $orderId = (int)$this->request->getParam('id');
+        $orderId = (int)$this->getRequest()->getParam('id');
         if (!$orderId) {
             $resultRedirect->setPath('/');
             return $resultRedirect;
@@ -209,7 +197,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         $order->cancel();
         $this->orderRepository->save($order);
 
-        // TODO: add comments to the old order showing edit / unstash time and admin user.
+        // @todo: add comments to the old order showing edit / unstash time and admin user.
 
         $resultRedirect->setPath('/');
         return $resultRedirect;

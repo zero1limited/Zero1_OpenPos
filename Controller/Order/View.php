@@ -102,7 +102,6 @@ class View implements HttpGetActionInterface
             return $forward->forward('noroute');
         }
 
-
         $orderId = (int)$this->request->getParam('id');
         if (!$orderId) {
             /** @var \Magento\Framework\Controller\Result\Forward $resultForward */
@@ -111,9 +110,8 @@ class View implements HttpGetActionInterface
         }
         $order = $this->loadOrder($orderId);
 
-        
         $page = $this->pageFactory->create();
-        $page->getConfig()->getTitle()->set('OpenPOS Order: '.$order->getIncrementId());
+        $page->getConfig()->getTitle()->set(__('OpenPOS Order: %1', $order->getIncrementId()));
         return $page;
     }
 
