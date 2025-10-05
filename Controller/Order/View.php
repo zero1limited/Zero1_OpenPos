@@ -7,6 +7,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
+use Magento\Framework\App\Response\RedirectInterface;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -37,6 +38,11 @@ class View implements HttpGetActionInterface
     protected $forwardFactory;
 
     /**
+     * @var RedirectInterface
+     */
+    protected $redirect;
+
+    /**
      * @var OpenPosHelper
      */
     protected $openPosHelper;
@@ -65,6 +71,7 @@ class View implements HttpGetActionInterface
      * @param RequestInterface $request
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
+     * @param RedirectInterface $redirect
      * @param OpenPosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
      * @param OrderRepositoryInterface $orderRepository
@@ -75,6 +82,7 @@ class View implements HttpGetActionInterface
         RequestInterface $request,
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
+        RedirectInterface $redirect,
         OpenPosHelper $openPosHelper,
         OpenPosSessionHelper $openPosSessionHelper,
         OrderRepositoryInterface $orderRepository,
@@ -84,6 +92,7 @@ class View implements HttpGetActionInterface
         $this->request = $request;
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
+        $this->redirect = $redirect;
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
         $this->orderRepository = $orderRepository;
@@ -112,6 +121,15 @@ class View implements HttpGetActionInterface
 
         $page = $this->pageFactory->create();
         $page->getConfig()->getTitle()->set(__('OpenPOS Order: %1', $order->getIncrementId()));
+
+        // Add back button URL on actions block
+        // @todo: fix this logic, not working as expected with no referrer
+        // I have removed the block for now.
+        // $block = $page->getLayout()->getBlock('openpos.order.view.actions');
+        // if ($block) {
+        //     $block->setRefererUrl($this->redirect->getRefererUrl());
+        // }
+        
         return $page;
     }
 

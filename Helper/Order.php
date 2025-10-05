@@ -123,22 +123,49 @@ class Order extends AbstractHelper
     }
 
 
+    /**
+     * Check if an order is fully paid.
+     *
+     * @param OrderInterface $order
+     * @return boolean
+     */
     public function isOrderPaid(OrderInterface $order): bool
     {
+        return $this->getTotalRemaining($order) === 0;
+    }
+
+    /**
+     * Return total paid so far for an order.
+     *
+     * @param OrderInterface $order
+     * @return float
+     */
+    public function getTotalPaid(OrderInterface $order): float
+    {
         $totalPaid = 0.00;
-        $grandTotal = $order->getBaseGrandTotal();
 
         $payments = $this->getPaymentsForOrder($order);
         foreach ($payments as $payment) {
             $totalPaid += (float)$payment->getBasePaymentAmount();
         }
 
-        if($totalPaid >= $grandTotal) {
-            return true;
-        }
-
-        return false;
+        return $totalPaid;
     }
+
+    /**
+     * Return total remaining to pay for an order.
+     *
+     * @return float
+     */
+    public function getTotalRemaining(OrderInterface $order): float
+    {
+        return max(0, (float)$order->getGrandTotal() - $this->getTotalPaid($order));
+    }
+
+
+
+
+
 
     public function getPaymentsForOrder(OrderInterface $order) // todo add return type
     {

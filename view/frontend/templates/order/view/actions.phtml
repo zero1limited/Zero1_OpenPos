@@ -1,0 +1,6 @@
+<?php
+/** @var \Zero1\OpenPos\Block\Order\View\Actions $block */
+?>
+
+<a href="<?= $escaper->escapeUrl($block->getUrl('openpos/order/index')) ?>" class="btn-primary"><?php echo __('View all orders') // @todo see Zero1\OpenPos\Controller\Order\View __('Back');?></a>
+<a href="<?= $escaper->escapeUrl($block->getUrl('openpos/order/success', ['id' => $block->getOrderId() ])) ?>" class="btn-primary"><?php echo __('Print'); ?></a>

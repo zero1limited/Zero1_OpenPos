@@ -13,5 +13,14 @@
                 <emulate_shipping_address>0</emulate_shipping_address>
             </advanced>
         </openpos>
+
+        <payment>
+            <openpos_layaways>
+                <active>1</active>
+                <model>Zero1\OpenPos\Model\PaymentMethod\Layaways</model>
+                <order_status>processing</order_status>
+                <title>OpenPOS Layaways</title>
+            </openpos_layaways>
+        </payment>
      </default>
 </config>

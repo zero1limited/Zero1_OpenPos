@@ -33,15 +33,8 @@
         <plugin name="zero1_openpos_quantity_validator_bypass" type="Zero1\OpenPos\Plugin\QuantityValidatorBypass"/>
     </type>
 
-    <type name="Zero1\OpenPos\Helper\ModuleIntegration">
-        <arguments>
-            <argument name="openPosModules" xsi:type="array">
-                <item name="Zero1_OpenPos" xsi:type="string">Zero1_OpenPos</item>
-                <item name="Hyva_Theme" xsi:type="string">Hyva_Theme</item>
-                <item name="Hyva_Checkout" xsi:type="string">Hyva_Checkout</item>
-                <item name="Magewirephp_Magewire" xsi:type="string">Magewirephp_Magewire</item>
-            </argument>
-        </arguments>
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="zero1_openpos_invoice_blocker" type="Zero1\OpenPos\Plugin\InvoiceBlocker" />
     </type>
 
     <type name="Zero1\OpenPos\Magewire\Switcher">
@@ -56,6 +49,31 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="openpos_setupwizard" xsi:type="object">Zero1\OpenPos\Console\Command\SetupWizard</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Zero1\OpenPos\Helper\ModuleIntegration">
+        <arguments>
+            <argument name="openPosModules" xsi:type="array">
+                <item name="Zero1_OpenPos" xsi:type="string">Zero1_OpenPos</item>
+                <item name="Hyva_Theme" xsi:type="string">Hyva_Theme</item>
+                <item name="Hyva_Checkout" xsi:type="string">Hyva_Checkout</item>
+                <item name="Magewirephp_Magewire" xsi:type="string">Magewirephp_Magewire</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Zero1\OpenPos\Helper\Payments">
+        <arguments>
+            <argument name="methods" xsi:type="array">
+                <item name="openpos_layaways" xsi:type="array">
+                    <item name="code" xsi:type="string">openpos_layaways</item>
+                    <item name="label" xsi:type="string">OpenPOS Layways</item>
+                    <item name="module" xsi:type="string">Zero1_OpenPosLayaways</item>
+                    <item name="canUseForLayaways" xsi:type="boolean">false</item>
+                    <item name="canUseForSplitPayments" xsi:type="boolean">false</item>
+                </item>
             </argument>
         </arguments>
     </type>
