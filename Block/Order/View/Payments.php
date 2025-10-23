@@ -8,10 +8,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Registry;
 use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
-
-/**
- * WORK IN PROGRESS
- */
+use Magento\Sales\Api\Data\OrderInterface;
 
 class Payments extends Template
 {
@@ -51,6 +48,11 @@ class Payments extends Template
         parent::__construct($context, $data);
     }
 
+    /**
+     * Get an array of payments for the current order
+     * 
+     * @return array
+     */
     public function getPayments(): array
     {
         $order = $this->getOrder();
@@ -70,36 +72,57 @@ class Payments extends Template
         return $payments;
     }
 
-    public function isOrderPaid()
+    /**
+     * Retrieves the ID of the current order.
+     *
+     * @return int
+     */
+    public function getOrderId(): int
     {
-        $order = $this->getOrder();
-
-        return $this->openPosOrderHelper->isOrderPaid($order);
+        return (int)$this->getOrder()->getId();
     }
 
+    /**
+     * Retrieves the current order from the registry.
+     *
+     * @return OrderInterface
+     */
+    protected function getOrder(): OrderInterface
+    {
+        return $this->registry->registry('current_order');
+    }
+
+    /**
+     * Formats a given amount into the store's currency string.
+     *
+     * @param float $amount
+     * @return string
+     */
     public function formatPrice($amount): string
     {
         return $this->priceHelper->currency($amount, true, false);
     }
 
-    public function getOrderId()
-    {
-        return $this->getOrder()->getId();
-    }
-
-    protected function getOrder()
-    {
-        return $this->registry->registry('current_order');
-    }
-
+    /**
+     * Check if a payment can be made on an order.
+     * Order has the be status 'pending' and use the layaway payment method.
+     * 
+     * @return bool
+     */
     public function canMakePayment(): bool
     {
         $order = $this->getOrder();
+        return $this->openPosOrderHelper->canMakePayment($order);
+    }
 
-        if($order->getStatus() === 'pending' && $order->getPayment()->getMethod() === 'openpos_layaways') {
-            return !$this->isOrderPaid();
-        }
-
-        return false;
+    /**
+     * Check if an order is fully paid.
+     *
+     * @return boolean
+     */
+    public function isOrderPaid()
+    {
+        $order = $this->getOrder();
+        return $this->openPosOrderHelper->isOrderPaid($order);
     }
 }

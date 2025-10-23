@@ -7,27 +7,19 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
-use Magento\Backend\Model\Auth;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
-use Magento\Framework\DataObjectFactory;
-use Zero1\OpenPosLayaways\Model\PaymentMethod;
+use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 use Magento\Framework\Exception\LocalizedException;
-
 use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Phrase;
 
 class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
-    /**
-     * @var Auth
-     */
-    protected $auth;
-
     /**
      * @var OpenPosHelper
      */
@@ -49,39 +41,28 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
     protected $quoteManagement;
 
     /**
-     * @var DataObjectFactory
-     */
-    protected $dataObjectFactory;
-
-    /**
      * @param Context $context
-     * @param Auth $auth
      * @param OpenPosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
      * @param CheckoutSession $checkoutSession
      * @param QuoteManagement $quoteManagement
-     * @param DataObjectFactory $dataObjectFactory
      */
     public function __construct(
         Context $context,
-        Auth $auth,
         OpenPosHelper $openPosHelper,
         OpenPosSessionHelper $openPosSessionHelper,
         CheckoutSession $checkoutSession,
-        QuoteManagement $quoteManagement,
-        DataObjectFactory $dataObjectFactory
+        QuoteManagement $quoteManagement
     ) {
-        $this->auth = $auth;
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
         $this->checkoutSession = $checkoutSession;
         $this->quoteManagement = $quoteManagement;
-        $this->dataObjectFactory = $dataObjectFactory;
         parent::__construct($context);
     }
 
     /**
-     * Create the current quote as an order pending payment
+     * Create the current quote as an order pending payment / stashed order
      * 
      * @return Redirect
      */
@@ -90,7 +71,7 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
-            // TODO harden maybe 404?
+            // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;
         }
@@ -100,7 +81,7 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
                 // Get current quote
                 $quote = $this->checkoutSession->getQuote();
                 $quote->getPayment()->importData([
-                    'method' => 'openpos_layaways' // todo sort
+                    'method' => Layaways::PAYMENT_METHOD_CODE
                 ]);
 
                 $quote->collectTotals();
@@ -120,6 +101,9 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
                 return $resultRedirect->setPath('checkout/cart');
             }
         }
+
+        $resultRedirect->setPath('/');
+        return $resultRedirect;
     }
 
     /**

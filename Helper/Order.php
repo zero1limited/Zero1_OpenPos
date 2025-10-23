@@ -11,13 +11,9 @@ use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollec
 use Zero1\OpenPos\Model\PaymentFactory;
 use Zero1\OpenPos\Api\PaymentRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-
 use Magento\Sales\Api\Data\OrderInterface;
 use Zero1\OpenPos\Api\Data\PaymentInterface;
-
-/**
- * Work in progress
- */
+use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 
 class Order extends AbstractHelper
 {
@@ -95,7 +91,6 @@ class Order extends AbstractHelper
         $orderId = $order->getId();
         $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession()->getUserName();
 
-        // Calculate tax from payment amount — adjust as needed
         $taxRate = $this->getTaxRateForOrder($order);
         $taxAmount = round($amount * ($taxRate / 100), 2);
 
@@ -118,10 +113,7 @@ class Order extends AbstractHelper
         }
         
         return $payment;
-
-        return null;
     }
-
 
     /**
      * Check if an order is fully paid.
@@ -162,12 +154,13 @@ class Order extends AbstractHelper
         return max(0, (float)$order->getGrandTotal() - $this->getTotalPaid($order));
     }
 
-
-
-
-
-
-    public function getPaymentsForOrder(OrderInterface $order) // todo add return type
+    /**
+     * Get all payments for a given order.
+     * 
+     * @param OrderInterface $order
+     * @return PaymentInterface[] array of payments
+     */
+    public function getPaymentsForOrder(OrderInterface $order) //@todo add return type
     {
         $payments = $this->paymentCollectionFactory->create()
             ->addFieldToFilter('order_id', $order->getEntityId());
@@ -175,6 +168,12 @@ class Order extends AbstractHelper
         return $payments->getItems();
     }
 
+    /**
+     * Check if an order can be edited (i.e. has no payments).
+     * 
+     * @param OrderInterface $order
+     * @return bool
+     */
     public function canEdit(OrderInterface $order): bool
     {
         $payments = $this->getPaymentsForOrder($order);
@@ -185,9 +184,35 @@ class Order extends AbstractHelper
         return false;
     }
 
+    /**
+     * Check if a payment can be made on an order.
+     * Order has the be status 'pending' and use the layaway payment method.
+     * 
+     * @param OrderInterface $order
+     * @return bool
+     */
+    public function canMakePayment(OrderInterface $order): bool
+    {
+        if(!$this->openPosHelper->isPosOrder($order)) {
+            return false;
+        }
+
+        // @todo order status
+        if($order->getStatus() === 'pending' && $order->getPayment()->getMethod() === Layaways::PAYMENT_METHOD_CODE) {
+            return !$this->isOrderPaid($order);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get tax rate for an order.
+     * 
+     * @param OrderInterface $order
+     * @return float tax rate as a percentage
+     */
     protected function getTaxRateForOrder(OrderInterface $order): float
     {
-        // Example: average tax rate based on order tax / subtotal
         try {
             $subtotal = (float)$order->getBaseSubtotal();
             $taxAmount = (float)$order->getBaseTaxAmount();

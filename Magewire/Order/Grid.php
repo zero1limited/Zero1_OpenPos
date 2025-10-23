@@ -13,7 +13,7 @@ use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as OrderSta
 /**
  * This class couldn't extend Magewire Pagination class due to getAllPageItems risk of OOM'ing PHP.
  * Couldn't figure out how to mix the existing pagination methods with returning a limited order collection.
- * I have copied some of the Pageination methods here though and will revisit.
+ * I have copied some of the Pagination methods here though and will revisit.
  */
 class Grid extends Component
 {

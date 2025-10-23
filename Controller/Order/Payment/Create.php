@@ -9,12 +9,11 @@ use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\Controller\Result\Forward;
-
-/**
- * WORK IN PROGRESS
- */
 
 class Create implements HttpGetActionInterface
 {
@@ -44,24 +43,48 @@ class Create implements HttpGetActionInterface
     protected $openPosSessionHelper;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
+     * @var OpenPosOrderHelper
+     */
+    protected $openPosOrderHelper;
+
+    /**
+     * @var MessageManagerInterface
+     */
+    protected $messageManager;
+
+    /**
      * @param RequestInterface $request
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
      * @param OpenPosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OrderRepositoryInterface $orderRepository
+     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @param MessageManagerInterface $messageManager
      */
     public function __construct(
         RequestInterface $request,
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper
+        OpenPosSessionHelper $openPosSessionHelper,
+        OrderRepositoryInterface $orderRepository,
+        OpenPosOrderHelper $openPosOrderHelper,
+        MessageManagerInterface $messageManager
     ) {
         $this->request = $request;
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->orderRepository = $orderRepository;
+        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -75,12 +98,16 @@ class Create implements HttpGetActionInterface
             return $forward->forward('noroute');
         }
 
-        $orderId = (int) $this->request->getParam('id');
-        $page = $this->pageFactory->create();
+        $orderId = (int)$this->request->getParam('id');
+        $order = $this->orderRepository->get($orderId);
 
+        if($this->openPosOrderHelper->canMakePayment($order)) {
+            $this->messageManager->addErrorMessage(__('You cannot add a payment to this order.'));
 
-        // @todo make sure is openpos order etc
-        
+            $forward = $this->forwardFactory->create();
+            return $forward->forward($this->openPosHelper->getOrderViewUrl($order));
+        }
+
         $page = $this->pageFactory->create();
         $page->getConfig()->getTitle()->set('Create Payment');
         return $page;

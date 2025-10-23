@@ -7,7 +7,6 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Api\Data\OrderInterface;
 
 class Notice extends Template
 {

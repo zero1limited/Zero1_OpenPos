@@ -4,18 +4,23 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Block\Order\Payment;
 
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\App\RequestInterface;
-
-/**
- * WORK IN PROGRESS
- */
 
 class Create extends Template
 {
-    protected RequestInterface $request;
+    /**
+     * @var RequestInterface
+     */
+    protected $request;
 
+    /**
+     * @param Context $context
+     * @param RequestInterface $request
+     * @param array $data
+     */
     public function __construct(
-        Template\Context $context,
+        Context $context,
         RequestInterface $request,
         array $data = []
     ) {
@@ -23,6 +28,11 @@ class Create extends Template
         $this->request = $request;
     }
 
+    /**
+     * Retrieves the ID of the current order.
+     *
+     * @return int
+     */
     public function getOrderId(): ?string
     {
         return $this->request->getParam('id');

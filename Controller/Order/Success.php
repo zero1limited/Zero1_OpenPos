@@ -103,6 +103,7 @@ class Success implements HttpGetActionInterface
             $resultForward = $this->forwardFactory->create();
             return $resultForward->forward('noroute');
         }
+        
         $order = $this->orderRepository->get($orderId);
         $this->registry->register('current_order', $order);
         $this->checkoutSession->setLastOrderId($order->getEntityId())->setLastRealOrderId($order->getIncrementId());

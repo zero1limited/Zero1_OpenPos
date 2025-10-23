@@ -13,6 +13,8 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
      * Use the 'Payment Provider Gateway': https://developer.adobe.com/commerce/php/development/payments-integrations/payment-gateway/
      */
 
+    const PAYMENT_METHOD_CODE = 'openpos_layaways';
+
     /**
      * @var string
      */

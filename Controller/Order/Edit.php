@@ -7,7 +7,6 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\RequestInterface;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
 use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
 use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
@@ -18,6 +17,7 @@ use Magento\Sales\Model\Reorder\OrderInfoBuyRequestGetter;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\Phrase;
 
@@ -132,7 +132,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
 
         $order = $this->orderRepository->get($orderId);
 
-        // Check if the order has already been paid
+        // Check if the order has already had a payment against it
         if(!$this->openPosOrderHelper->canEdit($order)) {
             $this->messageManager->addErrorMessage(__('A payment has already been made against this order, it can no longer be edited.'));
             $resultRedirect->setPath('openpos/order/view', ['id' => $orderId]);

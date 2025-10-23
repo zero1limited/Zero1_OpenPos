@@ -16,10 +16,6 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\Controller\Result\Forward;
 
-/**
- * Work in progress
- */
-
 class View implements HttpGetActionInterface
 {
     /**
@@ -117,6 +113,7 @@ class View implements HttpGetActionInterface
             $resultForward = $this->forwardFactory->create();
             return $resultForward->forward('noroute');
         }
+
         $order = $this->loadOrder($orderId);
 
         $page = $this->pageFactory->create();
@@ -143,7 +140,8 @@ class View implements HttpGetActionInterface
         $order = $this->orderRepository->get($orderId);
         $this->registry->register('current_order', $order);
 
-        $this->checkoutSession->setLastOrderId($order->getEntityId())->setLastRealOrderId($order->getIncrementId());
+        // @todo not sure why we do this, commenting out for now.
+        // $this->checkoutSession->setLastOrderId($order->getEntityId())->setLastRealOrderId($order->getIncrementId());
 
         return $order;
     }

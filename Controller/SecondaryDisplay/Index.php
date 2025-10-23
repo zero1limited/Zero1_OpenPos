@@ -47,6 +47,10 @@ class Index implements HttpGetActionInterface
      */
     public function execute()
     {
+        // This is in development.
+        $forward = $this->forwardFactory->create();
+        return $forward->forward('noroute');
+
         if(!$this->openPosHelper->currentlyOnPosStore()) {
             $forward = $this->forwardFactory->create();
             return $forward->forward('noroute');

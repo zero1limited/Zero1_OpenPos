@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Plugin;
 
 use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollectionFactory;
+use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Sales\Model\Order;
+use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 
 class InvoiceBlocker
 {
@@ -15,26 +16,26 @@ class InvoiceBlocker
     protected $posHelper;
 
     /**
-     * @var PaymentCollectionFactory
+     * @var OpenPosOrderHelper
      */
-    protected $paymentCollectionFactory;
+    protected $openPosOrderHelper;
 
     /**
      * @param PosHelper $posHelper
-     * @param PaymentCollectionFactory $paymentCollectionFactory
+     * @param OpenPosOrderHelper $openPosOrderHelper
      */
     public function __construct(
         PosHelper $posHelper,
-        PaymentCollectionFactory $paymentCollectionFactory
+        OpenPosOrderHelper $openPosOrderHelper
     ) {
         $this->posHelper = $posHelper;
-        $this->paymentCollectionFactory = $paymentCollectionFactory;
+        $this->openPosOrderHelper = $openPosOrderHelper;
     }
 
     /**
      * Ensure layaway OpenPOS orders cannot be invoiced if not fully paid.
      *
-     * @param \Magento\Sales\Model\Order $subject
+     * @param Order $subject
      * @param bool $result
      * @return bool
      */
@@ -42,22 +43,14 @@ class InvoiceBlocker
     {
         // Check order is an OpenPOS order
         if($this->posHelper->isPosOrder($subject)) {
-            // Check order is layaways
-            $paymentMethod = $subject->getPayment()->getMethod();
-            if($paymentMethod !== 'openpos_layaways') { // todo fix
+
+            // Check the order is layaways
+            if($subject->getPayment()->getMethod() !== Layaways::PAYMENT_METHOD_CODE) {
                 return $result;
             }
 
-            $paymentCollection = $this->paymentCollectionFactory->create();
-            $paymentCollection->addFieldToFilter('order_id', ['eq' => $subject->getId()]);
-
-            $totalPaid = 0;
-            foreach($paymentCollection as $payment) {
-                $totalPaid += $payment->getBasePaymentAmount();
-            }
-
-            if($totalPaid < $subject->getGrandTotal()) {
-                // Cannot invoice, total has not been paid.
+            // Cannot invoice, total has not been paid.
+            if(!$this->openPosOrderHelper->isOrderPaid($subject)) {
                 return false;
             }
         }

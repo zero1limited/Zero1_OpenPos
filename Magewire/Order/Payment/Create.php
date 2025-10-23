@@ -18,11 +18,30 @@ class Create extends Component
     public string $paymentType = '';
     public $amount = 0.00;
 
-    protected OpenPosHelper $openPosHelper;
-    protected OpenPosPaymentsHelper $openPosPaymentsHelper;
-    protected OpenPosOrderHelper $openPosOrderHelper;
-    protected OrderRepositoryInterface $orderRepository;
-    protected CoreRequest $coreRequest;
+    /**
+     * @var OpenPosHelper
+     */
+    protected $openPosHelper;
+
+    /**
+     * @var OpenPosPaymentsHelper
+     */
+    protected $openPosPaymentsHelper;
+
+    /**
+     * @var OpenPosOrderHelper
+     */
+    protected $openPosOrderHelper;
+
+    /**
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
+     * @var CoreRequest
+     */
+    protected $coreRequest;
 
     /**
      * @param OpenPosHelper $openPosHelper
@@ -36,7 +55,7 @@ class Create extends Component
         OpenPosPaymentsHelper $openPosPaymentsHelper,
         OpenPosOrderHelper $openPosOrderHelper,
         OrderRepositoryInterface $orderRepository,
-        CoreRequest $coreRequest,
+        CoreRequest $coreRequest
     ) {
         $this->openPosHelper = $openPosHelper;
         $this->openPosPaymentsHelper = $openPosPaymentsHelper;
@@ -45,26 +64,51 @@ class Create extends Component
         $this->coreRequest = $coreRequest;
     }
 
+    /**
+     * Ensure order ID is set for subsequent Magewire requests.
+     *
+     * @return void
+     */
     public function mount(): void
     {
         $this->orderId = (string)$this->coreRequest->getParam('id');
     }
 
+    /**
+     * Return current order being viewed.
+     *
+     * @return OrderInterface
+     */
     protected function getOrder(): OrderInterface
     {
         return $this->orderRepository->get($this->orderId);
     }
 
+    /**
+     * Return total paid so far for the current order.
+     *
+     * @return float
+     */
     public function getTotalPaid(): float
     {
         return $this->openPosOrderHelper->getTotalPaid($this->getOrder());
     }
 
+    /**
+     * Return total remaining to pay for the current order.
+     *
+     * @return float
+     */
     public function getTotalRemaining(): float
     {
         return $this->openPosOrderHelper->getTotalRemaining($this->getOrder());
     }
 
+    /**
+     * Check if the current order is fully paid.
+     *
+     * @return boolean
+     */
     public function isOrderPaid(): bool
     {
         return $this->openPosOrderHelper->isOrderPaid($this->getOrder());
@@ -99,6 +143,7 @@ class Create extends Component
         $payments = [];
         $order = $this->getOrder();
 
+        // @todo this might be returning duplicate records, check.
         $orderPayments = $this->openPosOrderHelper->getPaymentsForOrder($order);
         foreach ($orderPayments as $orderPayment) {
             $payments[] = [
