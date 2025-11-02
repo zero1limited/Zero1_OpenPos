@@ -101,7 +101,7 @@ class Create implements HttpGetActionInterface
         $orderId = (int)$this->request->getParam('id');
         $order = $this->orderRepository->get($orderId);
 
-        if($this->openPosOrderHelper->canMakePayment($order)) {
+        if(!$this->openPosOrderHelper->canMakePayment($order)) {
             $this->messageManager->addErrorMessage(__('You cannot add a payment to this order.'));
 
             $forward = $this->forwardFactory->create();

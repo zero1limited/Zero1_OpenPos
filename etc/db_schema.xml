@@ -19,6 +19,7 @@
         <column xsi:type="decimal" name="base_tax_amount" scale="4" precision="20" unsigned="false" nullable="true" comment="Base tax amount"/>
         <column xsi:type="text" name="base_payment_method" nullable="false" comment="Base payment method"/>
         <column xsi:type="text" name="payment_method" nullable="false" comment="Payment method"/>
+        <column xsi:type="text" name="additional_data" nullable="true" comment="Data for payment"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Creation time"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="payment_id"/>

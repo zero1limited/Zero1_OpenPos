@@ -55,11 +55,13 @@ class Payments extends Template
      */
     public function getPayments(): array
     {
+        $renderPayments = [];
+        
         $order = $this->getOrder();
         $payments = $this->openPosOrderHelper->getPaymentsForOrder($order);
 
         foreach($payments as $payment) {
-            $payments[] = [
+            $renderPayments[] = [
                 'id' => $payment->getId(),
                 'admin_user' => $payment->getAdminUser(),
                 'amount' => $payment->getBasePaymentAmount(),
@@ -69,7 +71,7 @@ class Payments extends Template
             ];
         }
 
-        return $payments;
+        return $renderPayments;
     }
 
     /**

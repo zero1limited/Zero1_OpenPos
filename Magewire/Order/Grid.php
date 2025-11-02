@@ -9,6 +9,7 @@ use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as OrderStatusCollectionFactory;
+use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 
 /**
  * This class couldn't extend Magewire Pagination class due to getAllPageItems risk of OOM'ing PHP.
@@ -55,24 +56,32 @@ class Grid extends Component
     protected $orderStatusCollectionFactory;
 
     /**
+     * @var PriceHelper
+     */
+    protected $priceHelper;
+
+    /**
      * @param OpenPosHelper $openPosHelper
      * @param OpenPosOrderHelper $openPosOrderHelper
      * @param CustomerSession $customerSession
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param OrderStatusCollectionFactory $orderStatusCollectionFactory
+     * @param PriceHelper $priceHelper
      */
     public function __construct(
         OpenPosHelper $openPosHelper,
         OpenPosOrderHelper $openPosOrderHelper,
         CustomerSession $customerSession,
         OrderCollectionFactory $orderCollectionFactory,
-        OrderStatusCollectionFactory $orderStatusCollectionFactory
+        OrderStatusCollectionFactory $orderStatusCollectionFactory,
+        PriceHelper $priceHelper
     ) {
         $this->openPosHelper = $openPosHelper;
         $this->openPosOrderHelper = $openPosOrderHelper;
         $this->customerSession = $customerSession;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->orderStatusCollectionFactory = $orderStatusCollectionFactory;
+        $this->priceHelper = $priceHelper;
     }
 
     /**
@@ -172,11 +181,11 @@ class Grid extends Component
             $orders[] = [
                 'increment_id' => $order->getIncrementId(),
                 'created_at' => $order->getCreatedAt(),
-                'magento_status' => $order->getStatus(),
-                'openpos_total_paid' => (float)$order->getData('openpos_total_paid'),
+                'magento_status' => $order->getStatusLabel(),
+                'openpos_total_paid' => $this->priceHelper->currency($order->getData('openpos_total_paid'), true, false),
                 'openpos_status' => $openPosStatus,
                 'customer_name' => $order->getCustomerName(),
-                'grand_total' => $order->getGrandTotal(),
+                'grand_total' => $this->priceHelper->currency($order->getGrandTotal(), true, false),
                 'view_url' => $this->openPosHelper->getOrderViewUrl($order)
             ];
         }

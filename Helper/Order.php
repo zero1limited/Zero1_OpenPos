@@ -11,9 +11,15 @@ use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollec
 use Zero1\OpenPos\Model\PaymentFactory;
 use Zero1\OpenPos\Api\PaymentRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Api\InvoiceRepositoryInterface;
+use Magento\Sales\Model\Service\InvoiceService;
+use Magento\Framework\DB\Transaction;
+
 use Magento\Sales\Api\Data\OrderInterface;
 use Zero1\OpenPos\Api\Data\PaymentInterface;
 use Zero1\OpenPos\Model\PaymentMethod\Layaways;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Api\Data\InvoiceInterface;
 
 class Order extends AbstractHelper
 {
@@ -48,6 +54,21 @@ class Order extends AbstractHelper
     protected $orderRepository;
 
     /**
+     * @var InvoiceRepositoryInterface
+     */
+    protected $invoiceRepository;
+
+    /**
+     * @var InvoiceService
+     */
+    protected $invoiceService;
+
+    /**
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /**
      * @param Context $context
      * @param PosHelper $openPosHelper
      * @param OpenPosSessionHelper $openPosSessionHelper
@@ -55,6 +76,9 @@ class Order extends AbstractHelper
      * @param PaymentFactory $paymentFactory
      * @param PaymentRepositoryInterface $paymentRepository
      * @param OrderRepositoryInterface $orderRepository
+     * @param InvoiceRepositoryInterface $invoiceRepository
+     * @param InvoiceService $invoiceService
+     * @param Transaction $transaction
      */
     public function __construct(
         Context $context,
@@ -63,8 +87,10 @@ class Order extends AbstractHelper
         PaymentCollectionFactory $paymentCollectionFactory,
         PaymentFactory $paymentFactory,
         PaymentRepositoryInterface $paymentRepository,
-        OrderRepositoryInterface $orderRepository
-
+        OrderRepositoryInterface $orderRepository,
+        InvoiceRepositoryInterface $invoiceRepository,
+        InvoiceService $invoiceService,
+        Transaction $transaction
     ) {
         $this->openPosHelper = $openPosHelper;
         $this->openPosSessionHelper = $openPosSessionHelper;
@@ -72,6 +98,9 @@ class Order extends AbstractHelper
         $this->paymentFactory = $paymentFactory;
         $this->paymentRepository = $paymentRepository;
         $this->orderRepository = $orderRepository;
+        $this->invoiceRepository = $invoiceRepository;
+        $this->invoiceService = $invoiceService;
+        $this->transaction = $transaction;
         
         parent::__construct($context);
     }
@@ -107,12 +136,46 @@ class Order extends AbstractHelper
 
         // Check if order can now be completed
         if($this->isOrderPaid($order)) {
-            $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
-            $order->setStatus('complete');
-            $this->orderRepository->save($order);
+            $this->invoiceOrder($order);
         }
         
         return $payment;
+    }
+
+    /**
+     * Invoice an OpenPOS order, set state to complete.
+     * 
+     * @param OrderInterface $order
+     * @return InvoiceInterface|null
+     * @throws LocalizedException
+     */
+    public function invoiceOrder(OrderInterface $order): ?InvoiceInterface
+    {
+        if(!$this->openPosHelper->isPosOrder($order)) {
+            throw new LocalizedException(
+                __('Cannot invoice a non OpenPOS order %1', $order->getIncrementId())
+            );
+        }
+
+        if ($order->canInvoice()) {
+            $invoice = $this->invoiceService->prepareInvoice($order);
+            $invoice->register();
+
+            $transactionSave = $this->transaction->addObject(
+                $invoice
+            )->addObject(
+                $invoice->getOrder()
+            );
+            $transactionSave->save();
+
+            $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
+            $order->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);
+            $this->orderRepository->save($order);
+
+            return $invoice;
+        }
+
+        return null;
     }
 
     /**
@@ -123,7 +186,7 @@ class Order extends AbstractHelper
      */
     public function isOrderPaid(OrderInterface $order): bool
     {
-        return $this->getTotalRemaining($order) === 0;
+        return abs($this->getTotalRemaining($order)) < 0.0001;
     }
 
     /**
@@ -151,7 +214,7 @@ class Order extends AbstractHelper
      */
     public function getTotalRemaining(OrderInterface $order): float
     {
-        return max(0, (float)$order->getGrandTotal() - $this->getTotalPaid($order));
+        return max(0, (float)$order->getBaseGrandTotal() - $this->getTotalPaid($order));
     }
 
     /**
@@ -160,7 +223,7 @@ class Order extends AbstractHelper
      * @param OrderInterface $order
      * @return PaymentInterface[] array of payments
      */
-    public function getPaymentsForOrder(OrderInterface $order) //@todo add return type
+    public function getPaymentsForOrder(OrderInterface $order): array
     {
         $payments = $this->paymentCollectionFactory->create()
             ->addFieldToFilter('order_id', $order->getEntityId());

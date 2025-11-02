@@ -7,7 +7,7 @@
     <update handle="sales_order_item_price"/>
     <body>
         <referenceContainer name="content">
-            <block class="Magento\Framework\View\Element\Template" name="openpos.order.view.actions" template="Zero1_OpenPos::order/view/actions.phtml" before="-"/>
+            <block class="Zero1\OpenPos\Block\Order\View\Actions" name="openpos.order.view.actions" template="Zero1_OpenPos::order/view/actions.phtml" before="-"/>
             <block class="Zero1\OpenPos\Block\Order\View\Payments" name="openpos.order.view.payments" template="Zero1_OpenPos::order/view/payments.phtml" after="openpos.order.view.actions" />
             <block class="Magento\Sales\Block\Order\View" name="order.comments" template="Magento_Sales::order/order_comments.phtml" before="sales.order.info.links"/>
             <block class="Magento\Sales\Block\Order\View" name="sales.order.view" cacheable="false" after="sales.order.info.links">

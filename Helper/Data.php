@@ -13,6 +13,7 @@ use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Framework\App\State;
+use Magento\Framework\Url;
 use Magento\Framework\Exception\LocalizedException;
 
 class Data extends AbstractHelper
@@ -69,6 +70,11 @@ class Data extends AbstractHelper
     protected $appState;
 
     /**
+     * @var Url
+     */
+    protected $url;
+
+    /**
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
@@ -76,6 +82,7 @@ class Data extends AbstractHelper
      * @param CustomerInterfaceFactory $customerFactory
      * @param EncryptorInterface $encryptor
      * @param State $appState
+     * @param Url $url
      */
     public function __construct(
         Context $context,
@@ -84,7 +91,8 @@ class Data extends AbstractHelper
         CustomerRepositoryInterface $customerRepository,
         CustomerInterfaceFactory $customerFactory,
         EncryptorInterface $encryptor,
-        State $appState
+        State $appState,
+        Url $url
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -92,6 +100,7 @@ class Data extends AbstractHelper
         $this->customerFactory = $customerFactory;
         $this->encryptor = $encryptor;
         $this->appState = $appState;
+        $this->url = $url;
         parent::__construct($context);
     }
 
@@ -313,7 +322,6 @@ class Data extends AbstractHelper
      */
     public function getTillUrl(): string
     {
-        // TODO this include admin path so will 404
         if(!$this->isEnabled()) {
             throw new LocalizedException(__('OpenPOS is currently disabled. Check configuration.'));
         }
@@ -323,7 +331,9 @@ class Data extends AbstractHelper
             throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
         }
 
-        return $posStore->getUrl('openpos/tillsession/login');
+        return $this->url->getUrl('openpos/tillsession/login', [
+            '_scope' => $posStore->getId()
+        ]);
     }
 
     /**
@@ -331,13 +341,15 @@ class Data extends AbstractHelper
      */
     public function getOrderViewUrl(OrderInterface $order): string
     {
-        // TODO this include admin path so will 404
         $orderId = $order->getId();
         $posStore = $this->getPosStore();
         if(!$posStore) {
             throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
         }
 
-        return $posStore->getUrl('openpos/order/view/id/'.$orderId);
+        return $this->url->getUrl('openpos/order/view/id', [
+            '_scope' => $posStore->getId(),
+            'id' => $orderId
+        ]);
     }
 }
