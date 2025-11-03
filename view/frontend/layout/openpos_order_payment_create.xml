@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="Zero1\OpenPos\Block\Order\Payment\Create" name="openpos.order.payment.create" template="Zero1_OpenPos::order/payment/create.phtml">
+                <arguments>
+                    <argument name="magewire" xsi:type="array">
+                        <item name="type" xsi:type="object">\Zero1\OpenPos\Magewire\Order\Payment\Create</item>
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

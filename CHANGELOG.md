@@ -1,5 +1,11 @@
 # OpenPOS changelog
 
+## [2.2.0] - 2025-11-03
+
+### Added
+- Layaway system. Orders can now be created with partial or no payment and completed or modified later.  
+  **Note:** This feature introduces significant underlying changes across order creation and payment workflows.
+
 ## [2.1.3] - 2025-07-11
 
 ### Fixed

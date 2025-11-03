@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Elasticsearch\Endpoints\Indices\Open;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 
-class AutoInvoice
+class PaymentCreate
 {
     /**
      * @var PosHelper
@@ -34,6 +34,8 @@ class AutoInvoice
     }
 
     /**
+     * Create OpenPOS payment for orders that are not layaways.
+     * 
      * @param OrderManagementInterface $orderManagement
      * @param OrderInterface $order
      * @return OrderInterface
@@ -41,7 +43,11 @@ class AutoInvoice
     public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
         if($this->posHelper->isPosOrder($order)) {
-            $this->openPosOrderHelper->invoiceOrder($order);
+            if($order->getPayment()->getMethod() === Layaways::PAYMENT_METHOD_CODE) {
+                return $order;
+            }
+
+            $this->openPosOrderHelper->makePayment($order, $order->getGrandTotal(), $order->getPayment()->getMethod(), $order->getPayment()->getMethod());
         }
 
         return $order;

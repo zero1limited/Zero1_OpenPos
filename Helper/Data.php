@@ -13,6 +13,12 @@ use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Framework\App\State;
+use Magento\Framework\Url;
+use Magento\Framework\Exception\LocalizedException;
+
+/**
+ * This class will soon change to a configuration helper only, with all logic moving to another class.
+ */
 
 class Data extends AbstractHelper
 {
@@ -68,6 +74,11 @@ class Data extends AbstractHelper
     protected $appState;
 
     /**
+     * @var Url
+     */
+    protected $url;
+
+    /**
      * @param Context $context
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
@@ -75,6 +86,7 @@ class Data extends AbstractHelper
      * @param CustomerInterfaceFactory $customerFactory
      * @param EncryptorInterface $encryptor
      * @param State $appState
+     * @param Url $url
      */
     public function __construct(
         Context $context,
@@ -83,7 +95,8 @@ class Data extends AbstractHelper
         CustomerRepositoryInterface $customerRepository,
         CustomerInterfaceFactory $customerFactory,
         EncryptorInterface $encryptor,
-        State $appState
+        State $appState,
+        Url $url
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -91,6 +104,7 @@ class Data extends AbstractHelper
         $this->customerFactory = $customerFactory;
         $this->encryptor = $encryptor;
         $this->appState = $appState;
+        $this->url = $url;
         parent::__construct($context);
     }
 
@@ -303,5 +317,43 @@ class Data extends AbstractHelper
             return true;
         }
         return false;
+    }
+
+    /**
+     * Return URL for till / OpenPOS frontend.
+     * 
+     * @return string
+     */
+    public function getTillUrl(): string
+    {
+        if(!$this->isEnabled()) {
+            throw new LocalizedException(__('OpenPOS is currently disabled. Check configuration.'));
+        }
+
+        $posStore = $this->getPosStore();
+        if(!$posStore) {
+            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
+        }
+
+        return $this->url->getUrl('openpos/tillsession/login', [
+            '_scope' => $posStore->getId()
+        ]);
+    }
+
+    /**
+     * Return URL for viewing order on till / OpenPOS frontend.
+     */
+    public function getOrderViewUrl(OrderInterface $order): string
+    {
+        $orderId = $order->getId();
+        $posStore = $this->getPosStore();
+        if(!$posStore) {
+            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
+        }
+
+        return $this->url->getUrl('openpos/order/view/id', [
+            '_scope' => $posStore->getId(),
+            'id' => $orderId
+        ]);
     }
 }

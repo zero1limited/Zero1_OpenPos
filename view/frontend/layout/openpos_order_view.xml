@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="sales_order_item_renderers"/>
+    <update handle="sales_order_item_price"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Zero1\OpenPos\Block\Order\View\Actions" name="openpos.order.view.actions" template="Zero1_OpenPos::order/view/actions.phtml" before="-"/>
+            <block class="Zero1\OpenPos\Block\Order\View\Payments" name="openpos.order.view.payments" template="Zero1_OpenPos::order/view/payments.phtml" after="openpos.order.view.actions" />
+            <block class="Magento\Sales\Block\Order\View" name="order.comments" template="Magento_Sales::order/order_comments.phtml" before="sales.order.info.links"/>
+            <block class="Magento\Sales\Block\Order\View" name="sales.order.view" cacheable="false" after="sales.order.info.links">
+                <block class="Magento\Sales\Block\Order\Items" name="order_items" template="Magento_Sales::order/items.phtml">
+                    <block class="Magento\Framework\View\Element\RendererList" name="sales.order.items.renderers" as="renderer.list"/>
+                    <block class="Magento\Theme\Block\Html\Pager" name="sales_order_item_pager"/>
+                    <block class="Magento\Sales\Block\Order\Totals" name="order_totals" template="Magento_Sales::order/totals.phtml">
+                        <arguments>
+                            <argument name="label_properties" xsi:type="string">colspan="4" class="mark"</argument>
+                            <argument name="value_properties" xsi:type="string">class="amount"</argument>
+                        </arguments>
+                        <block class="Magento\Tax\Block\Sales\Order\Tax" name="tax" template="Magento_Tax::order/tax.phtml"/>
+                    </block>
+                </block>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

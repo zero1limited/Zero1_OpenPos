@@ -1,0 +1,99 @@
+<div id="openpos-layaways-make-payment">
+
+    <div class="details flex flex-wrap w-full mb-4">
+        <span class="w-full text-lg"><?php echo __('Status: '); ?><span class="font-bold"><?php echo __('Pending'); ?></span></span>
+    </div>
+
+    <?php if (!empty($magewire->getPayments())): ?>
+        <div class="flex w-full flex-wrap border-t py-4 mb-4">
+            <div class="flex w-full">
+                <span class="text-xl font-bold"><?php echo __('Amount paid:'); ?> <span class="font-normal">£<?= number_format($magewire->getTotalPaid(), 2) ?></span></span>
+            </div>
+            <table class="table-auto w-full border border-collapse border-gray-300 mt-2">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border">#</th>
+                        <th class="px-4 py-2 border">Method</th>
+                        <th class="px-4 py-2 border">Admin</th>
+                        <th class="px-4 py-2 border">Amount</th>
+                        <th class="px-4 py-2 border">Tax</th>
+                        <th class="px-4 py-2 border">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($magewire->getPayments() as $index => $payment): ?>
+                        <tr>
+                            <td class="px-4 py-2 border"><?= $index + 1 ?></td>
+                            <td class="px-4 py-2 border"><?= $payment['payment_method'] ?></td>
+                            <td class="px-4 py-2 border"><?= $payment['admin_user'] ?></td>
+                            <td class="px-4 py-2 border">£<?= number_format($payment['amount'], 2) ?></td>
+                            <td class="px-4 py-2 border">£<?= number_format($payment['tax_amount'], 2) ?></td>
+                            <td class="px-4 py-2 border"><?= $payment['created_at'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="flex w-full flex-wrap border-t py-4 mt-4 pt-6">
+            <div class="flex w-full">
+                <span class="text-xl font-bold"><?php echo __('Amount due:'); ?> <span class="font-normal">£<?= number_format($magewire->getTotalRemaining(), 2) ?></span></span>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="flex w-full justify-between gap-4 border-b my-6 py-4 border-t">
+            <div class="flex w-full">
+                <span class="text-xl font-bold"><?php echo __('Amount paid:'); ?> <span class="font-normal">£<?= number_format($magewire->getTotalPaid(), 2) ?></span></span>
+            </div>
+            <div class="flex w-full">
+                <span class="text-xl font-bold"><?php echo __('Amount due:'); ?> <span class="font-normal">£<?= number_format($magewire->getTotalRemaining(), 2) ?></span></span>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!$magewire->isOrderPaid()): ?>
+        <div class="flex w-full justify-between gap-4 mb-4 radios-like-buttons">
+            <div class="flex w-full">
+                <label class="inline-flex items-center p-6">
+                    <input type="radio" wire:model="paymentType" value="remaining" class="mr-1">
+                    <?php echo __('Pay Remaining Balance'); ?> (£<?= number_format($magewire->getTotalRemaining(), 2) ?>)
+                </label>
+            </div>
+            <div class="flex w-full">
+                <label class="inline-flex items-center p-6">
+                    <input type="radio" wire:model="paymentType" value="custom" class="mr-1">
+                    <?php echo __('Pay Custom Amount'); ?>
+                </label>
+            </div>
+        </div>
+        <div class="flex w-full mb-6">
+            <?php if ($magewire->paymentType === 'custom'): ?>
+                <div class="flex w-full justify-between items-center gap-8">
+                    <label for="custom-amount" class="flex w-full mb-1 font-medium text-right justify-end"><?php echo __('Custom Amount'); ?></label>
+                    <input type="number" wire:model.defer="amount" id="custom-amount" min="0" step="0.01"
+                        class="border border-gray-300 p-4 rounded w-full" />
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="flex w-full flex-wrap mb-6">
+            <label for="payment-method" class="block font-medium mb-4 font-bolg text-lg"><?php echo __('Select Payment Method'); ?></label>
+            <select wire:model="paymentMethod" id="payment-method" class="border border-gray-300 px-4 py-2 rounded w-full">
+                <option value="">-- Please Select --</option>
+                <?php foreach ($magewire->getAvailablePaymentMethods() as $methodCode => $label): ?>
+                    <option value="<?= $methodCode ?>"><?= $label ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="flex w-full justify-between gap-4">
+            <div class="flex w-full">
+                <a href="<?= $magewire->getOrderViewUrl() ?>" class="btn btn-secondary flex w-full justify-center font-normal text-sm"><?php echo __('Back'); ?></a>
+            </div>
+            <div class="flex w-full">
+                <button wire:click="startPayment" class="btn btn-primary"><?php echo __('Make Payment'); ?></button>
+            </div>
+        </div>            
+
+    <?php endif; ?>
+
+</div>

@@ -1,0 +1,64 @@
+<?php
+$payments = $block->getPayments();
+
+$pageMessage = "This order has been paid in full";
+if (!$block->isOrderPaid()) {
+    if (empty($payments)) {
+        $pageMessage = "No payments have been recorded for this order";
+    } else {
+        $pageMessage = "There are outstanding payments due on this order";
+    }
+}
+?>
+
+<div id='openpos-layaways' class="my-6">
+
+    <div class="details flex flex-wrap w-full mb-4">
+        <span class="w-full font-bold text-lg"><?php echo $pageMessage; ?></span>
+    </div>
+
+    <div class="flex w-full gap-4 justify-between mb-4">
+        
+        <?php if ($block->canMakePayment()): ?>
+
+            <a href="<?= $block->getUrl('openpos/order_payment/create', ['id' => $block->getOrderId() ]) ?>" class="flex w-full justify-center items-center p-2 btn btn-primary"><?php echo __('Make Payment'); ?></a>
+            
+            <form class="w-full" action="<?= $block->getUrl('openpos/order/edit', ['id' => $block->getOrderId()]) ?>" method="post">
+                <input type="hidden" name="form_key" value="<?= $block->getFormKey(); ?>" />
+                <button type="submit" class="flex w-full justify-center items-center p-2 btn btn-primary">
+                    <?= __('Unstash'); ?>
+                </button>
+            </form>
+
+        <?php endif; ?>
+    </div>
+
+    <?php if (!empty($payments)): ?>
+        <div class="table-wrapper payments">
+            <table class="data table payments-table w-full text-sm text-left text-gray-800 border border-gray-200">
+                <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+                    <tr>
+                        <th class="p-2 border">Payment ID</th>
+                        <th class="p-2 border">Admin User</th>
+                        <th class="p-2 border">Amount</th>
+                        <th class="p-2 border">Tax Amount</th>
+                        <th class="p-2 border">Payment Method</th>
+                        <th class="p-2 border">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($payments as $payment): ?>
+                        <tr class="border-t">
+                            <td class="p-2"><?= $block->escapeHtml($payment['id']) ?></td>
+                            <td class="p-2"><?= $block->escapeHtml($payment['admin_user']) ?></td>
+                            <td class="p-2"><?= $block->formatPrice($payment['amount']) ?></td>
+                            <td class="p-2"><?= $block->formatPrice($payment['tax_amount']) ?></td>
+                            <td class="p-2"><?= $block->escapeHtml($payment['payment_method']) ?></td>
+                            <td class="p-2"><?= $block->escapeHtml($payment['created_at']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+</div>

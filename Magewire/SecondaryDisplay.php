@@ -53,6 +53,9 @@ class SecondaryDisplay extends Component
      */
     public function login(): void
     {
+        // This is in development.
+        return;
+
         try {
             $tillSession = $this->tillSessionRepository->getById($this->tillSessionId);
         } catch(\Exception $e) {
@@ -80,6 +83,9 @@ class SecondaryDisplay extends Component
      */
     public function fetch(): void
     {
+        // This is in development.
+        return;
+        
         $quote = $this->quoteRepository->get($this->quoteId);
         // Get the last visible item
         $quoteItems = $quote->getAllVisibleItems();

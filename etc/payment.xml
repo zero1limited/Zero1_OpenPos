@@ -1,0 +1,7 @@
+<payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Payment/etc/payment.xsd">
+    <methods>
+        <method name="openpos_layaways">
+            <allow_multiple_address>0</allow_multiple_address>
+        </method>
+    </methods>
+</payment>
