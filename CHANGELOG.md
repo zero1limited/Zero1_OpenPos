@@ -1,12 +1,10 @@
 # OpenPOS changelog
 
-## [2.2.0] - in development
+## [2.2.0] - 2025-11-03
 
 ### Added
-- Order view pages within OpenPOS / till frontend.
-- Link within the Magento admin to navigate to OpenPOS / till frontend.
-- WIP layaways / payments system
-
+- Layaway system. Orders can now be created with partial or no payment and completed or modified later.  
+  **Note:** This feature introduces significant underlying changes across order creation and payment workflows.
 
 ## [2.1.3] - 2025-07-11
 

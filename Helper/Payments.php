@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Helper;
 
 /**
- * Work in progress
+ * This class is a early implementation of a OpenPOS specific payment methods.
+ * It will move completely in the future as we implement online methods.
  */
 
 class Payments

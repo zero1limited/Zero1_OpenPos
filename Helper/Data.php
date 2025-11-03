@@ -16,6 +16,10 @@ use Magento\Framework\App\State;
 use Magento\Framework\Url;
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * This class will soon change to a configuration helper only, with all logic moving to another class.
+ */
+
 class Data extends AbstractHelper
 {
     const CONFIG_PATH_GENERAL_ENABLE = 'openpos/general/enable';
