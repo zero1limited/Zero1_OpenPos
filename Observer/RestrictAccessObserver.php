@@ -9,7 +9,7 @@ use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\ActionFlag;
 use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Framework\View\DesignInterface;
 
 class RestrictAccessObserver implements ObserverInterface
@@ -37,9 +37,9 @@ class RestrictAccessObserver implements ObserverInterface
     protected $posHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var DesignInterface
@@ -50,7 +50,7 @@ class RestrictAccessObserver implements ObserverInterface
      * @param RedirectInterface $redirect
      * @param ActionFlag $actionFlag
      * @param PosHelper $posHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param DesignInterface $design
      */
     public function __construct(
@@ -58,14 +58,14 @@ class RestrictAccessObserver implements ObserverInterface
         ResponseInterface $response,
         ActionFlag $actionFlag,
         PosHelper $posHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         DesignInterface $design
     ) {
         $this->redirect = $redirect;
         $this->response = $response;
         $this->actionFlag = $actionFlag;
         $this->posHelper = $posHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->design = $design;
     }
 
@@ -92,12 +92,12 @@ class RestrictAccessObserver implements ObserverInterface
         }
 
         // Check till session exists
-        if($this->openPosSessionHelper->isTillSessionActive() === true) {
+        if($this->openPosSession->isTillSessionActive() === true) {
             return;
         }
 
         // Redirect
-        $this->openPosSessionHelper->destroySession();
+        $this->openPosSession->destroySession();
         $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
         $this->redirect->redirect($this->response, 'openpos/tillsession/login');      
     }

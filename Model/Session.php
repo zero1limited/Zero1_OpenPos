@@ -1,10 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 use Zero1\OpenPos\Helper\Data as PosHelper;
 use Zero1\OpenPos\Model\TillSessionFactory;
 use Zero1\OpenPos\Api\TillSessionRepositoryInterface;
@@ -20,7 +18,7 @@ use Magento\User\Model\User;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class Session extends AbstractHelper
+class Session
 {
     /**
      * @var PosHelper
@@ -73,7 +71,6 @@ class Session extends AbstractHelper
     protected $userFactory;
 
     /**
-     * @param Context $context
      * @param PosHelper $posHelper
      * @param TillSessionFactory $tillSessionFactory
      * @param TillSessionRepositoryInterface $tillSessionRepository
@@ -86,7 +83,6 @@ class Session extends AbstractHelper
      * @param UserFactory $userFactory
      */
     public function __construct(
-        Context $context,
         PosHelper $posHelper,
         TillSessionFactory $tillSessionFactory,
         TillSessionRepositoryInterface $tillSessionRepository,
@@ -108,7 +104,6 @@ class Session extends AbstractHelper
         $this->sessionManager = $sessionManager;
         $this->messageManager = $messageManager;
         $this->userFactory = $userFactory;
-        parent::__construct($context);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Zero1\OpenPos\Magewire;
 
 use Magewirephp\Magewire\Component;
 use Magento\Customer\Model\Session as CustomerSession;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Model\ResourceModel\Address\CollectionFactory as CustomerAddressCollectionFactory;
@@ -21,9 +21,9 @@ class CustomerManagement extends Component
     protected $customerSession;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var CustomerRepositoryInterface
@@ -52,20 +52,20 @@ class CustomerManagement extends Component
 
     /**
      * @param CustomerSession $customerSession
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param CustomerRepository $customerRepository
      * @param CustomerCollectionFactory $customerCollectionFactory
      * @param CustomerAddressCollectionFactory $customerAddressCollectionFactory
      */
     public function __construct(
         CustomerSession $customerSession,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         CustomerRepositoryInterface $customerRepository,
         CustomerCollectionFactory $customerCollectionFactory,
         CustomerAddressCollectionFactory $customerAddressCollectionFactory
     ) {
         $this->customerSession = $customerSession;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->customerRepository = $customerRepository;
         $this->customerCollectionFactory = $customerCollectionFactory;
         $this->customerAddressCollectionFactory = $customerAddressCollectionFactory;
@@ -115,7 +115,7 @@ class CustomerManagement extends Component
      */
     public function changeToCustomerById(int $id): void
     {
-        if(!$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->openPosSession->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }
@@ -138,7 +138,7 @@ class CustomerManagement extends Component
      */
     public function updatedInputSearch(): void
     {
-        if(!$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->openPosSession->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }

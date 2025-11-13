@@ -8,7 +8,7 @@ use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterf
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
 use Zero1\OpenPos\Model\PaymentMethod\Layaways;
@@ -26,9 +26,9 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
     protected $openPosHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var CheckoutSession
@@ -43,19 +43,19 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
     /**
      * @param Context $context
      * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param CheckoutSession $checkoutSession
      * @param QuoteManagement $quoteManagement
      */
     public function __construct(
         Context $context,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         CheckoutSession $checkoutSession,
         QuoteManagement $quoteManagement
     ) {
         $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->checkoutSession = $checkoutSession;
         $this->quoteManagement = $quoteManagement;
         parent::__construct($context);
@@ -70,7 +70,7 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSession->isTillSessionActive()) {
             // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;

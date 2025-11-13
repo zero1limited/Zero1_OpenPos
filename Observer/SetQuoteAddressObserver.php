@@ -6,7 +6,7 @@ namespace Zero1\OpenPos\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Directory\Model\RegionFactory;
@@ -21,9 +21,9 @@ class SetQuoteAddressObserver implements ObserverInterface
     protected $posHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var CustomerSession
@@ -42,20 +42,20 @@ class SetQuoteAddressObserver implements ObserverInterface
 
     /**
      * @param PosHelper $posHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param CustomerSession $customerSession
      * @param ScopeConfigInterface $scopeConfig
      * @param RegionFactory $region
      */
     public function __construct(
         PosHelper $posHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         CustomerSession $customerSession,
         ScopeConfigInterface $scopeConfig,
         RegionFactory $regionFactory
     ) {
         $this->posHelper = $posHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->customerSession = $customerSession;
         $this->scopeConfig = $scopeConfig;
         $this->regionFactory = $regionFactory;
@@ -67,7 +67,7 @@ class SetQuoteAddressObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         // Check if module is enabled, and we are on the POS store frontend
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore() || $this->posHelper->isAdminSession() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore() || $this->posHelper->isAdminSession() || !$this->openPosSession->isTillSessionActive()) {
             return;
         }
 
@@ -78,7 +78,7 @@ class SetQuoteAddressObserver implements ObserverInterface
             return;
         }
 
-        $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession();
+        $adminUser = $this->openPosSession->getAdminUserFromTillSession();
         $quote->setCustomerEmail($adminUser->getEmail());
         $this->setDefaultAddress($quote->getShippingAddress(), $adminUser);
 

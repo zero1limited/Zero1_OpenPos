@@ -6,7 +6,7 @@ namespace Zero1\OpenPos\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollectionFactory;
 use Zero1\OpenPos\Model\PaymentFactory;
 use Zero1\OpenPos\Api\PaymentRepositoryInterface;
@@ -29,9 +29,9 @@ class Order extends AbstractHelper
     protected $openPosHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var PaymentCollectionFactory
@@ -71,7 +71,7 @@ class Order extends AbstractHelper
     /**
      * @param Context $context
      * @param PosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param PaymentCollectionFactory $paymentCollectionFactory
      * @param PaymentFactory $paymentFactory
      * @param PaymentRepositoryInterface $paymentRepository
@@ -83,7 +83,7 @@ class Order extends AbstractHelper
     public function __construct(
         Context $context,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         PaymentCollectionFactory $paymentCollectionFactory,
         PaymentFactory $paymentFactory,
         PaymentRepositoryInterface $paymentRepository,
@@ -93,7 +93,7 @@ class Order extends AbstractHelper
         Transaction $transaction
     ) {
         $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->paymentCollectionFactory = $paymentCollectionFactory;
         $this->paymentFactory = $paymentFactory;
         $this->paymentRepository = $paymentRepository;
@@ -118,7 +118,7 @@ class Order extends AbstractHelper
     public function makePayment(OrderInterface $order, $amount, $basePaymentMethodCode, $paymentMethodCode): ?PaymentInterface
     {
         $orderId = $order->getId();
-        $adminUser = $this->openPosSessionHelper->getAdminUserFromTillSession()->getUserName();
+        $adminUser = $this->openPosSession->getAdminUserFromTillSession()->getUserName();
 
         $taxRate = $this->getTaxRateForOrder($order);
         $taxAmount = round($amount * ($taxRate / 100), 2);

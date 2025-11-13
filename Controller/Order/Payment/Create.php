@@ -8,7 +8,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
@@ -38,9 +38,9 @@ class Create implements HttpGetActionInterface
     protected $openPosHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var OrderRepositoryInterface
@@ -62,7 +62,7 @@ class Create implements HttpGetActionInterface
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
      * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param OrderRepositoryInterface $orderRepository
      * @param OpenPosOrderHelper $openPosOrderHelper
      * @param MessageManagerInterface $messageManager
@@ -72,7 +72,7 @@ class Create implements HttpGetActionInterface
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         OrderRepositoryInterface $orderRepository,
         OpenPosOrderHelper $openPosOrderHelper,
         MessageManagerInterface $messageManager
@@ -81,7 +81,7 @@ class Create implements HttpGetActionInterface
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
         $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->orderRepository = $orderRepository;
         $this->openPosOrderHelper = $openPosOrderHelper;
         $this->messageManager = $messageManager;
@@ -93,7 +93,7 @@ class Create implements HttpGetActionInterface
     public function execute()
     {
         // Ensure no access to this controller with no till session
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSession->isTillSessionActive()) {
             $forward = $this->forwardFactory->create();
             return $forward->forward('noroute');
         }

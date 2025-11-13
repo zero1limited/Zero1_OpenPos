@@ -8,7 +8,7 @@ use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterf
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -29,9 +29,9 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
     protected $openPosHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var OpenPosOrderHelper
@@ -71,7 +71,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
     /**
      * @param Context $context
      * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param OpenPosOrderHelper $openPosOrderHelper
      * @param OrderRepositoryInterface $orderRepository
      * @param CartRepositoryInterface $quoteRepository
@@ -83,7 +83,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
     public function __construct(
         Context $context,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         OpenPosOrderHelper $openPosOrderHelper,
         OrderRepositoryInterface $orderRepository,
         CartRepositoryInterface $quoteRepository,
@@ -93,7 +93,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         QuoteManagement $quoteManagement
     ) {
         $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->openPosOrderHelper = $openPosOrderHelper;
         $this->orderRepository = $orderRepository;
         $this->quoteRepository = $quoteRepository;
@@ -113,7 +113,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSession->isTillSessionActive()) {
             // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;

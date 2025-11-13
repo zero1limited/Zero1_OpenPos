@@ -9,7 +9,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Backend\Model\Auth;
 use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Session as OpenPosSession;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\Controller\Result\Redirect;
@@ -30,9 +30,9 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     protected $openPosHelper;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var OpenPosSession
      */
-    protected $openPosSessionHelper;
+    protected $openPosSession;
 
     /**
      * @var CustomerSession
@@ -48,7 +48,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
      * @param Context $context
      * @param Auth $auth
      * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosSession $openPosSession
      * @param CustomerSession $customerSession
      * @param DataObjectFactory $dataObjectFactory
      */
@@ -56,13 +56,13 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
         Context $context,
         Auth $auth,
         OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosSession $openPosSession,
         CustomerSession $customerSession,
         DataObjectFactory $dataObjectFactory
     ) {
         $this->auth = $auth;
         $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosSession = $openPosSession;
         $this->customerSession = $customerSession;
         $this->dataObjectFactory = $dataObjectFactory;
         parent::__construct($context);
@@ -137,7 +137,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                     $this->auth->logout();
 
                     try {
-                        $this->openPosSessionHelper->startTillSession($adminUser);
+                        $this->openPosSession->startTillSession($adminUser);
                     } catch(\Exception $e) {
                         $this->customerSession->logout();
                         $this->messageManager->addErrorMessage(
