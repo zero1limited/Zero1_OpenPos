@@ -1,5 +1,14 @@
 # OpenPOS changelog
 
+## [2.3.0] - in development
+
+### Added
+- Support for Hyva 1.4 open source
+
+### Changed
+- Refactor of configuration and logic from old helper classes.
+- Card and cash payment methods now live in a new module. TBC
+
 ## [2.2.0] - 2025-11-03
 
 ### Added

@@ -8,7 +8,7 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Catalog\Model\Product\Image\UrlBuilder as ImageUrlBuilder;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Catalog\Helper\Product\Configuration as ProductConfigurationHelper;
 
@@ -37,9 +37,9 @@ class Cart extends Component
     protected $imageUrlBuilder;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var ProductConfigurationHelper
@@ -71,7 +71,7 @@ class Cart extends Component
      * @param PricingHelper $pricingHelper
      * @param CartRepositoryInterface $cartRepository
      * @param ImageUrlBuilder $imageUrlBuilder
-     * @param OpenPosSession $openPosSession
+     * @param TillSessionManagement $tillSessionManagement
      * @param ProductConfigurationHelper $productConfigurationHelper
      */
     public function __construct(
@@ -79,14 +79,14 @@ class Cart extends Component
         PricingHelper $pricingHelper,
         CartRepositoryInterface $cartRepository,
         ImageUrlBuilder $imageUrlBuilder,
-        OpenPosSession $openPosSession,
+        TillSessionManagement $tillSessionManagement,
         ProductConfigurationHelper $productConfigurationHelper
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->cartRepository = $cartRepository;
         $this->imageUrlBuilder = $imageUrlBuilder;
-        $this->openPosSession = $openPosSession;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->productConfigurationHelper = $productConfigurationHelper;
     }
 
@@ -223,7 +223,7 @@ class Cart extends Component
      */
     public function getTillSessionId()
     {
-        return $this->openPosSession->getTillSessionId();
+        return $this->tillSessionManagement->getTillSessionId();
     }
 
 }

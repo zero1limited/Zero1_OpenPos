@@ -3,23 +3,32 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Quote\Model\Quote;
 
 class VirtualQuoteSetter
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @param PosHelper $posHelper
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
-        PosHelper $posHelper
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -29,7 +38,7 @@ class VirtualQuoteSetter
      */
     public function afterIsVirtual(Quote $quote, bool $result): bool
     {
-        if($this->posHelper->currentlyOnPosStore() || $quote->getStoreId() === $this->posHelper->getPosStoreId()) {
+        if($this->tillSessionManagement->currentlyOnPosStore() || $quote->getStoreId() === $this->openPosConfiguration->getPosStoreId()) {
             return true;
         }
 

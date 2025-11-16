@@ -5,8 +5,8 @@ namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Directory\Model\RegionFactory;
@@ -16,14 +16,14 @@ use Magento\User\Model\User;
 class SetQuoteAddressObserver implements ObserverInterface
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var CustomerSession
@@ -41,21 +41,21 @@ class SetQuoteAddressObserver implements ObserverInterface
     protected $regionFactory;
 
     /**
-     * @param PosHelper $posHelper
-     * @param OpenPosSession $openPosSession
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param CustomerSession $customerSession
      * @param ScopeConfigInterface $scopeConfig
      * @param RegionFactory $region
      */
     public function __construct(
-        PosHelper $posHelper,
-        OpenPosSession $openPosSession,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         CustomerSession $customerSession,
         ScopeConfigInterface $scopeConfig,
         RegionFactory $regionFactory
     ) {
-        $this->posHelper = $posHelper;
-        $this->openPosSession = $openPosSession;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->customerSession = $customerSession;
         $this->scopeConfig = $scopeConfig;
         $this->regionFactory = $regionFactory;
@@ -67,7 +67,7 @@ class SetQuoteAddressObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         // Check if module is enabled, and we are on the POS store frontend
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->currentlyOnPosStore() || $this->posHelper->isAdminSession() || !$this->openPosSession->isTillSessionActive()) {
+        if(!$this->openPosConfiguration->isEnabled() || $this->tillSessionManagement->isAdminSession() || !$this->tillSessionManagement->isTillSessionActive()) {
             return;
         }
 
@@ -78,13 +78,13 @@ class SetQuoteAddressObserver implements ObserverInterface
             return;
         }
 
-        $adminUser = $this->openPosSession->getAdminUserFromTillSession();
+        $adminUser = $this->tillSessionManagement->getAdminUserFromTillSession();
         $quote->setCustomerEmail($adminUser->getEmail());
         $this->setDefaultAddress($quote->getShippingAddress(), $adminUser);
 
         try {
             // Attempt to set customer default billing address
-            if($this->customerSession->isLoggedIn() && !$this->posHelper->getForceStoreBillingAddress()) {
+            if($this->customerSession->isLoggedIn() && !$this->openPosConfiguration->getForceStoreBillingAddress()) {
                 $defaultBillingAddress = $this->customerSession->getCustomer()->getDefaultBillingAddress();
                 if($defaultBillingAddress && $defaultBillingAddress->getId()) {
                     $quote->getBillingAddress()->addData($defaultBillingAddress->getData());

@@ -4,23 +4,23 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Plugin;
 
 use Magento\Framework\Event\Observer;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Quote\Observer\SubmitObserver;
 
 class DisableOrderEmails
 {
     /**
-     * @var OpenPosHelper $openPosHelper
+     * @var OrderManagement
      */
-    protected OpenPosHelper $openPosHelper;
+    protected $orderManagement;
 
     /**
-     * @param OpenPosHelper $openPosHelper
+     * @param OrderManagement $openPosConfiguration
      */
     public function __construct(
-        OpenPosHelper $openPosHelper
+        OrderManagement $orderManagement
     ) {
-        $this->openPosHelper = $openPosHelper;
+        $this->orderManagement = $orderManagement;
     }
 
     /**
@@ -34,7 +34,7 @@ class DisableOrderEmails
     {
         $order = $observer->getEvent()->getOrder();
 
-        if($this->openPosHelper->isPosOrder($order)) {
+        if($this->orderManagement->isPosOrder($order)) {
             $order->setCanSendNewEmailFlag(false);
         }
 

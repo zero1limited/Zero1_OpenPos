@@ -6,7 +6,7 @@ namespace Zero1\OpenPos\Block\Order\View;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Registry;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
 use Magento\Sales\Api\Data\OrderInterface;
 
@@ -18,9 +18,9 @@ class Payments extends Template
     protected $registry;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
      * @var PriceHelper
@@ -30,19 +30,19 @@ class Payments extends Template
     /**
      * @param Context $context
      * @param Registry $registry
-     * @param OpenPosOrderHelper $openposOrderHelper
+     * @param OrderManagement $orderManagement
      * @param PriceHelper $priceHelper
      * @param array $data
      */
     public function __construct(
         Context $context,
         Registry $registry,
-        OpenPosOrderHelper $openPosOrderHelper,
+        OrderManagement $orderManagement,
         PriceHelper $priceHelper,
         array $data = []
     ) {
         $this->registry = $registry;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->orderManagement = $orderManagement;
         $this->priceHelper = $priceHelper;
 
         parent::__construct($context, $data);
@@ -58,7 +58,7 @@ class Payments extends Template
         $renderPayments = [];
         
         $order = $this->getOrder();
-        $payments = $this->openPosOrderHelper->getPaymentsForOrder($order);
+        $payments = $this->orderManagement->getPaymentsForOrder($order);
 
         foreach($payments as $payment) {
             $renderPayments[] = [
@@ -114,7 +114,7 @@ class Payments extends Template
     public function canMakePayment(): bool
     {
         $order = $this->getOrder();
-        return $this->openPosOrderHelper->canMakePayment($order);
+        return $this->orderManagement->canMakePayment($order);
     }
 
     /**
@@ -125,6 +125,6 @@ class Payments extends Template
     public function isOrderPaid()
     {
         $order = $this->getOrder();
-        return $this->openPosOrderHelper->isOrderPaid($order);
+        return $this->orderManagement->isOrderPaid($order);
     }
 }

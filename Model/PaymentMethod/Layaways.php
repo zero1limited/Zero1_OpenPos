@@ -4,7 +4,8 @@ namespace Zero1\OpenPos\Model\PaymentMethod;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Directory\Helper\Data as DirectoryHelper;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 
 class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
 {
@@ -18,12 +19,22 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * @var string
      */
-    protected $_code = 'openpos_layaways';
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
-    // /**
-    //  * @var string
-    //  */
-    // protected $_infoBlockType = \Zero1\OpenPosSplitPayments\Block\Info\SplitPayments::class;
+    /**
+     * @var OpenPosConfiguration
+     */
+    protected $openPosConfiguration;
+
+    /**
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @var DirectoryHelper
+     */
+    protected $directory;
 
     /**
      * @var bool
@@ -38,7 +49,8 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
      * @param \Magento\Payment\Helper\Data $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger $logger
-     * @param PosHelper $posHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param array $data
@@ -53,7 +65,8 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = [],
@@ -71,7 +84,8 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
             $resourceCollection
         );
 
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->directory = $directory ?: ObjectManager::getInstance()->get(DirectoryHelper::class);
     }
 
@@ -82,12 +96,12 @@ class Layaways extends \Magento\Payment\Model\Method\AbstractMethod
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         // Check if POS module is enabled
-        if(!$this->posHelper->isEnabled()) {
+        if(!$this->openPosConfiguration->isEnabled()) {
             return false;
         }
 
         // Check if we are on POS store
-        if(!$this->posHelper->currentlyOnPosStore()) {
+        if(!$this->tillSessionManagement->currentlyOnPosStore()) {
             return false;
         }
 

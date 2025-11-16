@@ -8,8 +8,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\ActionFlag;
-use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Framework\View\DesignInterface;
 
 class RestrictAccessObserver implements ObserverInterface
@@ -32,14 +32,14 @@ class RestrictAccessObserver implements ObserverInterface
     protected $actionFlag;
 
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var DesignInterface
@@ -49,23 +49,23 @@ class RestrictAccessObserver implements ObserverInterface
     /**
      * @param RedirectInterface $redirect
      * @param ActionFlag $actionFlag
-     * @param PosHelper $posHelper
-     * @param OpenPosSession $openPosSession
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param DesignInterface $design
      */
     public function __construct(
         RedirectInterface $redirect,
         ResponseInterface $response,
         ActionFlag $actionFlag,
-        PosHelper $posHelper,
-        OpenPosSession $openPosSession,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         DesignInterface $design
     ) {
         $this->redirect = $redirect;
         $this->response = $response;
         $this->actionFlag = $actionFlag;
-        $this->posHelper = $posHelper;
-        $this->openPosSession = $openPosSession;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->design = $design;
     }
 
@@ -77,12 +77,12 @@ class RestrictAccessObserver implements ObserverInterface
         $this->detectThemeUsageOnNonPosStore();
 
         // Check if module is enabled
-        if(!$this->posHelper->isEnabled()) {
+        if(!$this->openPosConfiguration->isEnabled()) {
             return;
         }
 
         // Check a POS store is set, and check if we are currently on it
-        if($this->posHelper->getPosStore() && !$this->posHelper->currentlyOnPosStore()) {
+        if($this->openPosConfiguration->getPosStore() && !$this->tillSessionManagement->currentlyOnPosStore()) {
             return;
         }
 
@@ -92,12 +92,12 @@ class RestrictAccessObserver implements ObserverInterface
         }
 
         // Check till session exists
-        if($this->openPosSession->isTillSessionActive() === true) {
+        if($this->tillSessionManagement->isTillSessionActive() === true) {
             return;
         }
 
         // Redirect
-        $this->openPosSession->destroySession();
+        $this->tillSessionManagement->destroySession();
         $this->actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
         $this->redirect->redirect($this->response, 'openpos/tillsession/login');      
     }
@@ -112,7 +112,7 @@ class RestrictAccessObserver implements ObserverInterface
     protected function detectThemeUsageOnNonPosStore(): void
     {
         // Currently on a POS store, authentication in place.
-        if($this->posHelper->currentlyOnPosStore()) {
+        if($this->tillSessionManagement->currentlyOnPosStore()) {
             return;
         }
 

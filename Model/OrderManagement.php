@@ -1,12 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Zero1\OpenPos\Model\ResourceModel\Payment\CollectionFactory as PaymentCollectionFactory;
 use Zero1\OpenPos\Model\PaymentFactory;
 use Zero1\OpenPos\Api\PaymentRepositoryInterface;
@@ -21,17 +19,17 @@ use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\InvoiceInterface;
 
-class Order extends AbstractHelper
+class OrderManagement
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var PaymentCollectionFactory
@@ -69,9 +67,8 @@ class Order extends AbstractHelper
     protected $transaction;
 
     /**
-     * @param Context $context
-     * @param PosHelper $openPosHelper
-     * @param OpenPosSession $openPosSession
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param PaymentCollectionFactory $paymentCollectionFactory
      * @param PaymentFactory $paymentFactory
      * @param PaymentRepositoryInterface $paymentRepository
@@ -81,9 +78,8 @@ class Order extends AbstractHelper
      * @param Transaction $transaction
      */
     public function __construct(
-        Context $context,
-        OpenPosHelper $openPosHelper,
-        OpenPosSession $openPosSession,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         PaymentCollectionFactory $paymentCollectionFactory,
         PaymentFactory $paymentFactory,
         PaymentRepositoryInterface $paymentRepository,
@@ -92,8 +88,8 @@ class Order extends AbstractHelper
         InvoiceService $invoiceService,
         Transaction $transaction
     ) {
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSession = $openPosSession;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->paymentCollectionFactory = $paymentCollectionFactory;
         $this->paymentFactory = $paymentFactory;
         $this->paymentRepository = $paymentRepository;
@@ -101,8 +97,21 @@ class Order extends AbstractHelper
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
         $this->transaction = $transaction;
-        
-        parent::__construct($context);
+    }
+
+    /**
+     * Check if an order is an OpenPOS order.
+     * 
+     * @param $order
+     * @return bool
+     */
+    public function isPosOrder($order): bool
+    {
+        if($order->getStoreId() == $this->openPosConfiguration->getPosStoreId()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -118,7 +127,7 @@ class Order extends AbstractHelper
     public function makePayment(OrderInterface $order, $amount, $basePaymentMethodCode, $paymentMethodCode): ?PaymentInterface
     {
         $orderId = $order->getId();
-        $adminUser = $this->openPosSession->getAdminUserFromTillSession()->getUserName();
+        $adminUser = $this->tillSessionManagement->getAdminUserFromTillSession()->getUserName();
 
         $taxRate = $this->getTaxRateForOrder($order);
         $taxAmount = round($amount * ($taxRate / 100), 2);
@@ -151,7 +160,7 @@ class Order extends AbstractHelper
      */
     public function invoiceOrder(OrderInterface $order): ?InvoiceInterface
     {
-        if(!$this->openPosHelper->isPosOrder($order)) {
+        if(!$this->isPosOrder($order)) {
             throw new LocalizedException(
                 __('Cannot invoice a non OpenPOS order %1', $order->getIncrementId())
             );
@@ -256,7 +265,7 @@ class Order extends AbstractHelper
      */
     public function canMakePayment(OrderInterface $order): bool
     {
-        if(!$this->openPosHelper->isPosOrder($order)) {
+        if(!$this->isPosOrder($order)) {
             return false;
         }
 

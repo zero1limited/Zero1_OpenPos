@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model\Payment;
 
 /**
  * This class is a early implementation of a OpenPOS specific payment methods.
  * It will move completely in the future as we implement online methods.
  */
 
-class Payments
+class MethodProvider
 {
     protected $methods = [];
 

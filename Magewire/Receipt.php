@@ -8,7 +8,7 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Framework\Validator\ValidatorChain;
 use Magento\Framework\Validator\EmailAddress;
 use Magento\Sales\Model\Order;
@@ -38,9 +38,9 @@ class Receipt extends Component
     protected $orderSender;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var string
@@ -52,13 +52,13 @@ class Receipt extends Component
         CustomerSession $customerSession,
         OrderRepositoryInterface $orderRepository,
         OrderSender $orderSender,
-        OpenPosSession $openPosSession
+        TillSessionManagement $tillSessionManagement
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->customerSession = $customerSession;
         $this->orderRepository = $orderRepository;
         $this->orderSender = $orderSender;
-        $this->openPosSession = $openPosSession;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**

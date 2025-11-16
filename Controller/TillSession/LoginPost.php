@@ -8,8 +8,8 @@ use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterf
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Backend\Model\Auth;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Model\Session as OpenPosSession;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\Controller\Result\Redirect;
@@ -25,14 +25,14 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     protected $auth;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSession
+     * @var TillSessionManagement
      */
-    protected $openPosSession;
+    protected $tillSessionManagement;
 
     /**
      * @var CustomerSession
@@ -47,22 +47,22 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     /**
      * @param Context $context
      * @param Auth $auth
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSession $openPosSession
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param CustomerSession $customerSession
      * @param DataObjectFactory $dataObjectFactory
      */
     public function __construct(
         Context $context,
         Auth $auth,
-        OpenPosHelper $openPosHelper,
-        OpenPosSession $openPosSession,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         CustomerSession $customerSession,
         DataObjectFactory $dataObjectFactory
     ) {
         $this->auth = $auth;
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSession = $openPosSession;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->customerSession = $customerSession;
         $this->dataObjectFactory = $dataObjectFactory;
         parent::__construct($context);
@@ -77,7 +77,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if(!$this->openPosHelper->currentlyOnPosStore()) {
+        if(!$this->tillSessionManagement->currentlyOnPosStore()) {
             $resultRedirect->setPath('/');
             return $resultRedirect;
         }
@@ -106,7 +106,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                     }
 
                     // Check 2FA
-                    if($this->openPosHelper->isTfaEnabled()) {
+                    if($this->openPosConfiguration->isTfaEnabled()) {
                         // Have to use ObjectManager here, core 2FA has no enabled / disabled config
                         // so some users choose to disable the extension entirely...
                         // TODO: add support for more providers - maybe find a better solution to below
@@ -137,7 +137,7 @@ class LoginPost extends Action implements HttpPostActionInterface, CsrfAwareActi
                     $this->auth->logout();
 
                     try {
-                        $this->openPosSession->startTillSession($adminUser);
+                        $this->tillSessionManagement->startTillSession($adminUser);
                     } catch(\Exception $e) {
                         $this->customerSession->logout();
                         $this->messageManager->addErrorMessage(
