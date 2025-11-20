@@ -48,6 +48,7 @@ class RestrictAccessObserver implements ObserverInterface
 
     /**
      * @param RedirectInterface $redirect
+     * @param ResponseInterface $response
      * @param ActionFlag $actionFlag
      * @param OpenPosConfiguration $openPosConfiguration
      * @param TillSessionManagement $tillSessionManagement

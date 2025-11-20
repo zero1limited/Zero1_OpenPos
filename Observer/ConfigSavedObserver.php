@@ -47,7 +47,7 @@ class ConfigSavedObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         $changedPaths = $observer->getEvent()->getData('changed_paths');
-        if(in_array( OpenPosConfiguration::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
+        if(in_array(OpenPosConfiguration::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
             $this->messageManager->addNoticeMessage(__('OpenPOS till users have been changed. Magento cache may need to be flushed before tills will allow logon.'));
         }
 

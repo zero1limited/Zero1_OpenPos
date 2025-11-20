@@ -37,7 +37,7 @@ $helper = $this->helper('Zero1\OpenPos\Model\Configuration');
                             data-validate="{required:true}">
                 </div>
             </div>
-            <?php if($helper->isTfaEnabled()): ?>
+            <?php if($block->isTfaEnabled()): ?>
                 <div class="field 2fa required">
                     <label for="tfa_code" class="label font-bold"><span><?= $block->escapeHtml(__('2FA code')) ?></span></label>
                     <div class="control">

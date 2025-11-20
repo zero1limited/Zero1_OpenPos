@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Elasticsearch\Endpoints\Indices\Open;
 use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderManagementInterface;
