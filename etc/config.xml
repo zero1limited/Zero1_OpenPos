@@ -11,6 +11,7 @@
             <advanced>
                 <force_store_billing_address>0</force_store_billing_address>
                 <emulate_shipping_address>0</emulate_shipping_address>
+                <module_integration_mode>none</module_integration_mode>
             </advanced>
         </openpos>
 
