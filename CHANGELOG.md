@@ -4,10 +4,11 @@
 
 ### Added
 - Support for Hyva 1.4 open source
+- Support for Luma checkout (this is now the default checkout solution)
 
 ### Changed
 - Refactor of configuration and logic from old helper classes.
-- Card and cash payment methods now live in a new module. TBC
+- Card and cash payment methods moved to a new module: zero1/open-pos-default-payments.
 
 ## [2.2.0] - 2025-11-03
 
