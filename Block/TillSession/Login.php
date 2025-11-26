@@ -36,6 +36,6 @@ class Login extends Template
      */
     public function isTfaEnabled(): bool
     {
-        return $this->configuration->isTfaEnabled();
+        return $this->openPosConfiguration->isTfaEnabled();
     }
 }
