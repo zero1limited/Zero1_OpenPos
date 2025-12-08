@@ -5,6 +5,7 @@
 ### Added
 - Support for Hyva 1.4 open source
 - Support for Luma checkout (this is now the default checkout solution)
+- New bin/magento command: `openpos:assign-products` for easier assigning of products to the POS website.
 
 ### Changed
 - Refactor of configuration and logic from old helper classes.

@@ -351,6 +351,11 @@ class SetupWizard extends Command
             $output->writeln('<comment>Since you created a website and store as part of this setup, you may need to make changes to your NGINX / Apache configuration also.</comment>');
         }
 
+        $output->writeln('');
+        $output->writeln('<fg=cyan;options=bold>TIP:</> You can assign all existing products to the POS website using the following command:');
+        $output->writeln('<fg=green;options=bold>bin/magento openpos:assign-products</>');
+        $output->writeln('');
+
         return 0;
     }
 }

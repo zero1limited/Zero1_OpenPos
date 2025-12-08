@@ -50,6 +50,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="openpos_setupwizard" xsi:type="object">Zero1\OpenPos\Console\Command\SetupWizard</item>
+                <item name="openpos_assignproducts" xsi:type="object">Zero1\OpenPos\Console\Command\AssignProducts</item>
             </argument>
         </arguments>
     </type>
