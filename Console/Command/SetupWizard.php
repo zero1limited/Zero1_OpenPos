@@ -339,6 +339,15 @@ class SetupWizard extends Command
         $this->configWriter->save('hyva_theme_fallback/general/list_part_of_url', '{"_1762845926961_961":{"path":"checkout\/index"},"_1762845929223_223":{"path":"paypal\/express\/review"},"_1762845937506_506":{"path":"paypal\/express\/saveShippingMethod"}}', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('recaptcha_frontend/type_for/place_order', null, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
+        // Hyva reccomended minification / bundling settings
+        $this->configWriter->save('dev/template/minify_html', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/merge_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/enable_js_bundling', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/minify_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/move_script_to_bottom', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/css/merge_css_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/css/minify_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+
         // Enable OpenPOS
         $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_GENERAL_ENABLE, 1);
         $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_INTERNAL_IS_CONFIGURED, 1);
