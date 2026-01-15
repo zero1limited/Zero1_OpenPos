@@ -11,6 +11,7 @@ use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollection
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as OrderStatusCollectionFactory;
 use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 /**
  * This class couldn't extend Magewire Pagination class due to getAllPageItems risk of OOM'ing PHP.
@@ -67,6 +68,11 @@ class Grid extends Component
     protected $priceHelper;
 
     /**
+     * @var TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
      * @param OpenPosConfiguration $openPosConfiguration
      * @param OrderManagement $orderManagement
      * @param CustomerSession $customerSession
@@ -74,6 +80,7 @@ class Grid extends Component
      * @param OrderStatusCollectionFactory $orderStatusCollectionFactory
      * @param UrlProvider $urlProvider
      * @param PriceHelper $priceHelper
+     * @param TimezoneInterface $timezone
      */
     public function __construct(
         OpenPosConfiguration $openPosConfiguration,
@@ -82,7 +89,8 @@ class Grid extends Component
         OrderCollectionFactory $orderCollectionFactory,
         OrderStatusCollectionFactory $orderStatusCollectionFactory,
         UrlProvider $urlProvider,
-        PriceHelper $priceHelper
+        PriceHelper $priceHelper,
+        TimezoneInterface $timezone
     ) {
         $this->openPosConfiguration = $openPosConfiguration;
         $this->orderManagement = $orderManagement;
@@ -91,6 +99,7 @@ class Grid extends Component
         $this->orderStatusCollectionFactory = $orderStatusCollectionFactory;
         $this->urlProvider = $urlProvider;
         $this->priceHelper = $priceHelper;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -189,7 +198,7 @@ class Grid extends Component
             $openPosStatus = (float)$order->getData('openpos_total_paid') >= $order->getBaseGrandTotal()  ? 'Paid' : 'Payments outstanding';
             $orders[] = [
                 'increment_id' => $order->getIncrementId(),
-                'created_at' => $order->getCreatedAt(),
+                'created_at' => $this->timezone->formatDateTime($order->getCreatedAt()),
                 'magento_status' => $order->getStatusLabel(),
                 'openpos_total_paid' => $this->priceHelper->currency($order->getData('openpos_total_paid'), true, false),
                 'openpos_status' => $openPosStatus,

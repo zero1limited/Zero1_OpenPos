@@ -109,7 +109,14 @@ class Receipt extends Component
         $order->setCustomerEmail($this->emailInput);
 
         $this->orderRepository->save($order);
-        $this->orderSender->send($order, true);
+        $result = $this->orderSender->send($order, true);
+
+        if($result) {
+            $this->dispatchSuccessMessage(__('Receipt emailed successfully to %1', $this->emailInput));
+            $this->emailInput = '';
+        } else {
+            $this->dispatchErrorMessage(__('An unknown error occurred while sending the receipt email. Please try again.'));
+        }
     }
 
     /**

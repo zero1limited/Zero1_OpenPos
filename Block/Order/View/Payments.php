@@ -8,6 +8,7 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\Registry;
 use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class Payments extends Template
@@ -28,10 +29,16 @@ class Payments extends Template
     protected $priceHelper;
 
     /**
+     * @var TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
      * @param Context $context
      * @param Registry $registry
      * @param OrderManagement $orderManagement
      * @param PriceHelper $priceHelper
+     * @param TimezoneInterface $timezone
      * @param array $data
      */
     public function __construct(
@@ -39,11 +46,13 @@ class Payments extends Template
         Registry $registry,
         OrderManagement $orderManagement,
         PriceHelper $priceHelper,
+        TimezoneInterface $timezone,
         array $data = []
     ) {
         $this->registry = $registry;
         $this->orderManagement = $orderManagement;
         $this->priceHelper = $priceHelper;
+        $this->timezone = $timezone;
 
         parent::__construct($context, $data);
     }
@@ -67,7 +76,7 @@ class Payments extends Template
                 'amount' => $payment->getBasePaymentAmount(),
                 'tax_amount' => $payment->getBaseTaxAmount(),
                 'payment_method' => $payment->getPaymentMethod(),
-                'created_at' => $payment->getCreatedAt()
+                'created_at' => $this->timezone->formatDateTime($payment->getCreatedAt())
             ];
         }
 
