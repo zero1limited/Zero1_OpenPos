@@ -18,6 +18,18 @@ If you are a merchant or agency wanting to implement OpenPOS please [join the Op
 
 [Development](DEVELOPMENT.md)
 
+# Version Compatibility
+
+⚠️ **Important Hyvä Requirements**
+
+| OpenPOS Version      | Hyvä Theme                 | Hyvä Checkout |
+|----------------------|----------------------------|---------------|
+| **2.3.x**            | **Hyvä 1.4** (Open Source) | Not required  |
+| **2.2.x and below**  |  **Hyvä 1.3 or lower**     | **Required**  |
+
+Please ensure your Hyvä setup matches the OpenPOS version you are installing to avoid compatibility issues.
+
+
 # Installation
 
 ```
