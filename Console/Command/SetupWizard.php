@@ -334,6 +334,7 @@ class SetupWizard extends Command
         $this->configWriter->save('checkout/cart/redirect_to_cart', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
         // Set theme fallback / Luma checkout config
+        $this->configWriter->save('hyva_themes_checkout/general/checkout', 'magento_luma', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('hyva_theme_fallback/general/enable', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('hyva_theme_fallback/general/theme_full_path', 'frontend/openpos/default-luma', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('hyva_theme_fallback/general/list_part_of_url', '{"_1762845926961_961":{"path":"checkout\/index"},"_1762845929223_223":{"path":"paypal\/express\/review"},"_1762845937506_506":{"path":"paypal\/express\/saveShippingMethod"}}', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
