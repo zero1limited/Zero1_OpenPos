@@ -73,11 +73,6 @@ class SetQuoteAddressObserver implements ObserverInterface
 
         $quote = $observer->getData('quote');
 
-        // Only modify valid quotes
-        if(!$quote->getId()) {
-            return;
-        }
-
         $adminUser = $this->tillSessionManagement->getAdminUserFromTillSession();
         $quote->setCustomerEmail($adminUser->getEmail());
         $this->setDefaultAddress($quote->getShippingAddress(), $adminUser);
