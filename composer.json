@@ -8,7 +8,7 @@
         "hyva-themes/magento2-default-theme": "^1.4",
         "hyva-themes/magento2-theme-fallback": "^1.0",
         "magewirephp/magewire": "^1.10",
-        "zero1/pos-theme": "dev-2.2-dev",
+        "zero1/open-pos-default-theme": "dev-master",
         "zero1/open-pos-default-theme-luma": "dev-master",
         "zero1/open-pos-default-payments": "dev-master",
         "zero1/open-pos-rma": "dev-2.1-dev"
