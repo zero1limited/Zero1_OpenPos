@@ -5,16 +5,16 @@ namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 
 class ConfigSavedObserver implements ObserverInterface
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var WriterInterface
@@ -27,16 +27,16 @@ class ConfigSavedObserver implements ObserverInterface
     protected $messageManager;
 
     /**
-     * @param PosHelper $posHelper
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param WriterInterface $configWriter
      * @param MessageManager $messageManager
      */
     public function __construct(
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
         WriterInterface $configWriter,
         MessageManager $messageManager
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->configWriter = $configWriter;
         $this->messageManager = $messageManager;
     }
@@ -47,7 +47,7 @@ class ConfigSavedObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         $changedPaths = $observer->getEvent()->getData('changed_paths');
-        if(in_array(PosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
+        if(in_array(OpenPosConfiguration::CONFIG_PATH_GENERAL_TILL_USERS, $changedPaths)) {
             $this->messageManager->addNoticeMessage(__('OpenPOS till users have been changed. Magento cache may need to be flushed before tills will allow logon.'));
         }
 

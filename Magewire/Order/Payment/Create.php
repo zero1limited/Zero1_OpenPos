@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Magewire\Order\Payment;
 
 use Magewirephp\Magewire\Component;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Payments as OpenPosPaymentsHelper;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\Payment\MethodProvider;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Framework\App\RequestInterface as CoreRequest;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class Create extends Component
@@ -19,19 +20,19 @@ class Create extends Component
     public $amount = 0.00;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosPaymentsHelper
+     * @var MethodProvider
      */
-    protected $openPosPaymentsHelper;
+    protected $methodProvider;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -44,24 +45,32 @@ class Create extends Component
     protected $coreRequest;
 
     /**
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosPaymentsHelper $openPosPaymentsHelper
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @var UrlProvider
+     */
+    protected $urlProvider;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param MethodProvider $methodProvider
+     * @param OrderManagement $orderManagement
      * @param OrderRepositoryInterface $orderRepository
      * @param CoreRequest $coreRequest
+     * @param UrlProvider $urlProvider
      */
     public function __construct(
-        OpenPosHelper $openPosHelper,
-        OpenPosPaymentsHelper $openPosPaymentsHelper,
-        OpenPosOrderHelper $openPosOrderHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        MethodProvider $methodProvider,
+        OrderManagement $orderManagement,
         OrderRepositoryInterface $orderRepository,
-        CoreRequest $coreRequest
+        CoreRequest $coreRequest,
+        UrlProvider $urlProvider
     ) {
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosPaymentsHelper = $openPosPaymentsHelper;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->methodProvider = $methodProvider;
+        $this->orderManagement = $orderManagement;
         $this->orderRepository = $orderRepository;
         $this->coreRequest = $coreRequest;
+        $this->urlProvider = $urlProvider;
     }
 
     /**
@@ -91,7 +100,7 @@ class Create extends Component
      */
     public function getTotalPaid(): float
     {
-        return $this->openPosOrderHelper->getTotalPaid($this->getOrder());
+        return $this->orderManagement->getTotalPaid($this->getOrder());
     }
 
     /**
@@ -101,7 +110,7 @@ class Create extends Component
      */
     public function getTotalRemaining(): float
     {
-        return $this->openPosOrderHelper->getTotalRemaining($this->getOrder());
+        return $this->orderManagement->getTotalRemaining($this->getOrder());
     }
 
     /**
@@ -111,7 +120,7 @@ class Create extends Component
      */
     public function isOrderPaid(): bool
     {
-        return $this->openPosOrderHelper->isOrderPaid($this->getOrder());
+        return $this->orderManagement->isOrderPaid($this->getOrder());
     }
 
     /**
@@ -123,7 +132,7 @@ class Create extends Component
     {
         $paymentMethods = [];
 
-        $allPaymentMethods = $this->openPosPaymentsHelper->getAll();
+        $allPaymentMethods = $this->methodProvider->getAll();
         foreach($allPaymentMethods as $paymentMethod) {
             if(isset($paymentMethod['canUseForLayaways']) && $paymentMethod['canUseForLayaways'] == true) {
                 $paymentMethods[$paymentMethod['code']] = $paymentMethod['label'];
@@ -144,7 +153,7 @@ class Create extends Component
         $order = $this->getOrder();
 
         // @todo this might be returning duplicate records, check.
-        $orderPayments = $this->openPosOrderHelper->getPaymentsForOrder($order);
+        $orderPayments = $this->orderManagement->getPaymentsForOrder($order);
         foreach ($orderPayments as $orderPayment) {
             $payments[] = [
                 'id' => $orderPayment->getId(),
@@ -189,7 +198,7 @@ class Create extends Component
         $order = $this->getOrder();
 
         try {
-            $payment = $this->openPosOrderHelper->makePayment($order, $this->amount, 'openpos_layaways', $this->paymentMethod);
+            $payment = $this->orderManagement->makePayment($order, $this->amount, 'openpos_layaways', $this->paymentMethod);
 
             if($payment->getId()) {
                 $this->dispatchSuccessMessage('Payment was successful.');
@@ -200,6 +209,6 @@ class Create extends Component
             $this->dispatchErrorMessage(__('An error occurred while saving the payment: %1', $e->getMessage()));
         }
 
-        $this->redirect($this->openPosHelper->getOrderViewUrl($order));
+        $this->redirect($this->urlProvider->getOrderViewUrl($order));
     }
 }

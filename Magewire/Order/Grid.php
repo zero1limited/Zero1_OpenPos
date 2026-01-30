@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Magewire\Order;
 
 use Magewirephp\Magewire\Component;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Magento\Sales\Model\ResourceModel\Order\Status\CollectionFactory as OrderStatusCollectionFactory;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 /**
  * This class couldn't extend Magewire Pagination class due to getAllPageItems risk of OOM'ing PHP.
@@ -31,14 +33,14 @@ class Grid extends Component
     public $filterStatus;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
      * @var CustomerSession
@@ -56,32 +58,48 @@ class Grid extends Component
     protected $orderStatusCollectionFactory;
 
     /**
+     * @var UrlProvider
+     */
+    protected $urlProvider;
+
+    /**
      * @var PriceHelper
      */
     protected $priceHelper;
 
     /**
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @var TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param OrderManagement $orderManagement
      * @param CustomerSession $customerSession
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param OrderStatusCollectionFactory $orderStatusCollectionFactory
+     * @param UrlProvider $urlProvider
      * @param PriceHelper $priceHelper
+     * @param TimezoneInterface $timezone
      */
     public function __construct(
-        OpenPosHelper $openPosHelper,
-        OpenPosOrderHelper $openPosOrderHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        OrderManagement $orderManagement,
         CustomerSession $customerSession,
         OrderCollectionFactory $orderCollectionFactory,
         OrderStatusCollectionFactory $orderStatusCollectionFactory,
-        PriceHelper $priceHelper
+        UrlProvider $urlProvider,
+        PriceHelper $priceHelper,
+        TimezoneInterface $timezone
     ) {
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->orderManagement = $orderManagement;
         $this->customerSession = $customerSession;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->orderStatusCollectionFactory = $orderStatusCollectionFactory;
+        $this->urlProvider = $urlProvider;
         $this->priceHelper = $priceHelper;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -148,7 +166,7 @@ class Grid extends Component
             ->group('main_table.entity_id');
         
         // Only load orders from OpenPOS store
-        $orderCollection->addFieldToFilter('store_id', $this->openPosHelper->getPosStoreId());
+        $orderCollection->addFieldToFilter('store_id', $this->openPosConfiguration->getPosStoreId());
 
         // If customer session active, only show current customer orders
         if($this->customerSession->isLoggedIn()) {
@@ -180,13 +198,13 @@ class Grid extends Component
             $openPosStatus = (float)$order->getData('openpos_total_paid') >= $order->getBaseGrandTotal()  ? 'Paid' : 'Payments outstanding';
             $orders[] = [
                 'increment_id' => $order->getIncrementId(),
-                'created_at' => $order->getCreatedAt(),
+                'created_at' => $this->timezone->formatDateTime($order->getCreatedAt()),
                 'magento_status' => $order->getStatusLabel(),
                 'openpos_total_paid' => $this->priceHelper->currency($order->getData('openpos_total_paid'), true, false),
                 'openpos_status' => $openPosStatus,
                 'customer_name' => $order->getCustomerName(),
                 'grand_total' => $this->priceHelper->currency($order->getGrandTotal(), true, false),
-                'view_url' => $this->openPosHelper->getOrderViewUrl($order)
+                'view_url' => $this->urlProvider->getOrderViewUrl($order)
             ];
         }
 

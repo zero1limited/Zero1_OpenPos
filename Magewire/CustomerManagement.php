@@ -5,7 +5,7 @@ namespace Zero1\OpenPos\Magewire;
 
 use Magewirephp\Magewire\Component;
 use Magento\Customer\Model\Session as CustomerSession;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
 use Magento\Customer\Model\ResourceModel\Address\CollectionFactory as CustomerAddressCollectionFactory;
@@ -21,9 +21,9 @@ class CustomerManagement extends Component
     protected $customerSession;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
 
     /**
      * @var CustomerRepositoryInterface
@@ -52,20 +52,20 @@ class CustomerManagement extends Component
 
     /**
      * @param CustomerSession $customerSession
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param TillSessionManagement $tillSessionManagement
      * @param CustomerRepository $customerRepository
      * @param CustomerCollectionFactory $customerCollectionFactory
      * @param CustomerAddressCollectionFactory $customerAddressCollectionFactory
      */
     public function __construct(
         CustomerSession $customerSession,
-        OpenPosSessionHelper $openPosSessionHelper,
+        TillSessionManagement $tillSessionManagement,
         CustomerRepositoryInterface $customerRepository,
         CustomerCollectionFactory $customerCollectionFactory,
         CustomerAddressCollectionFactory $customerAddressCollectionFactory
     ) {
         $this->customerSession = $customerSession;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->customerRepository = $customerRepository;
         $this->customerCollectionFactory = $customerCollectionFactory;
         $this->customerAddressCollectionFactory = $customerAddressCollectionFactory;
@@ -115,7 +115,7 @@ class CustomerManagement extends Component
      */
     public function changeToCustomerById(int $id): void
     {
-        if(!$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }
@@ -138,7 +138,7 @@ class CustomerManagement extends Component
      */
     public function updatedInputSearch(): void
     {
-        if(!$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             $this->redirect('/');
             return;
         }

@@ -7,7 +7,7 @@ use Magewirephp\Magewire\Component;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\DataObject\Factory as ObjectFactory;
 use Magento\Framework\UrlInterface;
@@ -36,9 +36,9 @@ class AutoAdd extends Component
     protected $productCollectionFactory;
 
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var CartRepositoryInterface
@@ -89,7 +89,7 @@ class AutoAdd extends Component
      * @param CheckoutSession $checkoutSession
      * @param ProductRepositoryInterface $productRepository
      * @param ProductCollectionFactory $productCollectionFactory
-     * @param PosHelper $posHelper
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param CartRepositoryInterface $cartRepository
      * @param ObjectFactory $objectFactory
      * @param UrlInterface $urlBuilder
@@ -98,7 +98,7 @@ class AutoAdd extends Component
         CheckoutSession $checkoutSession,
         ProductRepositoryInterface $productRepository,
         ProductCollectionFactory $productCollectionFactory,
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
         CartRepositoryInterface $cartRepository,
         ObjectFactory $objectFactory,
         UrlInterface $urlBuilder
@@ -106,7 +106,7 @@ class AutoAdd extends Component
         $this->checkoutSession = $checkoutSession;
         $this->productRepository = $productRepository;
         $this->productCollectionFactory = $productCollectionFactory;
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->cartRepository = $cartRepository;
         $this->objectFactory = $objectFactory;
         $this->urlBuilder = $urlBuilder;
@@ -123,14 +123,14 @@ class AutoAdd extends Component
             return;
         }
 
-        if(!$this->customProductMode && $this->skuInput == $this->posHelper->getCustomProductBarcode() && $this->posHelper->getCustomProductBarcode() != '') {
+        if(!$this->customProductMode && $this->skuInput == $this->openPosConfiguration->getCustomProductBarcode() && $this->openPosConfiguration->getCustomProductBarcode() != '') {
             $this->priceEditorMode = false;
             $this->customProductMode = true;
             $this->showSkuField = false;
             return;
         }
 
-        if($this->skuInput == $this->posHelper->getPriceEditorBarcode() && $this->posHelper->getPriceEditorBarcode() != '') {
+        if($this->skuInput == $this->openPosConfiguration->getPriceEditorBarcode() && $this->openPosConfiguration->getPriceEditorBarcode() != '') {
             $this->customProductMode = false;
             $this->priceEditorMode = true;
             $this->skuInput = '';
@@ -142,7 +142,7 @@ class AutoAdd extends Component
             $product = $this->productRepository->get($this->skuInput);
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
             // Cannot find product by SKU, so use barcode attribute
-            $barcodeAttribute = $this->posHelper->getBarcodeAttribute();
+            $barcodeAttribute = $this->openPosConfiguration->getBarcodeAttribute();
             if($barcodeAttribute) {
                 $productCollection = $this->productCollectionFactory->create();
                 $productCollection->addAttributeToFilter($barcodeAttribute, ['eq' => $this->skuInput]);
@@ -233,6 +233,6 @@ class AutoAdd extends Component
      */
     public function getExitCharacter(): string
     {
-        return $this->posHelper->getBarcodeScannerExitCharacter();
+        return $this->openPosConfiguration->getBarcodeScannerExitCharacter();
     }
 }

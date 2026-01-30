@@ -8,8 +8,8 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
 use Magento\Framework\App\Response\RedirectInterface;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Framework\Registry;
 use Magento\Checkout\Model\Session as CheckoutSession;
@@ -39,14 +39,14 @@ class View implements HttpGetActionInterface
     protected $redirect;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -68,8 +68,8 @@ class View implements HttpGetActionInterface
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
      * @param RedirectInterface $redirect
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param OrderRepositoryInterface $orderRepository
      * @param Registry $registry
      * @param CheckoutSession $checkoutSession
@@ -79,8 +79,8 @@ class View implements HttpGetActionInterface
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
         RedirectInterface $redirect,
-        OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         OrderRepositoryInterface $orderRepository,
         Registry $registry,
         CheckoutSession $checkoutSession
@@ -89,8 +89,8 @@ class View implements HttpGetActionInterface
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
         $this->redirect = $redirect;
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->orderRepository = $orderRepository;
         $this->registry = $registry;
         $this->checkoutSession = $checkoutSession;
@@ -102,7 +102,7 @@ class View implements HttpGetActionInterface
     public function execute()
     {
         // Ensure no access to this controller with no till session
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             $forward = $this->forwardFactory->create();
             return $forward->forward('noroute');
         }

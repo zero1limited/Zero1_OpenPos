@@ -7,9 +7,9 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -24,19 +24,19 @@ use Magento\Framework\Phrase;
 class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -70,9 +70,9 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
 
     /**
      * @param Context $context
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
+     * @param OrderManagement $orderManagement
      * @param OrderRepositoryInterface $orderRepository
      * @param CartRepositoryInterface $quoteRepository
      * @param ProductRepositoryInterface $productRepository
@@ -82,9 +82,9 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
      */
     public function __construct(
         Context $context,
-        OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
-        OpenPosOrderHelper $openPosOrderHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
+        OrderManagement $orderManagement,
         OrderRepositoryInterface $orderRepository,
         CartRepositoryInterface $quoteRepository,
         ProductRepositoryInterface $productRepository,
@@ -92,9 +92,9 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         CheckoutSession $checkoutSession,
         QuoteManagement $quoteManagement
     ) {
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
+        $this->orderManagement = $orderManagement;
         $this->orderRepository = $orderRepository;
         $this->quoteRepository = $quoteRepository;
         $this->productRepository = $productRepository;
@@ -113,7 +113,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;
@@ -133,7 +133,7 @@ class Edit extends Action implements HttpPostActionInterface, CsrfAwareActionInt
         $order = $this->orderRepository->get($orderId);
 
         // Check if the order has already had a payment against it
-        if(!$this->openPosOrderHelper->canEdit($order)) {
+        if(!$this->orderManagement->canEdit($order)) {
             $this->messageManager->addErrorMessage(__('A payment has already been made against this order, it can no longer be edited.'));
             $resultRedirect->setPath('openpos/order/view', ['id' => $orderId]);
             return $resultRedirect;

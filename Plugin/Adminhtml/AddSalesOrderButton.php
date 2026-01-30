@@ -3,16 +3,17 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin\Adminhtml;
 
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Sales\Block\Adminhtml\Order\View;
 
 class AddSalesOrderButton
 {
     /**
-     * @var OpenPosHelper
+     * @var OrderManagement
      */
-    protected $openPosHelper;
+    protected $orderManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -20,15 +21,23 @@ class AddSalesOrderButton
     protected $orderRepository;
 
     /**
-     * @param OpenPosHelper $openPosHelper
+     * @var UrlProvider
+     */
+    protected $urlProvider;
+
+    /**
+     * @param OrderManagement $orderManagement
      * @param OrderRepositoryInterface $orderRepository
+     * @param UrlProvider $urlProvider
      */
     public function __construct(
-        OpenPosHelper $openPosHelper,
-        OrderRepositoryInterface $orderRepository
+        OrderManagement $orderManagement,
+        OrderRepositoryInterface $orderRepository,
+        UrlProvider $urlProvider
     ) {
-        $this->openPosHelper = $openPosHelper;
+        $this->orderManagement = $orderManagement;
         $this->orderRepository = $orderRepository;
+        $this->urlProvider = $urlProvider;
     }
 
     /**
@@ -44,14 +53,14 @@ class AddSalesOrderButton
             $orderId = $subject->getOrderId();
             $order = $this->orderRepository->get($orderId);
 
-            if($this->openPosHelper->isPosOrder($order)) {
+            if($this->orderManagement->isPosOrder($order)) {
                 $subject->addButton(
                     'view_in_openpos',
                     [
                         'label' => __('View in OpenPOS'),
                         'class' => __('primary'),
                         'id' => 'order-view-view-in-openpos',
-                        'onclick' => 'window.open(\'' . $this->openPosHelper->getOrderViewUrl($order) . '\', \'_blank\')'
+                        'onclick' => 'window.open(\'' . $this->urlProvider->getOrderViewUrl($order) . '\', \'_blank\')'
                     ]
                 );
             }

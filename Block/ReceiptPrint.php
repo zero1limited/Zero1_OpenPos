@@ -5,18 +5,19 @@ namespace Zero1\OpenPos\Block;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Pricing\Helper\Data as PricingHelper;
 use Magento\Theme\Block\Html\Header\Logo as LogoBlock;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Sales\Model\Order;
 
 class ReceiptPrint extends Template
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var CheckoutSession
@@ -34,30 +35,38 @@ class ReceiptPrint extends Template
     protected $logoBlock;
 
     /**
+     * @var TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
      * @var Order
      */
     protected $order;
 
     /**
      * @param Context $context
-     * @param PosHelper $posHelper
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param CheckoutSession $checkoutSession
      * @param PricingHelper $pricingHelper
      * @param LogoBlock $logoBlock
+     * @param TimezoneInterface $timezone
      * @param array $data
      */
     public function __construct(
         Context $context,
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
         CheckoutSession $checkoutSession,
         PricingHelper $pricingHelper,
         LogoBlock $logoBlock,
+        TimezoneInterface $timezone,
         array $data = []
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->checkoutSession = $checkoutSession;
         $this->pricingHelper = $pricingHelper;
         $this->logoBlock = $logoBlock;
+        $this->timezone = $timezone;
         parent::__construct($context, $data);
     }
 
@@ -66,7 +75,7 @@ class ReceiptPrint extends Template
      */
     public function getReceiptHeaderContents(): string
     {
-        return $this->posHelper->getReceiptHeader() ?? '';
+        return $this->openPosConfiguration->getReceiptHeader() ?? '';
     }
 
     /**
@@ -74,7 +83,7 @@ class ReceiptPrint extends Template
      */
     public function getReceiptFooterContents(): string
     {
-        return $this->posHelper->getReceiptFooter() ?? '';
+        return $this->openPosConfiguration->getReceiptFooter() ?? '';
     }
 
     /**
@@ -100,7 +109,7 @@ class ReceiptPrint extends Template
      */
     public function getOrderDate(): string
     {
-        return $this->getOrder()->getCreatedAt();
+        return $this->timezone->formatDateTime($this->getOrder()->getCreatedAt());
     }
 
     /**
@@ -129,7 +138,7 @@ class ReceiptPrint extends Template
      */
     public function getOrderGrandTotal(): string
     {
-        return $this->pricingHelper->currency($this->getOrder()->getGrandTotal(), true, false);
+        return $this->formatPrice($this->getOrder()->getGrandTotal());
     }
 
     /**
@@ -138,6 +147,15 @@ class ReceiptPrint extends Template
     public function getOrderItems(): array
     {
         return $this->getOrder()->getAllVisibleItems();
+    }
+
+    /**
+     * @param mixed $amount
+     * @return string
+     */
+    public function formatPrice($amount): string
+    {
+        return $this->pricingHelper->currency($amount, true, false);
     }
 
     /**

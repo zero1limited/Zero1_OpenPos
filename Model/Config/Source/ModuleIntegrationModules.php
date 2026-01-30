@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Zero1\OpenPos\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
-use Zero1\OpenPos\Helper\ModuleIntegration;
+use Zero1\OpenPos\Model\ModuleIntegration;
 use Magento\Framework\Module\ModuleListInterface;
 
 class ModuleIntegrationModules implements OptionSourceInterface

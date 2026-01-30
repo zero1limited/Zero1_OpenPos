@@ -1,26 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
-use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Framework\App\State;
-use Magento\Framework\Url;
-use Magento\Framework\Exception\LocalizedException;
 
-/**
- * This class will soon change to a configuration helper only, with all logic moving to another class.
- */
-
-class Data extends AbstractHelper
+class Configuration
 {
     const CONFIG_PATH_GENERAL_ENABLE = 'openpos/general/enable';
     const CONFIG_PATH_GENERAL_TFA_ENABLE = 'openpos/general/tfa_enable';
@@ -44,68 +31,25 @@ class Data extends AbstractHelper
     const CONFIG_PATH_INTERNAL_IS_CONFIGURED = 'openpos/internal/is_configured';
 
     /**
-     * @var StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
-     * @var CustomerRepositoryInterface
+     * @var StoreManagerInterface
      */
-    protected $customerRepository;
+    protected $storeManager;
 
     /**
-     * @var CustomerInterfaceFactory
-     */
-    protected $customerFactory;
-
-    /**
-     * @var EncryptorInterface
-     */
-    protected $encryptor;
-
-    /**
-     * @var State
-     */
-    protected $appState;
-
-    /**
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * @param Context $context
-     * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
-     * @param CustomerRepositoryInterface $customerRepository
-     * @param CustomerInterfaceFactory $customerFactory
-     * @param EncryptorInterface $encryptor
-     * @param State $appState
-     * @param Url $url
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        Context $context,
-        StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
-        CustomerRepositoryInterface $customerRepository,
-        CustomerInterfaceFactory $customerFactory,
-        EncryptorInterface $encryptor,
-        State $appState,
-        Url $url
+        StoreManagerInterface $storeManager
     ) {
-        $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
-        $this->customerRepository = $customerRepository;
-        $this->customerFactory = $customerFactory;
-        $this->encryptor = $encryptor;
-        $this->appState = $appState;
-        $this->url = $url;
-        parent::__construct($context);
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -156,16 +100,10 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Check if we should bypass stock checks.
-     *
      * @return bool
      */
     public function bypassStock(): bool
     {
-        if(!$this->currentlyOnPosStore()) {
-            return false;
-        }
-
         return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_GENERAL_BYPASS_STOCK);
     }
 
@@ -276,84 +214,5 @@ class Data extends AbstractHelper
         } catch(\Magento\Framework\Exception\NoSuchEntityException $e) {
             return null;
         }
-    }
-
-    /**
-     * Check if we are currently on the POS store.
-     *
-     * @return bool
-     */
-    public function currentlyOnPosStore(): bool
-    {
-        if(!$this->isEnabled()) {
-            return false;
-        }
-        return $this->storeManager->getStore()->getId() == $this->getPosStoreId();
-    }
-
-    /**
-     * Check if an order is a POS order.
-     * 
-     * @param OrderInterface $order
-     * @return bool
-     */
-    public function isPosOrder(OrderInterface $order): bool
-    {
-        if($order->getStoreId() == $this->getPosStoreId()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if current session is in Magento Admin area.
-     * 
-     * @return bool
-     */
-    public function isAdminSession(): bool
-    {
-        if ($this->appState->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Return URL for till / OpenPOS frontend.
-     * 
-     * @return string
-     */
-    public function getTillUrl(): string
-    {
-        if(!$this->isEnabled()) {
-            throw new LocalizedException(__('OpenPOS is currently disabled. Check configuration.'));
-        }
-
-        $posStore = $this->getPosStore();
-        if(!$posStore) {
-            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
-        }
-
-        return $this->url->getUrl('openpos/tillsession/login', [
-            '_scope' => $posStore->getId()
-        ]);
-    }
-
-    /**
-     * Return URL for viewing order on till / OpenPOS frontend.
-     */
-    public function getOrderViewUrl(OrderInterface $order): string
-    {
-        $orderId = $order->getId();
-        $posStore = $this->getPosStore();
-        if(!$posStore) {
-            throw new LocalizedException(__('OpenPOS configuration is incomplete. Check configuration.'));
-        }
-
-        return $this->url->getUrl('openpos/order/view/id', [
-            '_scope' => $posStore->getId(),
-            'id' => $orderId
-        ]);
     }
 }

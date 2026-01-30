@@ -7,8 +7,9 @@ use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpPostActionInterface as HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Action\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
 use Zero1\OpenPos\Model\PaymentMethod\Layaways;
@@ -21,14 +22,19 @@ use Magento\Framework\Phrase;
 class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
+
+    /**
+     * @var UrlProvider
+     */
+    protected $urlProvider;
 
     /**
      * @var CheckoutSession
@@ -42,20 +48,23 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
 
     /**
      * @param Context $context
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
+     * @param UrlProvider $urlProvider
      * @param CheckoutSession $checkoutSession
      * @param QuoteManagement $quoteManagement
      */
     public function __construct(
         Context $context,
-        OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
+        UrlProvider $urlProvider,
         CheckoutSession $checkoutSession,
         QuoteManagement $quoteManagement
     ) {
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
+        $this->urlProvider = $urlProvider;
         $this->checkoutSession = $checkoutSession;
         $this->quoteManagement = $quoteManagement;
         parent::__construct($context);
@@ -70,7 +79,7 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
     {
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             // @todo harden maybe 404?
             $resultRedirect->setPath('/');
             return $resultRedirect;
@@ -89,7 +98,7 @@ class Stash extends Action implements HttpPostActionInterface, CsrfAwareActionIn
 
                 if($order && $order->getId()) {
                     $this->messageManager->addSuccessMessage(__('Order #%1 has been placed.', $order->getIncrementId()));
-                    $url = $this->openPosHelper->getOrderViewUrl($order);
+                    $url = $this->urlProvider->getOrderViewUrl($order);
 
                     return $resultRedirect->setPath($url);
                 } else {

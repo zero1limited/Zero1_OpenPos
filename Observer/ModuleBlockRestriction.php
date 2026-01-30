@@ -5,15 +5,16 @@ namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\ModuleIntegration as ModuleIntegration;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\ModuleIntegration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 
 class ModuleBlockRestriction implements ObserverInterface
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var ModuleIntegration
@@ -21,15 +22,23 @@ class ModuleBlockRestriction implements ObserverInterface
     protected $moduleIntegration;
 
     /**
-     * @param OpenPosHelper $openPosHelper
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param ModuleIntegration $moduleIntegration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
-        OpenPosHelper $openPosHelper,
-        ModuleIntegration $moduleIntegration
+        OpenPosConfiguration $openPosConfiguration,
+        ModuleIntegration $moduleIntegration,
+        TillSessionManagement $tillSessionManagement
     ) {
-        $this->openPosHelper = $openPosHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->moduleIntegration = $moduleIntegration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -38,12 +47,12 @@ class ModuleBlockRestriction implements ObserverInterface
     public function execute(Observer $observer): void
     {
         // Check if module is enabled
-        if(!$this->openPosHelper->isEnabled()) {
+        if(!$this->openPosConfiguration->isEnabled()) {
             return;
         }
 
         // Check we are currently on POS store
-        if(!$this->openPosHelper->currentlyOnPosStore()) {
+        if(!$this->tillSessionManagement->currentlyOnPosStore()) {
             return;
         }
 

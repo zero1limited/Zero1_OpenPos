@@ -3,24 +3,33 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\CatalogInventory\Model\Quote\Item\QuantityValidator;
 use Magento\Framework\Event\Observer;
 
 class QuoteItemQuantityBypass
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @param PosHelper $posHelper
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
-        PosHelper $posHelper
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -32,7 +41,7 @@ class QuoteItemQuantityBypass
     {
         // TODO: Check if this is still required
 
-        if($this->posHelper->bypassStock() && $this->posHelper->currentlyOnPosStore()) {
+        if($this->openPosConfiguration->bypassStock() && $this->tillSessionManagement->currentlyOnPosStore()) {
             $quoteItem = $observer->getEvent()->getItem();
             if($quoteItem) {
                 $quoteItem->getQuote()->setIsSuperMode(true);

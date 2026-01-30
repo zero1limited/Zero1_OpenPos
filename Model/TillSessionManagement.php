@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Zero1\OpenPos\Model\TillSessionFactory;
 use Zero1\OpenPos\Api\TillSessionRepositoryInterface;
 use Zero1\OpenPos\Model\ResourceModel\TillSession\CollectionFactory as TillSessionCollectionFactory;
@@ -13,19 +11,21 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Framework\Session\SessionManagerInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 use Magento\User\Model\UserFactory;
 use Zero1\OpenPos\Api\Data\TillSessionInterface;
 use Magento\User\Model\User;
+use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class Session extends AbstractHelper
+class TillSessionManagement
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var TillSessionFactory
@@ -63,6 +63,11 @@ class Session extends AbstractHelper
     protected $sessionManager;
 
     /**
+     * @var StoreManagerInterface
+     */
+    protected $storeManager;
+
+    /**
      * @var MessageManager
      */
     protected $messageManager;
@@ -73,8 +78,12 @@ class Session extends AbstractHelper
     protected $userFactory;
 
     /**
-     * @param Context $context
-     * @param PosHelper $posHelper
+     * @var State
+     */
+    protected $appState;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param TillSessionFactory $tillSessionFactory
      * @param TillSessionRepositoryInterface $tillSessionRepository
      * @param TillSessionCollectionFactory $tillSessionCollectionFactory
@@ -82,12 +91,13 @@ class Session extends AbstractHelper
      * @param QuoteManagement $quoteManagement
      * @param CartRepositoryInterface $quoteRepository
      * @param SessionManagerInterface $sessionManager
+     * @param StoreManagerInterface $storeManager
      * @param MessageManager $messageManager
      * @param UserFactory $userFactory
+     * @param State $appState
      */
     public function __construct(
-        Context $context,
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
         TillSessionFactory $tillSessionFactory,
         TillSessionRepositoryInterface $tillSessionRepository,
         TillSessionCollectionFactory $tillSessionCollectionFactory,
@@ -95,10 +105,12 @@ class Session extends AbstractHelper
         QuoteManagement $quoteManagement,
         CartRepositoryInterface $quoteRepository,
         SessionManagerInterface $sessionManager,
+        StoreManagerInterface $storeManager,
         MessageManager $messageManager,
-        UserFactory $userFactory
+        UserFactory $userFactory,
+        State $appState
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->tillSessionFactory = $tillSessionFactory;
         $this->tillSessionRepository = $tillSessionRepository;
         $this->tillSessionCollectionFactory = $tillSessionCollectionFactory;
@@ -106,9 +118,10 @@ class Session extends AbstractHelper
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
         $this->sessionManager = $sessionManager;
+        $this->storeManager = $storeManager;
         $this->messageManager = $messageManager;
         $this->userFactory = $userFactory;
-        parent::__construct($context);
+        $this->appState = $appState;
     }
 
     /**
@@ -140,12 +153,6 @@ class Session extends AbstractHelper
      */
     public function getTillSession(): ?TillSessionInterface
     {
-        // Check user is on POS store
-        if(!$this->posHelper->currentlyOnPosStore()) {
-            $this->destroySession();
-            return null;
-        }
-
         $tillSessionId = $this->getTillSessionId();
         try {
             $tillSession = $this->tillSessionRepository->getById($tillSessionId);
@@ -164,6 +171,11 @@ class Session extends AbstractHelper
      */
     public function isTillSessionActive(TillSessionInterface $tillSession = null): bool
     {
+        if($this->openPosConfiguration->isEnabled() !== true || $this->currentlyOnPosStore() == false) {
+            $this->destroySession();
+            return false;
+        }
+        
         if(!$tillSession) {
             $tillSession = $this->getTillSession();
         }
@@ -172,7 +184,7 @@ class Session extends AbstractHelper
             return false;
         }
 
-        $tillSessionLifetime = $this->posHelper->getSessionLifetime();
+        $tillSessionLifetime = $this->openPosConfiguration->getSessionLifetime();
         if($tillSessionLifetime !== 0) {
             $currentDateTime = new \DateTime();
             $tillSessionExpiry = new \DateTime($tillSession->getCreatedAt());
@@ -214,7 +226,7 @@ class Session extends AbstractHelper
     public function startTillSession(User $adminUser): TillSessionInterface
     {
         // Check user is on POS store
-        if(!$this->posHelper->currentlyOnPosStore()) {
+        if(!$this->currentlyOnPosStore()) {
             $this->destroySession();
             throw new LocalizedException(__('Cannot create till session on non-POS store.'));
         }
@@ -228,7 +240,7 @@ class Session extends AbstractHelper
             $this->setTillSessionId(null);
         }
 
-        $tillUsers = $this->posHelper->getTillUsers();
+        $tillUsers = $this->openPosConfiguration->getTillUsers();
         if(!in_array($adminUser->getId(), $tillUsers)) {
             throw new LocalizedException(__('This admin user doesn\'t have permission to use a till.'));
         }
@@ -298,5 +310,31 @@ class Session extends AbstractHelper
         }
 
         return null;
+    }
+
+    /**
+     * Check if current session is in Magento Admin area.
+     * 
+     * @return bool
+     */
+    public function isAdminSession(): bool
+    {
+        if ($this->appState->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if we are currently on the POS store.
+     *
+     * @return bool
+     */
+    public function currentlyOnPosStore(): bool
+    {
+        if(!$this->openPosConfiguration->isEnabled()) {
+            return false;
+        }
+        return $this->storeManager->getStore()->getId() == $this->openPosConfiguration->getPosStoreId();
     }
 }

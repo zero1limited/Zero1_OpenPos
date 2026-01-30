@@ -5,22 +5,31 @@ namespace Zero1\OpenPos\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 
 class ProductIsSalableAfterObserver implements ObserverInterface
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @param PosHelper $posHelper
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
-        PosHelper $posHelper
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -29,17 +38,17 @@ class ProductIsSalableAfterObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         // Check if module is enabled
-        if(!$this->posHelper->isEnabled()) {
+        if(!$this->openPosConfiguration->isEnabled()) {
             return;
         }
 
         // Check we are currently on POS store
-        if(!$this->posHelper->currentlyOnPosStore()) {
+        if(!$this->tillSessionManagement->currentlyOnPosStore()) {
             return;
         }
 
         // Check if we should be bypassing stock
-        if(!$this->posHelper->bypassStock()) {
+        if(!$this->openPosConfiguration->bypassStock()) {
             return;
         }
 

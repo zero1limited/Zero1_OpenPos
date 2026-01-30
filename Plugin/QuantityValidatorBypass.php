@@ -3,24 +3,33 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\CatalogInventory\Observer\QuantityValidatorObserver;
 use Magento\Framework\Event\Observer;
 
 class QuantityValidatorBypass
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @param OpenPosHelper $posHelper
+     * @var TillSessionManagement
+     */
+    protected $tillSessionManagement;
+
+    /**
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
-        OpenPosHelper $posHelper
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -30,7 +39,7 @@ class QuantityValidatorBypass
      */
     public function aroundExecute(QuantityValidatorObserver $subject, callable $proceed, Observer $observer): void
     {
-        if($this->posHelper->currentlyOnPosStore() && $this->posHelper->bypassStock()) {
+        if($this->tillSessionManagement->currentlyOnPosStore() && $this->openPosConfiguration->bypassStock()) {
             return;
         }
 

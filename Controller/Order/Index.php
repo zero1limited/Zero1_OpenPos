@@ -6,8 +6,8 @@ namespace Zero1\OpenPos\Controller\Order;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\Controller\Result\Forward;
 
@@ -24,31 +24,31 @@ class Index implements HttpGetActionInterface
     protected $forwardFactory;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
 
     /**
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      */
     public function __construct(
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
-        OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement
     ) {
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
     }
 
     /**
@@ -57,7 +57,7 @@ class Index implements HttpGetActionInterface
     public function execute()
     {
         // Ensure no access to this controller with no till session
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             $forward = $this->forwardFactory->create();
             return $forward->forward('noroute');
         }

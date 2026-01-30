@@ -3,34 +3,33 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Elasticsearch\Endpoints\Indices\Open;
-use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class AutoInvoice
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
-     * @param PosHelper $posHelper
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param OrderManagement $orderManagement
      */
     public function __construct(
-        PosHelper $posHelper,
-        OpenPosOrderHelper $openPosOrderHelper
+        OpenPosConfiguration $openPosConfiguration,
+        OrderManagement $orderManagement
     ) {
-        $this->posHelper = $posHelper;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->orderManagement = $orderManagement;
     }
 
     /**
@@ -40,8 +39,8 @@ class AutoInvoice
      */
     public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
-        if($this->posHelper->isPosOrder($order)) {
-            $this->openPosOrderHelper->invoiceOrder($order);
+        if($this->orderManagement->isPosOrder($order)) {
+            $this->orderManagement->invoiceOrder($order);
         }
 
         return $order;

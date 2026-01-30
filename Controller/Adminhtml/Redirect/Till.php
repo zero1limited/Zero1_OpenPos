@@ -5,7 +5,7 @@ namespace Zero1\OpenPos\Controller\Adminhtml\Redirect;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Framework\Controller\Result\RedirectFactory;
 
 class Till extends Action
@@ -13,9 +13,9 @@ class Till extends Action
     public const ADMIN_RESOURCE = 'Zero1_OpenPos::pos';
 
     /**
-     * @var OpenPosHelper
+     * @var UrlProvider
      */
-    protected $openPosHelper;
+    protected $urlProvider;
 
     /**
      * @var RedirectFactory
@@ -24,16 +24,16 @@ class Till extends Action
 
     /**
      * @param Context $context
-     * @param OpenPosHelper $openPosHelper
+     * @param UrlProvider $urlProvider
      * @param RedirectFactory $resultRedirectFactory
      */
     public function __construct(
         Context $context,
-        OpenPosHelper $openPosHelper,
+        UrlProvider $urlProvider,
         RedirectFactory $resultRedirectFactory
     ) {
         parent::__construct($context);
-        $this->openPosHelper = $openPosHelper;
+        $this->urlProvider = $urlProvider;
         $this->resultRedirectFactory = $resultRedirectFactory;
     }
 
@@ -45,7 +45,7 @@ class Till extends Action
     public function execute()
     {
         try {
-            $targetUrl = $this->openPosHelper->getTillUrl();
+            $targetUrl = $this->urlProvider->getTillUrl();
 
             /** @var \Magento\Framework\Controller\Result\Redirect $resultRedirect */
             $resultRedirect = $this->resultRedirectFactory->create();

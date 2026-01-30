@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Zero1\OpenPos\Helper\Data as PosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\Data\OrderAddressInterfaceFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Directory\Model\RegionFactory;
@@ -13,9 +14,14 @@ use Magento\Sales\Model\Order\Address;
 class EmulateOrderShippingAddress
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
+
+    /**
+     * @var OrderManagement
+     */
+    protected $orderManagement;
 
     /**
      * @var OrderAddressInterfaceFactory
@@ -33,18 +39,21 @@ class EmulateOrderShippingAddress
     protected $regionFactory;
 
     /**
-     * @param PosHelper $posHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param OrderManagement $orderManagement
      * @param OrderAddressInterfaceFactory $addressFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param RegionFactory $regionFactory
      */
     public function __construct(
-        PosHelper $posHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        OrderManagement $orderManagement,
         OrderAddressInterfaceFactory $addressFactory,
         ScopeConfigInterface $scopeConfig,
         RegionFactory $regionFactory
     ) {
-        $this->posHelper = $posHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->orderManagement = $orderManagement;
         $this->addressFactory = $addressFactory;
         $this->scopeConfig = $scopeConfig;
         $this->regionFactory = $regionFactory;
@@ -58,11 +67,11 @@ class EmulateOrderShippingAddress
     public function afterGetShippingAddress(Order $order, $result)
     {
         // Ensure OpenPOS is enabled and configured to emulate shipping addresses.
-        if(!$this->posHelper->isEnabled() || !$this->posHelper->getEmulateShippingAddress()) {
+        if(!$this->openPosConfiguration->isEnabled() || !$this->openPosConfiguration->getEmulateShippingAddress()) {
             return $result;
         }
 
-        if($result === null && $this->posHelper->isPosOrder($order)) {
+        if($result === null && $this->orderManagement->isPosOrder($order)) {
             $address = $this->addressFactory->create();
 
             // Logic to handle either dropdown / selectable regions or just text based region entry.

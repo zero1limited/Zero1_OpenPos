@@ -7,10 +7,11 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Result\PageFactory;
 use Magento\Framework\Controller\Result\ForwardFactory;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
-use Zero1\OpenPos\Helper\Session as OpenPosSessionHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\TillSessionManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\OrderManagement;
+use Zero1\OpenPos\Model\UrlProvider;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\Controller\Result\Forward;
@@ -33,14 +34,14 @@ class Create implements HttpGetActionInterface
     protected $forwardFactory;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosSessionHelper
+     * @var TillSessionManagement
      */
-    protected $openPosSessionHelper;
+    protected $tillSessionManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -48,9 +49,14 @@ class Create implements HttpGetActionInterface
     protected $orderRepository;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
+
+    /**
+     * @var UrlProvider
+     */
+    protected $urlProvider;
 
     /**
      * @var MessageManagerInterface
@@ -61,29 +67,32 @@ class Create implements HttpGetActionInterface
      * @param RequestInterface $request
      * @param PageFactory $pageFactory
      * @param ForwardFactory $forwardFactory
-     * @param OpenPosHelper $openPosHelper
-     * @param OpenPosSessionHelper $openPosSessionHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param TillSessionManagement $tillSessionManagement
      * @param OrderRepositoryInterface $orderRepository
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @param OrderManagement $orderManagement
+     * @param UrlProvider $urlProvider
      * @param MessageManagerInterface $messageManager
      */
     public function __construct(
         RequestInterface $request,
         PageFactory $pageFactory,
         ForwardFactory $forwardFactory,
-        OpenPosHelper $openPosHelper,
-        OpenPosSessionHelper $openPosSessionHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        TillSessionManagement $tillSessionManagement,
         OrderRepositoryInterface $orderRepository,
-        OpenPosOrderHelper $openPosOrderHelper,
+        OrderManagement $orderManagement,
+        UrlProvider $urlProvider,
         MessageManagerInterface $messageManager
     ) {
         $this->request = $request;
         $this->pageFactory = $pageFactory;
         $this->forwardFactory = $forwardFactory;
-        $this->openPosHelper = $openPosHelper;
-        $this->openPosSessionHelper = $openPosSessionHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->tillSessionManagement = $tillSessionManagement;
         $this->orderRepository = $orderRepository;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->orderManagement = $orderManagement;
+        $this->urlProvider = $urlProvider;
         $this->messageManager = $messageManager;
     }
 
@@ -93,7 +102,7 @@ class Create implements HttpGetActionInterface
     public function execute()
     {
         // Ensure no access to this controller with no till session
-        if(!$this->openPosHelper->currentlyOnPosStore() || !$this->openPosSessionHelper->isTillSessionActive()) {
+        if(!$this->tillSessionManagement->isTillSessionActive()) {
             $forward = $this->forwardFactory->create();
             return $forward->forward('noroute');
         }
@@ -101,11 +110,11 @@ class Create implements HttpGetActionInterface
         $orderId = (int)$this->request->getParam('id');
         $order = $this->orderRepository->get($orderId);
 
-        if(!$this->openPosOrderHelper->canMakePayment($order)) {
+        if(!$this->orderManagement->canMakePayment($order)) {
             $this->messageManager->addErrorMessage(__('You cannot add a payment to this order.'));
 
             $forward = $this->forwardFactory->create();
-            return $forward->forward($this->openPosHelper->getOrderViewUrl($order));
+            return $forward->forward($this->urlProvider->getOrderViewUrl($order));
         }
 
         $page = $this->pageFactory->create();

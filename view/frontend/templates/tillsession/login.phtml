@@ -1,11 +1,3 @@
-<?php
-$helper = $this->helper('Zero1\OpenPos\Helper\Data');
-
-// TODO, SEAN NEEDS TO CLEAN THIS UP :)
-?>
-
-<!-- form -->
-
 <div class="block block-customer-login p-8 openpos-login-wrapper bg-white mx-auto">
 
     <?= $block->getChildHtml('openpos.tillsession.login.logo') ?>
@@ -36,7 +28,7 @@ $helper = $this->helper('Zero1\OpenPos\Helper\Data');
                             data-validate="{required:true}">
                 </div>
             </div>
-            <?php if($helper->isTfaEnabled()): ?>
+            <?php if($block->isTfaEnabled()): ?>
                 <div class="field 2fa required">
                     <label for="tfa_code" class="label font-bold"><span><?= $block->escapeHtml(__('2FA code')) ?></span></label>
                     <div class="control">

@@ -5,7 +5,7 @@ namespace Zero1\OpenPos\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Magento\Framework\App\State;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Magento\Store\Api\Data\WebsiteInterfaceFactory;
 use Magento\Store\Api\WebsiteRepositoryInterface;
 use Magento\Store\Api\Data\GroupInterfaceFactory;
@@ -33,9 +33,9 @@ class SetupWizard extends Command
     protected $state;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var WebsiteInterfaceFactory
@@ -99,7 +99,7 @@ class SetupWizard extends Command
 
     /**
      * @param State $state
-     * @param OpenPosHelper $openPosHelper
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param WebsiteInterfaceFactory $websiteFactory
      * @param WebsiteRepositoryInterface $websiteRepository
      * @param GroupInterfaceFactory $groupFactory
@@ -115,7 +115,7 @@ class SetupWizard extends Command
      */    
     public function __construct(
         State $state,
-        OpenPosHelper $openPosHelper,
+        OpenPosConfiguration $openPosConfiguration,
         WebsiteInterfaceFactory $websiteFactory,
         WebsiteRepositoryInterface $websiteRepository,
         GroupInterfaceFactory $groupFactory,
@@ -130,7 +130,7 @@ class SetupWizard extends Command
         UserFactory $userFactory
     ) {
         $this->state = $state;
-        $this->openPosHelper = $openPosHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->websiteFactory = $websiteFactory;
         $this->websiteRepository = $websiteRepository;
         $this->groupFactory = $groupFactory;
@@ -177,7 +177,7 @@ class SetupWizard extends Command
             return 0;
         }
 
-        if($this->openPosHelper->getIsConfigured()) {
+        if($this->openPosConfiguration->getIsConfigured()) {
             $output->writeln('<error>It looks like you have already configured OpenPOS. Continuing with the setup wizard may erase data and configuration.</error>');
             $output->writeln('<fg=black;bg=cyan>It\'s not advisable to continue running this command on production environments without testing on staging first.</>');
             $question = new ConfirmationQuestion('Would you like to continue anyway? [y/n] ', false);
@@ -295,7 +295,7 @@ class SetupWizard extends Command
         }
 
         // Set OpenPOS store ID
-        $this->configWriter->save(OpenPosHelper::CONFIG_PATH_GENERAL_POS_STORE, $store->getId());
+        $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_GENERAL_POS_STORE, $store->getId());
 
         // Set theme
         $themeCollection = $this->themeCollectionFactory->create();
@@ -325,7 +325,7 @@ class SetupWizard extends Command
 
         $adminUser = $helper->ask($input, $output, $question);
         $adminUser = $this->userFactory->create()->loadByUsername($adminUser);
-        $this->configWriter->save(OpenPosHelper::CONFIG_PATH_GENERAL_TILL_USERS, $adminUser->getId());
+        $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_GENERAL_TILL_USERS, $adminUser->getId());
 
         // Set misc config
         $this->configWriter->save('hyva_themes_checkout/general/checkout', 'default', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
@@ -333,9 +333,25 @@ class SetupWizard extends Command
         $this->configWriter->save('checkout/sidebar/display', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/cart/redirect_to_cart', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
+        // Set theme fallback / Luma checkout config
+        $this->configWriter->save('hyva_themes_checkout/general/checkout', 'magento_luma', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('hyva_theme_fallback/general/enable', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('hyva_theme_fallback/general/theme_full_path', 'frontend/openpos/default-luma', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('hyva_theme_fallback/general/list_part_of_url', '{"_1762845926961_961":{"path":"checkout\/index"},"_1762845929223_223":{"path":"paypal\/express\/review"},"_1762845937506_506":{"path":"paypal\/express\/saveShippingMethod"}}', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('recaptcha_frontend/type_for/place_order', null, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+
+        // Hyva reccomended minification / bundling settings
+        $this->configWriter->save('dev/template/minify_html', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/merge_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/enable_js_bundling', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/minify_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/js/move_script_to_bottom', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/css/merge_css_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('dev/css/minify_files', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+
         // Enable OpenPOS
-        $this->configWriter->save(OpenPosHelper::CONFIG_PATH_GENERAL_ENABLE, 1);
-        $this->configWriter->save(OpenPosHelper::CONFIG_PATH_INTERNAL_IS_CONFIGURED, 1);
+        $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_GENERAL_ENABLE, 1);
+        $this->configWriter->save(OpenPosConfiguration::CONFIG_PATH_INTERNAL_IS_CONFIGURED, 1);
 
         $output->writeln('<info>OpenPOS setup is complete.</info>');
         $output->writeln('<info>Use the Magento admin for further configuration.</info>');
@@ -344,6 +360,11 @@ class SetupWizard extends Command
         if(!$existingStore) {
             $output->writeln('<comment>Since you created a website and store as part of this setup, you may need to make changes to your NGINX / Apache configuration also.</comment>');
         }
+
+        $output->writeln('');
+        $output->writeln('<fg=cyan;options=bold>TIP:</> You can assign all existing products to the POS website using the following command:');
+        $output->writeln('<fg=green;options=bold>bin/magento openpos:assign-products</>');
+        $output->writeln('');
 
         return 0;
     }

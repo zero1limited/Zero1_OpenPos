@@ -3,33 +3,33 @@ declare(strict_types=1);
 
 namespace Zero1\OpenPos\Plugin;
 
-use Zero1\OpenPos\Helper\Data as PosHelper;
-use Zero1\OpenPos\Helper\Order as OpenPosOrderHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Model\Order;
 use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 
 class InvoiceBlocker
 {
     /**
-     * @var PosHelper
+     * @var OpenPosConfiguration;
      */
-    protected $posHelper;
+    protected $openPosConfiguration;
 
     /**
-     * @var OpenPosOrderHelper
+     * @var OrderManagement
      */
-    protected $openPosOrderHelper;
+    protected $orderManagement;
 
     /**
-     * @param PosHelper $posHelper
-     * @param OpenPosOrderHelper $openPosOrderHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param OrderManagement $orderManagement
      */
     public function __construct(
-        PosHelper $posHelper,
-        OpenPosOrderHelper $openPosOrderHelper
+        OpenPosConfiguration $openPosConfiguration,
+        OrderManagement $orderManagement
     ) {
-        $this->posHelper = $posHelper;
-        $this->openPosOrderHelper = $openPosOrderHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->orderManagement = $orderManagement;
     }
 
     /**
@@ -42,7 +42,7 @@ class InvoiceBlocker
     public function afterCanInvoice(Order $subject, bool $result): bool
     {
         // Check order is an OpenPOS order
-        if($this->posHelper->isPosOrder($subject)) {
+        if($this->orderManagement->isPosOrder($subject)) {
 
             // Check the order is layaways
             if($subject->getPayment()->getMethod() !== Layaways::PAYMENT_METHOD_CODE) {
@@ -50,7 +50,7 @@ class InvoiceBlocker
             }
 
             // Cannot invoice, total has not been paid.
-            if(!$this->openPosOrderHelper->isOrderPaid($subject)) {
+            if(!$this->orderManagement->isOrderPaid($subject)) {
                 return false;
             }
         }

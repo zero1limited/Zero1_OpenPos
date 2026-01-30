@@ -5,15 +5,28 @@ namespace Zero1\OpenPos\Block\Adminhtml\Order\View;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
+use Zero1\OpenPos\Model\UrlProvider;
+use Zero1\OpenPos\Model\OrderManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 
 class Notice extends Template
 {
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
+
+    /**
+     * @var UrlProvider
+     */
+    protected $urlProvider;
+
+    /**
+     * @var OrderManagement
+     */
+    protected $orderManagement;
 
     /**
      * @var OrderRepositoryInterface
@@ -22,17 +35,23 @@ class Notice extends Template
 
     /**
      * @param Context $context
-     * @param OpenPosHelper $openPosHelper
+     * @param OpenPosConfiguration $openPosConfiguration
+     * @param UrlProvider $urlProvider
+     * @param OrderManagement $orderManagement
      * @param OrderRepositoryInterface $orderRepository
      * @param array $data
      */
     public function __construct(
         Context $context,
-        OpenPosHelper $openPosHelper,
+        OpenPosConfiguration $openPosConfiguration,
+        UrlProvider $urlProvider,
+        OrderManagement $orderManagement,
         OrderRepositoryInterface $orderRepository,
         array $data = []
     ) {
-        $this->openPosHelper = $openPosHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
+        $this->urlProvider = $urlProvider;
+        $this->orderManagement = $orderManagement;
         $this->orderRepository = $orderRepository;
         parent::__construct($context, $data);
     }
@@ -47,7 +66,7 @@ class Notice extends Template
         $orderId = (int)$this->getRequest()->getParam('order_id');
         $order = $this->orderRepository->get($orderId);
 
-        return $this->openPosHelper->isPosOrder($order);
+        return $this->orderManagement->isPosOrder($order);
     }
 
     /**
@@ -57,10 +76,9 @@ class Notice extends Template
      */
     public function getOrderViewUrl(): string
     {
-        // TODO this add admin path so will 404
         $orderId = (int)$this->getRequest()->getParam('order_id');
         $order = $this->orderRepository->get($orderId);
 
-        return $this->openPosHelper->getOrderViewUrl($order);
+        return $this->urlProvider->getOrderViewUrl($order);
     }
 }

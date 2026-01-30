@@ -1,14 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Zero1\OpenPos\Helper;
+namespace Zero1\OpenPos\Model;
 
-use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
-use Zero1\OpenPos\Helper\Data as OpenPosHelper;
+use Zero1\OpenPos\Model\Configuration as OpenPosConfiguration;
 use Magento\Framework\Module\ModuleListInterface;
 
-class ModuleIntegration extends AbstractHelper
+class ModuleIntegration
 {
     const MODULE_INTEGRATION_MODE_ALL = 'all';
     const MODULE_INTEGRATION_MODE_SPECIFIC = 'specific';
@@ -22,9 +20,9 @@ class ModuleIntegration extends AbstractHelper
     protected $openPosModules;
 
     /**
-     * @var OpenPosHelper
+     * @var OpenPosConfiguration
      */
-    protected $openPosHelper;
+    protected $openPosConfiguration;
 
     /**
      * @var ModuleListInterface
@@ -32,21 +30,17 @@ class ModuleIntegration extends AbstractHelper
     protected $moduleList;
 
     /**
-     * @param Context $context
-     * @param PosHelper $openPosHelper
+     * @param OpenPosConfiguration $openPosConfiguration
      * @param ModuleListInterface $moduleList
      */
     public function __construct(
-        Context $context,
-        OpenPosHelper $openPosHelper,
+        OpenPosConfiguration $openPosConfiguration,
         ModuleListInterface $moduleList,
         array $openPosModules = []
     ) {
-        $this->openPosHelper = $openPosHelper;
+        $this->openPosConfiguration = $openPosConfiguration;
         $this->moduleList = $moduleList;
         $this->openPosModules = $openPosModules;
-        
-        parent::__construct($context);
     }
 
     /**
@@ -75,14 +69,14 @@ class ModuleIntegration extends AbstractHelper
      */
     public function getAllowedModules(): array
     {
-        $mode = $this->openPosHelper->getModuleIntegrationMode();
+        $mode = $this->openPosConfiguration->getModuleIntegrationMode();
 
         if($mode === self::MODULE_INTEGRATION_MODE_ALL) {
             return $this->moduleList->getNames();
         }
 
         if($mode === self::MODULE_INTEGRATION_MODE_SPECIFIC) {
-            $whitelisedModules = $this->openPosHelper->getModuleIntegrationModules();
+            $whitelisedModules = $this->openPosConfiguration->getModuleIntegrationModules();
             return array_merge($whitelisedModules, $this->getCoreWhitelistModules());
         }
 
