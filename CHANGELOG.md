@@ -1,6 +1,6 @@
 # OpenPOS changelog
 
-## [2.3.0] - in development
+## [2.3.0] - 2026-01-30
 
 ### Added
 - Support for Hyva 1.4 open source
