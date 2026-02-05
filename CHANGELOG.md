@@ -1,5 +1,10 @@
 # OpenPOS changelog
 
+## [2.3.1] - 2026-02-05
+
+### Fixed
+- Stock levels not adjusting for POS orders.
+
 ## [2.3.0] - 2026-01-30
 
 ### Added
@@ -10,6 +15,11 @@
 ### Changed
 - Refactor of configuration and logic from old helper classes.
 - Card and cash payment methods moved to a new module: zero1/open-pos-default-payments.
+
+## [2.2.1] - 2026-02-05
+
+### Fixed
+- Stock levels not adjusting for POS orders.
 
 ## [2.2.0] - 2025-11-03
 

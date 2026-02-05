@@ -8,10 +8,10 @@
         "hyva-themes/magento2-default-theme": "^1.4",
         "hyva-themes/magento2-theme-fallback": "^1.0",
         "magewirephp/magewire": "^1.10",
-        "zero1/open-pos-default-theme": "2.2.*",
-        "zero1/open-pos-default-theme-luma": "1.0.*",
-        "zero1/open-pos-default-payments": "1.0.*",
-        "zero1/open-pos-rma": "2.1.*"
+        "zero1/open-pos-default-theme": "2.2.0",
+        "zero1/open-pos-default-theme-luma": "1.0.0",
+        "zero1/open-pos-default-payments": "1.0.0",
+        "zero1/open-pos-rma": "2.1.1"
     },
     "autoload": {
         "files": [
