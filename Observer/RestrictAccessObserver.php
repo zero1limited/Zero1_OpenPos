@@ -14,7 +14,11 @@ use Magento\Framework\View\DesignInterface;
 
 class RestrictAccessObserver implements ObserverInterface
 {
-    const CONTROLLER_ACTION_WHITELIST = ['openpos_tillsession_login', 'openpos_tillsession_loginpost'];
+    const CONTROLLER_ACTION_WHITELIST = [
+        'openpos_tillsession_login',
+        'openpos_tillsession_loginpost',
+        'openpos_tillsession_handoff'
+    ];
 
     /**
      * @var RedirectInterface
