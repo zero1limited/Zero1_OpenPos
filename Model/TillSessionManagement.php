@@ -169,7 +169,7 @@ class TillSessionManagement
      * @param TillSessionInterface|null $tillSession
      * @return bool
      */
-    public function isTillSessionActive(TillSessionInterface $tillSession = null): bool
+    public function isTillSessionActive(?TillSessionInterface $tillSession = null): bool
     {
         if($this->openPosConfiguration->isEnabled() !== true || $this->currentlyOnPosStore() == false) {
             return false;
@@ -303,7 +303,7 @@ class TillSessionManagement
      * @param TillSessionInterface|null $tillSession
      * @return User|null
      */
-    public function getAdminUserFromTillSession(TillSessionInterface $tillSession = null): ?User
+    public function getAdminUserFromTillSession(?TillSessionInterface $tillSession = null): ?User
     {
         if(!$tillSession) {
             $tillSession = $this->getTillSession();
