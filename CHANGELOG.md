@@ -1,5 +1,16 @@
 # OpenPOS changelog
 
+## [2.4.0] - 2026-09-03
+
+### Added
+- Ability to redirect & login to OpenPOS from the Magento admin automatically.
+
+### Changed
+- Improvements to billing address management in Luma based checkout.
+
+### Fixed
+- Resolve deprecation notices thrown with PHP 8.4 - thank you @lefte.
+
 ## [2.3.1] - 2026-02-05
 
 ### Fixed
