@@ -172,7 +172,6 @@ class TillSessionManagement
     public function isTillSessionActive(?TillSessionInterface $tillSession = null): bool
     {
         if($this->openPosConfiguration->isEnabled() !== true || $this->currentlyOnPosStore() == false) {
-            $this->destroySession();
             return false;
         }
         
@@ -199,21 +198,36 @@ class TillSessionManagement
     }
 
     /**
+     * Remove the till session only: delete the record and drop the reference held
+     * in the Magento session. The rest of the Magento session is left untouched.
+     * 
+     * @return void
+     */
+    public function clearTillSession(): void
+    {
+        $tillSessionId = $this->getTillSessionId();
+        if(!$tillSessionId) {
+            return;
+        }
+
+        try {
+            $this->tillSessionRepository->deleteById($tillSessionId);
+        } catch(NoSuchEntityException $e) {
+            // Might already be removed - we are getting ID from our session
+        }
+
+        $this->setTillSessionId(null);
+    }
+
+    /**
      * Destroy till session, and Magento session.
+     * Only safe where the whole session is meant to end (till login / logout).
      * 
      * @return void
      */
     public function destroySession(): void
     {
-        if($this->getTillSessionId()) {
-            try {
-                $this->tillSessionRepository->deleteById($this->getTillSessionId());
-            } catch(NoSuchEntityException $e) {
-                // Might already be removed - we are getting ID from our session
-            }
-            $this->setTillSessionId(null);
-        }
-
+        $this->clearTillSession();
         $this->sessionManager->destroy();
     }
 
@@ -231,14 +245,7 @@ class TillSessionManagement
             throw new LocalizedException(__('Cannot create till session on non-POS store.'));
         }
                 
-        if($this->getTillSessionId()) {
-            try {
-                $this->tillSessionRepository->deleteById($this->getTillSessionId());
-            } catch(NoSuchEntityException $e) {
-                // Might already be removed - we are getting ID from our session
-            }
-            $this->setTillSessionId(null);
-        }
+        $this->clearTillSession();
 
         $tillUsers = $this->openPosConfiguration->getTillUsers();
         if(!in_array($adminUser->getId(), $tillUsers)) {
