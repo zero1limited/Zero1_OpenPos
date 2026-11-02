@@ -29,6 +29,14 @@ If you are a merchant or agency wanting to implement OpenPOS please [join the Op
 
 Please ensure your Hyvä setup matches the OpenPOS version you are installing to avoid compatibility issues.
 
+⚠️ **Magento Inventory (MSI)**
+
+If Magento Inventory (MSI) is enabled on your store, also install `zero1/open-pos-msi` so till sales update stock levels:
+
+```
+composer require zero1/open-pos-msi
+```
+
 
 # Installation
 

@@ -309,6 +309,10 @@ class TillSessionManagement
             $tillSession = $this->getTillSession();
         }
 
+        if(!$tillSession) {
+            return null;
+        }
+
         $adminUser = $this->userFactory->create();
         $adminUser->loadByUsername($tillSession->getAdminUser());
 

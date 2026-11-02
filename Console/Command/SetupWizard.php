@@ -18,6 +18,7 @@ use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory as ThemeCollection
 use Magento\Store\Model\StoreManagerInterface;
 use \Magento\User\Model\ResourceModel\User\CollectionFactory as AdminUserCollectionFactory;
 use Magento\User\Model\UserFactory;
+use Zero1\OpenPos\Model\InventoryCompatibility;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -98,6 +99,11 @@ class SetupWizard extends Command
     protected $userFactory;
 
     /**
+     * @var InventoryCompatibility
+     */
+    protected $inventoryCompatibility;
+
+    /**
      * @param State $state
      * @param OpenPosConfiguration $openPosConfiguration
      * @param WebsiteInterfaceFactory $websiteFactory
@@ -112,7 +118,8 @@ class SetupWizard extends Command
      * @param StoreManagerInterface $storeManager
      * @param AdminUserCollectionFactory $adminUserCollectionFactory
      * @param UserFactory $userFactory
-     */    
+     * @param InventoryCompatibility $inventoryCompatibility
+     */
     public function __construct(
         State $state,
         OpenPosConfiguration $openPosConfiguration,
@@ -127,7 +134,8 @@ class SetupWizard extends Command
         ThemeCollectionFactory $themeCollectionFactory,
         StoreManagerInterface $storeManager,
         AdminUserCollectionFactory $adminUserCollectionFactory,
-        UserFactory $userFactory
+        UserFactory $userFactory,
+        InventoryCompatibility $inventoryCompatibility
     ) {
         $this->state = $state;
         $this->openPosConfiguration = $openPosConfiguration;
@@ -143,6 +151,7 @@ class SetupWizard extends Command
         $this->storeManager = $storeManager;
         $this->adminUserCollectionFactory = $adminUserCollectionFactory;
         $this->userFactory = $userFactory;
+        $this->inventoryCompatibility = $inventoryCompatibility;
         parent::__construct();
     }
 
@@ -359,6 +368,12 @@ class SetupWizard extends Command
 
         if(!$existingStore) {
             $output->writeln('<comment>Since you created a website and store as part of this setup, you may need to make changes to your NGINX / Apache configuration also.</comment>');
+        }
+
+        if($this->inventoryCompatibility->isMsiPackageMissing()) {
+            $output->writeln('');
+            $output->writeln('<error>Magento Inventory (MSI) is enabled. Till sales will not update stock levels correctly until you install the OpenPOS MSI package:</error>');
+            $output->writeln('<fg=green;options=bold>composer require ' . InventoryCompatibility::OPENPOS_INVENTORY_PACKAGE . '</>');
         }
 
         $output->writeln('');

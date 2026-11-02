@@ -18,6 +18,10 @@ use Zero1\OpenPos\Api\Data\PaymentInterface;
 use Zero1\OpenPos\Model\PaymentMethod\Layaways;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
+use Magento\Sales\Api\Data\OrderStatusHistoryInterfaceFactory;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class OrderManagement
 {
@@ -67,6 +71,26 @@ class OrderManagement
     protected $transaction;
 
     /**
+     * @var OrderStatusHistoryRepositoryInterface
+     */
+    protected $orderStatusHistoryRepository;
+
+    /**
+     * @var OrderStatusHistoryInterfaceFactory
+     */
+    protected $orderStatusHistoryFactory;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var EventManager
+     */
+    protected $eventManager;
+
+    /**
      * @param OpenPosConfiguration $openPosConfiguration
      * @param TillSessionManagement $tillSessionManagement
      * @param PaymentCollectionFactory $paymentCollectionFactory
@@ -76,6 +100,10 @@ class OrderManagement
      * @param InvoiceRepositoryInterface $invoiceRepository
      * @param InvoiceService $invoiceService
      * @param Transaction $transaction
+     * @param OrderStatusHistoryRepositoryInterface $orderStatusHistoryRepository
+     * @param OrderStatusHistoryInterfaceFactory $orderStatusHistoryFactory
+     * @param LoggerInterface $logger
+     * @param EventManager $eventManager
      */
     public function __construct(
         OpenPosConfiguration $openPosConfiguration,
@@ -86,7 +114,11 @@ class OrderManagement
         OrderRepositoryInterface $orderRepository,
         InvoiceRepositoryInterface $invoiceRepository,
         InvoiceService $invoiceService,
-        Transaction $transaction
+        Transaction $transaction,
+        OrderStatusHistoryRepositoryInterface $orderStatusHistoryRepository,
+        OrderStatusHistoryInterfaceFactory $orderStatusHistoryFactory,
+        LoggerInterface $logger,
+        EventManager $eventManager
     ) {
         $this->openPosConfiguration = $openPosConfiguration;
         $this->tillSessionManagement = $tillSessionManagement;
@@ -97,6 +129,10 @@ class OrderManagement
         $this->invoiceRepository = $invoiceRepository;
         $this->invoiceService = $invoiceService;
         $this->transaction = $transaction;
+        $this->orderStatusHistoryRepository = $orderStatusHistoryRepository;
+        $this->orderStatusHistoryFactory = $orderStatusHistoryFactory;
+        $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -115,6 +151,49 @@ class OrderManagement
     }
 
     /**
+     * Check if an order is being placed by an active till.
+     * Only meaningful while the order is being placed, as it depends on the current till session.
+     * Other orders on the POS store (Magento admin, API, imports) are handled as normal Magento orders.
+     *
+     * @param OrderInterface $order
+     * @return bool
+     */
+    public function isTillSale(OrderInterface $order): bool
+    {
+        return $this->isPosOrder($order) && $this->tillSessionManagement->isTillSessionActive();
+    }
+
+    /**
+     * Log a failure in OpenPOS processing of an order that has already been placed,
+     * and leave a comment on the order so staff can check it.
+     * Never throws: failing the request at this point would only invite a duplicate order.
+     *
+     * @param OrderInterface $order
+     * @param string $message
+     * @param \Throwable $error
+     * @return void
+     */
+    public function reportProcessingFailure(OrderInterface $order, string $message, \Throwable $error): void
+    {
+        $this->logger->critical($message, ['order' => $order->getIncrementId(), 'exception' => $error]);
+
+        try {
+            // Saved on its own rather than through the order: if invoicing failed part way, the order
+            // object may hold totals for an invoice that was never saved.
+            $history = $this->orderStatusHistoryFactory->create();
+            $history->setParentId($order->getEntityId());
+            $history->setEntityName('order');
+            $history->setStatus($order->getStatus());
+            $history->setIsCustomerNotified(0);
+            $history->setIsVisibleOnFront(0);
+            $history->setComment((string)__('%1 Error: %2', $message, $error->getMessage()));
+            $this->orderStatusHistoryRepository->save($history);
+        } catch(\Throwable $e) {
+            $this->logger->critical('OpenPOS could not add a comment to order ' . $order->getIncrementId(), ['exception' => $e]);
+        }
+    }
+
+    /**
      * Add OpenPOS payment to an order.
      * If the order is fully paid after the payment, invoice the order.
      * 
@@ -123,11 +202,17 @@ class OrderManagement
      * @param string $basePaymentMethodCode
      * @param string $paymentMethodCode
      * @return PaymentInterface on success, null on failure
+     * @throws LocalizedException
      */
     public function makePayment(OrderInterface $order, $amount, $basePaymentMethodCode, $paymentMethodCode): ?PaymentInterface
     {
         $orderId = $order->getId();
-        $adminUser = $this->tillSessionManagement->getAdminUserFromTillSession()->getUserName();
+
+        $tillUser = $this->tillSessionManagement->getAdminUserFromTillSession();
+        if(!$tillUser) {
+            throw new LocalizedException(__('An active till session is required to take an OpenPOS payment.'));
+        }
+        $adminUser = $tillUser->getUserName();
 
         $taxRate = $this->getTaxRateForOrder($order);
         $taxAmount = round($amount * ($taxRate / 100), 2);
@@ -180,6 +265,19 @@ class OrderManagement
             $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);
             $this->orderRepository->save($order);
+
+            // Let extensions act on the order being paid in full: at the till for a normal sale,
+            // or when the final layaway payment is taken. The order and invoice are already saved,
+            // so a failure here mustn't undo the payment.
+            try {
+                $this->eventManager->dispatch('openpos_order_paid', ['order' => $order, 'invoice' => $invoice]);
+            } catch(\Throwable $e) {
+                $this->reportProcessingFailure(
+                    $order,
+                    (string)__('OpenPOS could not finish processing this order after payment (e.g. updating stock). Please check the order.'),
+                    $e
+                );
+            }
 
             return $invoice;
         }

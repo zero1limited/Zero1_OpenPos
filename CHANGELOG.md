@@ -1,5 +1,21 @@
 # OpenPOS changelog
 
+## [2.4.1] - 2026-11-02
+
+### Added
+- Improved support for Magento Inventory (MSI) via the new zero1/open-pos-msi package.
+- `openpos_till_sale_placed` and `openpos_order_paid` events for extensions.
+- Admin notice when Magento Inventory (MSI) is enabled without zero1/open-pos-msi.
+
+### Changed
+- API requests (REST, SOAP, GraphQL) to the POS store now require an active till session, in line with the frontend.
+- OpenPOS payment methods are now only available to an active till session.
+- Orders placed on the POS store outside of a till (e.g. from the Magento admin) no longer run till specific events (e.g. auto invoicing).
+
+### Fixed
+- Emailing a receipt no longer unlinks the order from the customer's account.
+- Order emails for cash and RMA payments now show the payment details correctly.
+
 ## [2.4.0] - 2026-09-03
 
 ### Added

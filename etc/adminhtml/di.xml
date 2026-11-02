@@ -3,4 +3,11 @@
     <type name="Magento\Sales\Block\Adminhtml\Order\View">
         <plugin name="zero1_openpos_add_sales_order_button" type="Zero1\OpenPos\Plugin\Adminhtml\AddSalesOrderButton" sortOrder="10" />
     </type>
+    <type name="Magento\Framework\Notification\MessageList">
+        <arguments>
+            <argument name="messages" xsi:type="array">
+                <item name="zero1_openpos_inventory_module_missing" xsi:type="string">Zero1\OpenPos\Model\System\Message\InventoryModuleMissing</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
