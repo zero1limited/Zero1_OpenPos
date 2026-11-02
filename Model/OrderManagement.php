@@ -21,6 +21,7 @@ use Magento\Sales\Api\Data\InvoiceInterface;
 use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
 use Magento\Sales\Api\Data\OrderStatusHistoryInterfaceFactory;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\Event\ManagerInterface as EventManager;
 
 class OrderManagement
 {
@@ -85,6 +86,11 @@ class OrderManagement
     protected $logger;
 
     /**
+     * @var EventManager
+     */
+    protected $eventManager;
+
+    /**
      * @param OpenPosConfiguration $openPosConfiguration
      * @param TillSessionManagement $tillSessionManagement
      * @param PaymentCollectionFactory $paymentCollectionFactory
@@ -97,6 +103,7 @@ class OrderManagement
      * @param OrderStatusHistoryRepositoryInterface $orderStatusHistoryRepository
      * @param OrderStatusHistoryInterfaceFactory $orderStatusHistoryFactory
      * @param LoggerInterface $logger
+     * @param EventManager $eventManager
      */
     public function __construct(
         OpenPosConfiguration $openPosConfiguration,
@@ -110,7 +117,8 @@ class OrderManagement
         Transaction $transaction,
         OrderStatusHistoryRepositoryInterface $orderStatusHistoryRepository,
         OrderStatusHistoryInterfaceFactory $orderStatusHistoryFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventManager $eventManager
     ) {
         $this->openPosConfiguration = $openPosConfiguration;
         $this->tillSessionManagement = $tillSessionManagement;
@@ -124,6 +132,7 @@ class OrderManagement
         $this->orderStatusHistoryRepository = $orderStatusHistoryRepository;
         $this->orderStatusHistoryFactory = $orderStatusHistoryFactory;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -256,6 +265,19 @@ class OrderManagement
             $order->setState(\Magento\Sales\Model\Order::STATE_COMPLETE);
             $order->setStatus(\Magento\Sales\Model\Order::STATE_COMPLETE);
             $this->orderRepository->save($order);
+
+            // Let extensions act on the order being paid in full: at the till for a normal sale,
+            // or when the final layaway payment is taken. The order and invoice are already saved,
+            // so a failure here mustn't undo the payment.
+            try {
+                $this->eventManager->dispatch('openpos_order_paid', ['order' => $order, 'invoice' => $invoice]);
+            } catch(\Throwable $e) {
+                $this->reportProcessingFailure(
+                    $order,
+                    (string)__('OpenPOS could not finish processing this order after payment (e.g. updating stock). Please check the order.'),
+                    $e
+                );
+            }
 
             return $invoice;
         }

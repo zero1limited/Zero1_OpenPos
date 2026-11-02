@@ -1,6 +1,11 @@
 # OpenPOS changelog
 
-## [2.4.1] - Unreleased
+## [2.4.1] - 2026-11-02
+
+### Added
+- Improved support for Magento Inventory (MSI) via the new zero1/open-pos-msi package.
+- `openpos_till_sale_placed` and `openpos_order_paid` events for extensions.
+- Admin notice when Magento Inventory (MSI) is enabled without zero1/open-pos-msi.
 
 ### Changed
 - API requests (REST, SOAP, GraphQL) to the POS store now require an active till session, in line with the frontend.

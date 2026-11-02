@@ -13,6 +13,9 @@
         "zero1/open-pos-default-payments": "1.0.3",
         "zero1/open-pos-rma": "2.1.3"
     },
+    "suggest": {
+        "zero1/open-pos-msi": "Required when Magento Inventory (MSI) is enabled, so till sales update stock levels correctly."
+    },
     "autoload": {
         "files": [
             "registration.php"

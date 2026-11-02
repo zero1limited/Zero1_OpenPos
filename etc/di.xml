@@ -16,6 +16,7 @@
     <type name="Magento\Sales\Api\OrderManagementInterface">
         <plugin name="zero1_openpos_auto_invoice" type="Zero1\OpenPos\Plugin\AutoInvoice" sortOrder="10"/>
         <plugin name="zero1_openpos_payment_create" type="Zero1\OpenPos\Plugin\PaymentCreate" sortOrder="20"/>
+        <plugin name="zero1_openpos_till_sale_events" type="Zero1\OpenPos\Plugin\TillSaleEvents" sortOrder="30"/>
     </type>
 
     <type name="Magento\Quote\Observer\SubmitObserver">
