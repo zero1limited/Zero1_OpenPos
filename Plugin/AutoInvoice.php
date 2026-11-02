@@ -39,8 +39,21 @@ class AutoInvoice
      */
     public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
-        if($this->orderManagement->isPosOrder($order)) {
+        // Orders placed on the POS store without a till (Magento admin, API) are left to Magento's own invoicing.
+        if(!$this->orderManagement->isTillSale($order)) {
+            return $order;
+        }
+
+        // The order has already been saved, so don't fail the request: that would leave the
+        // till's basket active and a retry would place a duplicate order.
+        try {
             $this->orderManagement->invoiceOrder($order);
+        } catch(\Throwable $e) {
+            $this->orderManagement->reportProcessingFailure(
+                $order,
+                (string)__('OpenPOS could not invoice this order automatically. Please check the order and invoice it manually.'),
+                $e
+            );
         }
 
         return $order;

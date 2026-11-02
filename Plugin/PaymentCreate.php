@@ -42,12 +42,25 @@ class PaymentCreate
      */
     public function afterPlace(OrderManagementInterface $orderManagement, OrderInterface $order): OrderInterface
     {
-        if($this->orderManagement->isPosOrder($order)) {
-            if($order->getPayment()->getMethod() === Layaways::PAYMENT_METHOD_CODE) {
-                return $order;
-            }
+        // Orders placed on the POS store without a till (Magento admin, API) take no OpenPOS payment.
+        if(!$this->orderManagement->isTillSale($order)) {
+            return $order;
+        }
 
+        if($order->getPayment()->getMethod() === Layaways::PAYMENT_METHOD_CODE) {
+            return $order;
+        }
+
+        // The order has already been saved, so don't fail the request: that would leave the
+        // till's basket active and a retry would place a duplicate order.
+        try {
             $this->orderManagement->makePayment($order, $order->getGrandTotal(), $order->getPayment()->getMethod(), $order->getPayment()->getMethod());
+        } catch(\Throwable $e) {
+            $this->orderManagement->reportProcessingFailure(
+                $order,
+                (string)__('OpenPOS could not record the payment for this order. Please check the order.'),
+                $e
+            );
         }
 
         return $order;
