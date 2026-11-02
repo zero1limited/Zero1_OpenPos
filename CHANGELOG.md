@@ -4,6 +4,7 @@
 
 ### Changed
 - API requests (REST, SOAP, GraphQL) to the POS store now require an active till session, in line with the frontend.
+- OpenPOS payment methods are now only available to an active till session.
 
 ## [2.4.0] - 2026-09-03
 
