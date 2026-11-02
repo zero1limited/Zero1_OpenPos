@@ -1,5 +1,10 @@
 # OpenPOS changelog
 
+## [2.4.1] - Unreleased
+
+### Changed
+- API requests (REST, SOAP, GraphQL) to the POS store now require an active till session, in line with the frontend.
+
 ## [2.4.0] - 2026-09-03
 
 ### Added

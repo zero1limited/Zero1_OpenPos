@@ -38,6 +38,12 @@
         <plugin name="zero1_openpos_invoice_blocker" type="Zero1\OpenPos\Plugin\InvoiceBlocker" />
     </type>
 
+    <type name="Zero1\OpenPos\Model\ApiAccessPolicy">
+        <arguments>
+            <argument name="tillSessionManagement" xsi:type="object">Zero1\OpenPos\Model\TillSessionManagement\Proxy</argument>
+        </arguments>
+    </type>
+
     <type name="Zero1\OpenPos\Magewire\Switcher">
         <arguments>
             <argument name="blocks" xsi:type="array">
