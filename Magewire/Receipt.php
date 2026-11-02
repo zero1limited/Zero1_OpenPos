@@ -104,12 +104,13 @@ class Receipt extends Component
 
         $order = $this->orderRepository->get($this->getOrder()->getId());
 
-        $order->setCustomerId(null);
-        $order->setCustomerIsGuest(true);
-        $order->setCustomerEmail($this->emailInput);
+        // Send from a copy of the order so the order itself is never changed. The guest template
+        // is used because the standard one links to the customer's account on the POS store's domain.
+        $receiptOrder = clone $order;
+        $receiptOrder->setCustomerIsGuest(true);
+        $receiptOrder->setCustomerEmail($this->emailInput);
 
-        $this->orderRepository->save($order);
-        $result = $this->orderSender->send($order, true);
+        $result = $this->orderSender->send($receiptOrder, true);
 
         if($result) {
             $this->dispatchSuccessMessage(__('Receipt emailed successfully to %1', $this->emailInput));

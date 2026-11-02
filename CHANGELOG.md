@@ -7,6 +7,10 @@
 - OpenPOS payment methods are now only available to an active till session.
 - Orders placed on the POS store outside of a till (e.g. from the Magento admin) no longer run till specific events (e.g. auto invoicing).
 
+### Fixed
+- Emailing a receipt no longer unlinks the order from the customer's account.
+- Order emails for cash and RMA payments now show the payment details correctly.
+
 ## [2.4.0] - 2026-09-03
 
 ### Added
