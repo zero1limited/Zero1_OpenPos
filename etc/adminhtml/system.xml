@@ -48,11 +48,11 @@
                 <label>Customisation</label>
                 <field id="receipt_header" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
-                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
                 </field>
                 <field id="receipt_footer" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt footer</label>
-                    <comment>Please enter the text/html you wish to show at the receipt footer</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt footer. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
                 </field>
                 <field id="price_editor_barcode" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Price Editor Barcode / SKU</label>
