@@ -1,5 +1,10 @@
 # OpenPOS changelog
 
+## [Unreleased]
+
+### Changed
+- Receipt header and footer now keep line breaks from plain multi-line text, so addresses etc. can be pasted in as-is. Content already using HTML line breaks / block elements is unchanged.
+
 ## [2.4.1] - 2026-11-02
 
 ### Added
