@@ -1,5 +1,31 @@
 # OpenPOS changelog
 
+## [2.4.2] - In development
+
+### Added
+- Till home page / welcome panel added.
+- "Home page message" setting (OpenPOS > Customisation), shown on the till home page.
+- OpenPOS logo, installed version and project link at the bottom of the till home page (`openpos.homepage.powered_by`).
+
+### Changed
+- zero1/open-pos-default-theme: generated files are no longer shipped with the module. Hyva prerequisites / installation documentation must be followed during OpenPOS install.
+- Receipt header and footer now keep line breaks from plain multi-line text, so addresses etc. can be pasted in as-is. Content already using HTML line breaks / block elements is unchanged.
+- Module integration mode now stops layout XML of modules that aren't allowed from loading on the POS store, rather than removing their blocks after layout is built. Their layout can no longer remove, move or restyle POS elements, and core blocks are no longer removed because a 3rd party module replaces their class.
+- Changing module integration settings now marks the Layouts and Blocks HTML output caches as invalidated.
+- Hyvä theme fallback, compat module fallback and base layout reset modules are now always allowed by module integration.
+- The till home page is now served by OpenPOS (`openpos/index/index`, layout handle `openpos_index_index`) instead of the store's CMS home page, so content, page layout and meta data meant for the main storefront no longer affect it. The POS website's Default Web URL (`web/default/front`) is set to `openpos` by the setup wizard, and on upgrade for existing installs unless it had been changed from Magento's default. Content can be added with the `openpos-homepage` CMS block, which is created for the POS store if missing.
+- Hyvä is now locked to 1.4, 1.5+ support coming soon.
+
+### Fixed
+- zero1/open-pos-default-theme: the Tailwind build now includes the Hyvä default (parent) theme's templates, so styles used only by inherited templates (e.g. the product page gallery) are generated.
+- Till order view: resolved total display issue and bottom link 404.
+- zero1/open-pos-default-theme: messages (e.g. "Order # has been placed.") no longer cover the header / logo. They use Hyvä's positioning, below the header and staying in view when scrolled.
+- 'checkout/cart/redirect_to_cart' was incorrectly set by setup wizard, this now defaults to 0.
+
+### Removed
+- `Zero1\OpenPos\Observer\ModuleBlockRestriction`, replaced by `Zero1\OpenPos\Model\Layout\ModuleIntegrationFilter`.
+- The till home page layout and template have moved from zero1/open-pos-default-theme (`Magento_Theme/layout/cms_index_index.xml`, `Magento_Theme::cms/homepage.phtml`) into this module. Themes customising them should move to `openpos_index_index.xml`; the block is still named `openpos.homepage.content`.
+
 ## [2.4.1] - 2026-11-02
 
 ### Added

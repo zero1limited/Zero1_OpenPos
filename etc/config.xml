@@ -6,6 +6,7 @@
                 <session_lifetime>240</session_lifetime>
             </general>
             <customisation>
+                <homepage_message>Start scanning to add products!</homepage_message>
                 <barcode_scanner_exit_character>tab</barcode_scanner_exit_character>
             </customisation>
             <advanced>

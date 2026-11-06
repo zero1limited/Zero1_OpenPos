@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- Product slider widgets can be used in the home page CMS block -->
+    <update handle="hyva_product_slider"/>
+    <body>
+        <referenceContainer name="top.container">
+            <!-- Greeting, store name, live date / time and the home page message (Stores > Configuration > OpenPOS > Customisation) -->
+            <block class="Magento\Framework\View\Element\Template" name="openpos.homepage.welcome" template="Zero1_OpenPos::home/welcome.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Zero1\OpenPos\ViewModel\Homepage</argument>
+                </arguments>
+            </block>
+            <block class="Magento\Cms\Block\Block" name="openpos.homepage.content" after="openpos.homepage.welcome">
+                <arguments>
+                    <argument name="block_id" xsi:type="string">openpos-homepage</argument>
+                </arguments>
+            </block>
+            <!-- OpenPOS logo, version and project link -->
+            <block class="Magento\Framework\View\Element\Template" name="openpos.homepage.powered_by" template="Zero1_OpenPos::home/powered-by.phtml" after="openpos.homepage.content">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Zero1\OpenPos\ViewModel\PoweredBy</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <referenceContainer name="content" remove="true"/>
+
+        <!-- No page heading, as on the Hyvä CMS home page this replaces -->
+        <referenceBlock name="page.main.title" remove="true"/>
+    </body>
+</page>

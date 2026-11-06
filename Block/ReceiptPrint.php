@@ -75,7 +75,7 @@ class ReceiptPrint extends Template
      */
     public function getReceiptHeaderContents(): string
     {
-        return $this->openPosConfiguration->getReceiptHeader() ?? '';
+        return $this->formatReceiptText($this->openPosConfiguration->getReceiptHeader());
     }
 
     /**
@@ -83,7 +83,25 @@ class ReceiptPrint extends Template
      */
     public function getReceiptFooterContents(): string
     {
-        return $this->openPosConfiguration->getReceiptFooter() ?? '';
+        return $this->formatReceiptText($this->openPosConfiguration->getReceiptFooter());
+    }
+
+    /**
+     * Convert plain text line breaks to <br />, so multi-line text pasted into config renders as entered.
+     * Content that already uses HTML line breaks / block elements is left untouched to avoid double spacing.
+     *
+     * @param string|null $contents
+     * @return string
+     */
+    protected function formatReceiptText(?string $contents): string
+    {
+        $contents = trim((string)$contents);
+
+        if ($contents === '' || preg_match('/<(br|p|div|ul|ol|li|table|tr|h[1-6])\b/i', $contents)) {
+            return $contents;
+        }
+
+        return nl2br($contents);
     }
 
     /**

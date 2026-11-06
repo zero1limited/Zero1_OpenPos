@@ -69,7 +69,36 @@
                 <item name="Hyva_Theme" xsi:type="string">Hyva_Theme</item>
                 <item name="Hyva_Checkout" xsi:type="string">Hyva_Checkout</item>
                 <item name="Magewirephp_Magewire" xsi:type="string">Magewirephp_Magewire</item>
+                <item name="Hyva_ThemeFallback" xsi:type="string">Hyva_ThemeFallback</item>
+                <item name="Hyva_CompatModuleFallback" xsi:type="string">Hyva_CompatModuleFallback</item>
+                <item name="Hyva_BaseLayoutReset" xsi:type="string">Hyva_BaseLayoutReset</item>
             </argument>
+        </arguments>
+    </type>
+
+    <!-- Module integration: leave out layout XML of modules not allowed on the POS store.
+         Wraps the file sources layout merging reads (as declared in app/etc/di.xml). Page\Layout\Reader builds its own
+         Merge and passes its source in explicitly, so it is set there too. Global rather than frontend, as layout for
+         the POS store can be built under emulation from any area and shares its cache entry with the till. -->
+    <virtualType name="openPosLayoutFileSourceFiltered" type="Zero1\OpenPos\Model\Layout\ModuleIntegrationFilter">
+        <arguments>
+            <argument name="subject" xsi:type="object">Magento\Framework\View\Layout\File\Collector\Aggregated\Proxy</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="openPosPageLayoutFileSourceFiltered" type="Zero1\OpenPos\Model\Layout\ModuleIntegrationFilter">
+        <arguments>
+            <argument name="subject" xsi:type="object">pageLayoutFileCollectorAggregated</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Framework\View\Model\Layout\Merge">
+        <arguments>
+            <argument name="fileSource" xsi:type="object">openPosLayoutFileSourceFiltered</argument>
+            <argument name="pageLayoutFileSource" xsi:type="object">openPosPageLayoutFileSourceFiltered</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Page\Layout\Reader">
+        <arguments>
+            <argument name="pageLayoutFileSource" xsi:type="object">openPosPageLayoutFileSourceFiltered</argument>
         </arguments>
     </type>
 

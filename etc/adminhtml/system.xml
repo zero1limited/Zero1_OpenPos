@@ -13,10 +13,12 @@
                 <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable OpenPOS system</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <backend_model>Zero1\OpenPos\Model\Config\Backend\InvalidateLayoutCache</backend_model>
                 </field>
                 <field id="pos_store" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>POS Store</label>
                     <source_model>Magento\Config\Model\Config\Source\Store</source_model>
+                    <backend_model>Zero1\OpenPos\Model\Config\Backend\InvalidateLayoutCache</backend_model>
                 </field>
                 <field id="tfa_enable" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable 2FA on till login</label>
@@ -48,11 +50,15 @@
                 <label>Customisation</label>
                 <field id="receipt_header" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
-                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
                 </field>
                 <field id="receipt_footer" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt footer</label>
-                    <comment>Please enter the text/html you wish to show at the receipt footer</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt footer. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
+                </field>
+                <field id="homepage_message" translate="label comment" type="textarea" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Home page message</label>
+                    <comment>Shown on the till home page, below the greeting and current date / time. Plain text, line breaks are kept. Leave empty to show no message. Further content can be added with the 'openpos-homepage' CMS block.</comment>
                 </field>
                 <field id="price_editor_barcode" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Price Editor Barcode / SKU</label>
@@ -74,11 +80,13 @@
                 <field id="module_integration_mode" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Module integration mode</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationMode</source_model>
-                    <comment>Allow Magento modules to make changes to the frontend of OpenPOS. If you are facing issues select 'None'.</comment>
+                    <backend_model>Zero1\OpenPos\Model\Config\Backend\InvalidateLayoutCache</backend_model>
+                    <comment>Allow Magento modules to make changes to the frontend of OpenPOS. If you are facing issues select 'None'. This also applies to anything else rendered for the POS store, such as emails and PDFs for POS orders, so allow any modules those rely on.</comment>
                 </field>
                 <field id="module_integration_modules" translate="label" type="multiselect" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Specific modules</label>
                     <source_model>Zero1\OpenPos\Model\Config\Source\ModuleIntegrationModules</source_model>
+                    <backend_model>Zero1\OpenPos\Model\Config\Backend\InvalidateLayoutCache</backend_model>
                     <depends>
                         <field id="module_integration_mode">specific</field>
                     </depends>

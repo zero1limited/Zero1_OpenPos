@@ -16,9 +16,15 @@ Core development is a balance between keeping the POS clean and reliable, but at
 
 ## Module Registration
 
-OpenPOS includes a compatibility feature called **Module Integration Mode**. This feature can be configured to strip out 3rd party module blocks from the POS that aren't required or are causing issues.
+OpenPOS includes a compatibility feature called **Module Integration Mode**. This feature can be configured to keep 3rd party modules that aren't required, or are causing issues, out of the POS.
 
-Any modules that are OpenPOS specific can be whitelisted.
+In "Specific" or "None" mode, layout XML (`layout` and `page_layout`) from modules that aren't allowed is not loaded on the POS store at all. This works the same way as Magento's own module output switch, so their blocks are never created and their layout instructions (`remove`, `move`, `referenceBlock` arguments / templates, `<head>` assets, handle updates) never reach the POS. Theme files under a module's directory (e.g. `<theme>/Vendor_Module/layout/`) count as that module's.
+
+This applies to everything rendered for the POS store's frontend, not just the till. Emails and PDFs for POS orders are rendered as the POS store, so any modules they rely on (e.g. a PDF customiser) need to be allowed too.
+
+Layout is cached, so changes to the module integration settings mark the Layouts and Blocks HTML output caches as invalidated. Refresh them for the change to take effect.
+
+Magento core modules and modules registered as "OpenPOS Modules" (below) are always allowed.
 
 If your module adds UI elements to the POS frontend (e.g., via layout XML), you **must** register your module as an "OpenPOS Module" to ensure it renders correctly when the system is running in "Specific" or "None" integration modes.
 
@@ -40,7 +46,7 @@ To whitelist your module, add it to the `openPosModules` argument of `Zero1\Open
 </config>
 ```
 
-OpenPOS will then automatically allow your module's blocks to render regardless of the configuration.
+OpenPOS will then automatically load your module's layout on the POS regardless of the configuration.
 
 
 ## Adding Payment Methods
@@ -93,6 +99,8 @@ To register a payment method with OpenPOS, inject the following configuration in
 ## Frontend Architecture
 
 The OpenPOS till interface is a Hyvä theme and utilizes Magewire for a lot of the interaction elements.
+
+The till home page is served by OpenPOS itself (`openpos/index/index`, layout handle `openpos_index_index`), with the POS website's Default Web URL (`web/default/front`) set to `openpos`. It does not use the store's CMS home page. Content can be added with the `openpos-homepage` CMS block.
 
 While the checkout also used to use Hyvä, it now uses the Magento Luma theme.
 This was a decision made to make OpenPOS accessible to more sites.

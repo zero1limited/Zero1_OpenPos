@@ -1,0 +1,29 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Zero1\OpenPos\ViewModel\PoweredBy;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+/** @var PoweredBy $poweredBy */
+$poweredBy = $block->getData('view_model');
+$version = $poweredBy->getVersion();
+?>
+<div class="openpos-homepage-powered-by flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 pt-4 pb-10 text-sm text-fg-secondary">
+    <img src="<?= $escaper->escapeUrl($block->getViewFileUrl('images/openposlogo.svg')) ?>"
+            alt="OpenPOS"
+            width="110"
+            height="16"
+            class="h-4 w-auto"
+            loading="lazy"
+    >
+    <?php if ($version): ?>
+        <span class="opacity-40" aria-hidden="true">&middot;</span>
+        <span class="tabular-nums"><?= $escaper->escapeHtml(__('v%1', $version)) ?></span>
+    <?php endif; ?>
+    <span class="opacity-40" aria-hidden="true">&middot;</span>
+    <?= $escaper->escapeHtml(__('Open source point of sale by ZERO-1')) ?>
+</div>

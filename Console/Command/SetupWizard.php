@@ -19,6 +19,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use \Magento\User\Model\ResourceModel\User\CollectionFactory as AdminUserCollectionFactory;
 use Magento\User\Model\UserFactory;
 use Zero1\OpenPos\Model\InventoryCompatibility;
+use Zero1\OpenPos\Model\TillHomepage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -104,6 +105,11 @@ class SetupWizard extends Command
     protected $inventoryCompatibility;
 
     /**
+     * @var TillHomepage
+     */
+    protected $tillHomepage;
+
+    /**
      * @param State $state
      * @param OpenPosConfiguration $openPosConfiguration
      * @param WebsiteInterfaceFactory $websiteFactory
@@ -119,6 +125,7 @@ class SetupWizard extends Command
      * @param AdminUserCollectionFactory $adminUserCollectionFactory
      * @param UserFactory $userFactory
      * @param InventoryCompatibility $inventoryCompatibility
+     * @param TillHomepage $tillHomepage
      */
     public function __construct(
         State $state,
@@ -135,7 +142,8 @@ class SetupWizard extends Command
         StoreManagerInterface $storeManager,
         AdminUserCollectionFactory $adminUserCollectionFactory,
         UserFactory $userFactory,
-        InventoryCompatibility $inventoryCompatibility
+        InventoryCompatibility $inventoryCompatibility,
+        TillHomepage $tillHomepage
     ) {
         $this->state = $state;
         $this->openPosConfiguration = $openPosConfiguration;
@@ -152,6 +160,7 @@ class SetupWizard extends Command
         $this->adminUserCollectionFactory = $adminUserCollectionFactory;
         $this->userFactory = $userFactory;
         $this->inventoryCompatibility = $inventoryCompatibility;
+        $this->tillHomepage = $tillHomepage;
         parent::__construct();
     }
 
@@ -317,6 +326,9 @@ class SetupWizard extends Command
         }
         $this->configWriter->save('design/theme/theme_id', $openPosTheme->getId(), \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
+        // Serve the till home page from OpenPOS rather than the store's CMS home page
+        $this->tillHomepage->configure($store);
+
         // Set first till user
         $output->writeln('<comment>To login to OpenPOS, a Magento admin account is used.</comment>');
         $adminUserCollection = $this->adminUserCollectionFactory->create();
@@ -340,7 +352,7 @@ class SetupWizard extends Command
         $this->configWriter->save('hyva_themes_checkout/general/checkout', 'default', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/options/guest_checkout', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
         $this->configWriter->save('checkout/sidebar/display', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
-        $this->configWriter->save('checkout/cart/redirect_to_cart', 1, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
+        $this->configWriter->save('checkout/cart/redirect_to_cart', 0, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());
 
         // Set theme fallback / Luma checkout config
         $this->configWriter->save('hyva_themes_checkout/general/checkout', 'magento_luma', \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES, $website->getId());

@@ -1,0 +1,78 @@
+<?php
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Zero1\OpenPos\ViewModel\Homepage;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+/** @var Homepage $homepage */
+$homepage = $block->getData('view_model');
+
+$firstName = $homepage->getTillUserFirstName();
+$message = $homepage->getMessage();
+$now = $homepage->getNow();
+$greetings = [
+    'morning' => (string)__('Good morning'),
+    'afternoon' => (string)__('Good afternoon'),
+    'evening' => (string)__('Good evening'),
+];
+$greeting = $now['hour'] < 12 ? $greetings['morning'] : ($now['hour'] < 18 ? $greetings['afternoon'] : $greetings['evening']);
+?>
+<script>
+    function initOpenPosHomepageClock() {
+        const timeZone = <?= /* @noEscape */ json_encode($homepage->getTimezone()) ?>;
+        const locale = <?= /* @noEscape */ json_encode($homepage->getLocale()) ?>;
+        const greetings = <?= /* @noEscape */ json_encode($greetings) ?>;
+        const timeFormat = new Intl.DateTimeFormat(locale, {timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23'});
+        const dateFormat = new Intl.DateTimeFormat(locale, {timeZone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
+        const hourFormat = new Intl.DateTimeFormat('en-GB', {timeZone, hour: 'numeric', hourCycle: 'h23'});
+
+        return {
+            greeting: <?= /* @noEscape */ json_encode($greeting) ?>,
+            time: <?= /* @noEscape */ json_encode($now['time']) ?>,
+            date: <?= /* @noEscape */ json_encode($now['date']) ?>,
+            timer: null,
+            init() {
+                this.tick();
+                this.timer = setInterval(() => this.tick(), 1000);
+            },
+            destroy() {
+                clearInterval(this.timer);
+            },
+            tick() {
+                const now = new Date();
+                const hour = parseInt(hourFormat.format(now), 10);
+                this.time = timeFormat.format(now);
+                this.date = dateFormat.format(now);
+                this.greeting = hour < 12 ? greetings.morning : (hour < 18 ? greetings.afternoon : greetings.evening);
+            }
+        };
+    }
+</script>
+<section
+    x-data="initOpenPosHomepageClock()"
+    class="openpos-homepage-welcome flex flex-col items-center px-4 pt-16 pb-12 text-center md:pt-24"
+    aria-label="<?= $escaper->escapeHtmlAttr(__('Welcome')) ?>"
+>
+    <p class="text-sm font-semibold uppercase tracking-widest text-primary">
+        <?= $escaper->escapeHtml($homepage->getStoreName()) ?>
+    </p>
+    <p class="mt-3 text-2xl font-medium text-fg-secondary md:text-3xl">
+        <span x-text="greeting"><?= $escaper->escapeHtml($greeting) ?></span><?php if ($firstName): ?>, <?= $escaper->escapeHtml($firstName) ?><?php endif; ?>
+    </p>
+
+    <time class="mt-6 block text-7xl font-bold leading-none tracking-tight tabular-nums text-fg md:text-9xl" x-text="time"><?= $escaper->escapeHtml($now['time']) ?></time>
+    <p class="mt-4 text-xl text-fg-secondary md:text-2xl" x-text="date"><?= $escaper->escapeHtml($now['date']) ?></p>
+
+    <?php if ($message): ?>
+        <p class="mt-12 flex items-center gap-3 text-lg text-fg-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-primary" aria-hidden="true">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M8 7v10M12 7v10M17 7v10"/>
+            </svg>
+            <span><?= /* @noEscape */ nl2br($escaper->escapeHtml($message)) ?></span>
+        </p>
+    <?php endif; ?>
+</section>

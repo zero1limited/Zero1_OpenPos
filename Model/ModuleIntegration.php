@@ -51,6 +51,7 @@ class ModuleIntegration
     public function getCoreWhitelistModules(): array
     {
         $allModules = $this->moduleList->getNames();
+        $coreMagentoModules = [];
 
         foreach ($allModules as $moduleName) {
             // Add core Magento modules
