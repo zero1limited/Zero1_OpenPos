@@ -48,9 +48,14 @@
 
             <group id="customisation" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Customisation</label>
+                <field id="receipt_logo" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Show logo on receipt</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>The POS store's header logo (Content > Design > Configuration). Receipt printers print in black only, so a simple, high contrast logo works best.</comment>
+                </field>
                 <field id="receipt_header" translate="label comment" type="textarea" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt header</label>
-                    <comment>Please enter the text/html you wish to show at the receipt header. This will show below your logo. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
+                    <comment>Please enter the text/html you wish to show at the receipt header. Shown below the logo. Line breaks are kept unless the content contains HTML line breaks or block elements (e.g. &lt;br&gt;, &lt;p&gt;).</comment>
                 </field>
                 <field id="receipt_footer" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Receipt footer</label>

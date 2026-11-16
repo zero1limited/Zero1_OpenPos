@@ -7,6 +7,8 @@
                     <argument name="magewire" xsi:type="object">Zero1\OpenPos\Magewire\Receipt</argument>
                 </arguments>
                 <block class="Zero1\OpenPos\Block\ReceiptPrint" name="openpos.receipt.print" template="Zero1_OpenPos::receipt/print.phtml" />
+                <!-- Further ways to print the receipt, shown next to the "Print receipt" button (e.g. zero1/open-pos-star-passprnt) -->
+                <container name="openpos.receipt.print.actions" as="print_actions"/>
             </block>
         </referenceContainer>
     </body>

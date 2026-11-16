@@ -1,31 +1,96 @@
-<div style="width:100%; text-align: center;padding-bottom:20px">
-    <div style="padding-top:10px; ">
-        <?= $block->getReceiptHeaderContents(); ?>
+<?php
+/**
+ * The printed receipt. Also used by add-ons that send the receipt to a printer themselves (e.g. Star PassPRNT),
+ * so styles are inline, black only and sized in em, to scale with the font size of the page it is printed from.
+ */
+
+use Magento\Framework\Escaper;
+use Zero1\OpenPos\Block\ReceiptPrint;
+
+/** @var ReceiptPrint $block */
+/** @var Escaper $escaper */
+
+$payments = $block->getPayments();
+$hasBalanceDue = $block->hasBalanceDue();
+$cell = 'padding:0.15em 0; vertical-align:top;';
+$amountCell = $cell . ' text-align:right; white-space:nowrap; padding-left:0.75em;';
+?>
+<div style="text-align:center; padding-bottom:1em;">
+    <?php if ($block->isLogoEnabled()): ?>
+        <img src="<?= $escaper->escapeUrl($block->getLogoUrl()) ?>"
+             alt="<?= $escaper->escapeHtmlAttr($block->getLogoAlt()) ?>"
+             style="display:block; margin:0 auto 0.5em; max-width:60%; height:auto;" />
+    <?php endif; ?>
+    <div>
+        <?= /* @noEscape - text/HTML from OpenPOS configuration */ $block->getReceiptHeaderContents() ?>
     </div>
-    <h2 style="font-size:12pt">Order # <?= $block->getOrderIncrementId() ?></h2>
-    <span><?= $block->getOrderDate(); ?></span><br />
+    <h2 style="font-size:1.2em; font-weight:bold; margin:0.5em 0 0;">
+        <?= $escaper->escapeHtml(__('Order # %1', $block->getOrderIncrementId())) ?>
+    </h2>
+    <span><?= $escaper->escapeHtml($block->getOrderDate()) ?></span>
 </div>
 
-<table style="width:100%; margin-left:0px; margin-right:0px; margin-top:20px">
+<table style="width:100%; border-collapse:collapse;">
     <tr>
-        <th style="text-align:left">Item</th>
-        <th style="text-align:right">SubTotal</th>
+        <th style="<?= $cell ?> text-align:left; font-weight:bold;"><?= $escaper->escapeHtml(__('Item')) ?></th>
+        <th style="<?= $amountCell ?> font-weight:bold;"><?= $escaper->escapeHtml(__('Total')) ?></th>
     </tr>
-    <?php foreach ($block->getOrderItems() as $orderItem) : ?>
+    <?php foreach ($block->getOrderItems() as $orderItem): ?>
         <tr>
-            <td><?= (int)$orderItem->getQtyOrdered(); ?> x <?= $orderItem->getName() ?> </td>
-            <td style="text-align:right"><?= $block->formatPrice($orderItem->getRowTotalInclTax()) ?></td>
+            <td style="<?= $cell ?> text-align:left;">
+                <?= $escaper->escapeHtml($block->getItemQty($orderItem)) ?> x <?= $escaper->escapeHtml($orderItem->getName()) ?>
+            </td>
+            <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($block->getItemRowTotal($orderItem)) ?></td>
         </tr>
-    <?php endforeach ?>
-    <tr style="margin-top:25px; padding-top: 20px;">
-        <td>TOTAL PAID</td>
-        <td style="text-align:right; font-weight:bold"><?= $block->getOrderGrandTotal() ?></td>
+    <?php endforeach; ?>
+</table>
+
+<table style="width:100%; border-collapse:collapse; margin-top:0.5em; border-top:1px solid #000;">
+    <?php if ($block->hasDiscount() || $block->hasShipping()): ?>
+        <tr>
+            <td style="<?= $cell ?> text-align:left;"><?= $escaper->escapeHtml(__('Subtotal')) ?></td>
+            <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($block->getSubtotal()) ?></td>
+        </tr>
+        <?php if ($block->hasDiscount()): ?>
+            <tr>
+                <td style="<?= $cell ?> text-align:left;"><?= $escaper->escapeHtml($block->getDiscountLabel()) ?></td>
+                <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($block->getDiscountAmount()) ?></td>
+            </tr>
+        <?php endif; ?>
+        <?php if ($block->hasShipping()): ?>
+            <tr>
+                <td style="<?= $cell ?> text-align:left;"><?= $escaper->escapeHtml(__('Shipping')) ?></td>
+                <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($block->getShippingAmount()) ?></td>
+            </tr>
+        <?php endif; ?>
+    <?php endif; ?>
+    <tr>
+        <td style="<?= $cell ?> text-align:left; font-weight:bold;"><?= $escaper->escapeHtml(__('Total')) ?></td>
+        <td style="<?= $amountCell ?> font-weight:bold;"><?= $escaper->escapeHtml($block->getOrderGrandTotal()) ?></td>
     </tr>
 </table>
 
-<span>Paid by <?= __($block->getOrderPayment()) ?></span>
+<?php if ($payments || $hasBalanceDue): ?>
+    <table style="width:100%; border-collapse:collapse; margin-top:0.5em; border-top:1px solid #000;">
+        <?php foreach ($payments as $payment): ?>
+            <tr>
+                <td style="<?= $cell ?> text-align:left;"><?= $escaper->escapeHtml($payment['label']) ?></td>
+                <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($payment['amount']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        <?php if ($hasBalanceDue): ?>
+            <tr>
+                <td style="<?= $cell ?> text-align:left;"><?= $escaper->escapeHtml(__('Total paid')) ?></td>
+                <td style="<?= $amountCell ?>"><?= $escaper->escapeHtml($block->getTotalPaid()) ?></td>
+            </tr>
+            <tr>
+                <td style="<?= $cell ?> text-align:left; font-weight:bold;"><?= $escaper->escapeHtml(__('Balance due')) ?></td>
+                <td style="<?= $amountCell ?> font-weight:bold;"><?= $escaper->escapeHtml($block->getBalanceDue()) ?></td>
+            </tr>
+        <?php endif; ?>
+    </table>
+<?php endif; ?>
 
-
-<div style="width:100%; padding-top:15px; padding-bottom:15px">
-    <?= $block->getReceiptFooterContents(); ?>
+<div style="padding:1em 0;">
+    <?= /* @noEscape - text/HTML from OpenPOS configuration */ $block->getReceiptFooterContents() ?>
 </div>

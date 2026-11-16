@@ -6,6 +6,8 @@
 - Till home page / welcome panel added.
 - "Home page message" setting (OpenPOS > Customisation), shown on the till home page.
 - OpenPOS logo, installed version and project link at the bottom of the till home page (`openpos.homepage.powered_by`).
+- "Show logo on receipt" setting (OpenPOS > Customisation), on by default.
+- `openpos.receipt.print.actions` container next to the receipt's "Print receipt" button, for extensions adding other ways to print (e.g. zero1/open-pos-star-passprnt).
 
 ### Changed
 - zero1/open-pos-default-theme: generated files are no longer shipped with the module. Hyva prerequisites / installation documentation must be followed during OpenPOS install.
@@ -15,14 +17,20 @@
 - Hyvä theme fallback, compat module fallback and base layout reset modules are now always allowed by module integration.
 - The till home page is now served by OpenPOS (`openpos/index/index`, layout handle `openpos_index_index`) instead of the store's CMS home page, so content, page layout and meta data meant for the main storefront no longer affect it. The POS website's Default Web URL (`web/default/front`) is set to `openpos` by the setup wizard, and on upgrade for existing installs unless it had been changed from Magento's default. Content can be added with the `openpos-homepage` CMS block, which is created for the POS store if missing.
 - Hyvä is now locked to 1.4, 1.5+ support coming soon.
+- The receipt lists the payments taken (e.g. each layaway payment), with the total paid and balance due when the order isn't fully paid.
+- The receipt shows the subtotal, discount and shipping when an order has a discount or shipping.
+- "Print receipt" prints straight away, rather than waiting on a request to the server.
 
 ### Fixed
 - zero1/open-pos-default-theme: the Tailwind build now includes the Hyvä default (parent) theme's templates, so styles used only by inherited templates (e.g. the product page gallery) are generated.
 - Till order view: resolved total display issue and bottom link 404.
 - zero1/open-pos-default-theme: messages (e.g. "Order # has been placed.") no longer cover the header / logo. They use Hyvä's positioning, below the header and staying in view when scrolled.
 - 'checkout/cart/redirect_to_cart' was incorrectly set by setup wizard, this now defaults to 0.
+- Layaway receipts showed the full order total as paid and the payment method as `openpos_layaways`.
+- Receipt amounts are formatted in the order's currency without being converted again.
 
 ### Removed
+- Unused `Zero1_OpenPos::receipt.phtml` template, replaced by `receipt/wrapper.phtml` and `receipt/print.phtml`.
 - `Zero1\OpenPos\Observer\ModuleBlockRestriction`, replaced by `Zero1\OpenPos\Model\Layout\ModuleIntegrationFilter`.
 - The till home page layout and template have moved from zero1/open-pos-default-theme (`Magento_Theme/layout/cms_index_index.xml`, `Magento_Theme::cms/homepage.phtml`) into this module. Themes customising them should move to `openpos_index_index.xml`; the block is still named `openpos.homepage.content`.
 

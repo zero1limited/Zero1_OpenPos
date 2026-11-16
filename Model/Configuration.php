@@ -19,6 +19,7 @@ class Configuration
 
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_HEADER = 'openpos/customisation/receipt_header';
     const CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER = 'openpos/customisation/receipt_footer';
+    const CONFIG_PATH_CUSTOMISATION_RECEIPT_LOGO = 'openpos/customisation/receipt_logo';
     const CONFIG_PATH_CUSTOMISATION_HOMEPAGE_MESSAGE = 'openpos/customisation/homepage_message';
     const CONFIG_PATH_CUSTOMISATION_PRICE_EDITOR_BARCODE = 'openpos/customisation/price_editor_barcode';
     const CONFIG_PATH_CUSTOMISATION_CUSTOM_PRODUCT_BARCODE = 'openpos/customisation/custom_product_barcode';
@@ -138,6 +139,14 @@ class Configuration
     public function getReceiptFooter(): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_FOOTER);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReceiptLogoEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::CONFIG_PATH_CUSTOMISATION_RECEIPT_LOGO);
     }
 
     /**

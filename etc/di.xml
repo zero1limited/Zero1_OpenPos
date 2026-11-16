@@ -102,6 +102,16 @@
         </arguments>
     </type>
 
+    <!-- Customer facing names for payment methods on receipts. Methods not listed use their Magento title. -->
+    <type name="Zero1\OpenPos\Block\ReceiptPrint">
+        <arguments>
+            <argument name="paymentMethodLabels" xsi:type="array">
+                <item name="openpos_pay_card" xsi:type="string">Credit/Debit Card</item>
+                <item name="openpos_pay_cash" xsi:type="string">Cash</item>
+            </argument>
+        </arguments>
+    </type>
+
     <type name="Zero1\OpenPos\Model\Payment\MethodProvider">
         <arguments>
             <argument name="methods" xsi:type="array">
